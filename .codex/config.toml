@@ -1,0 +1,5 @@
+# Project-scoped MCP configuration. Keep the set minimal and do not store secrets here.
+
+[mcp_servers.chrome-devtools]
+command = "npx"
+args = ["-y", "chrome-devtools-mcp@latest"]

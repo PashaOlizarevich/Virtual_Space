@@ -1,0 +1,4 @@
+interface:
+  display_name: "Create Component"
+  short_description: "Создание доступных UI-компонентов проекта"
+  default_prompt: "Use $create-component to build a reusable UI component for this project."

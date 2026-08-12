@@ -1,0 +1,4 @@
+interface:
+  display_name: "API Development"
+  short_description: "Разработка безопасных API и Server Actions"
+  default_prompt: "Use $api-development to implement a validated API endpoint in this project."

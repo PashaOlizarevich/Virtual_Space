@@ -1,0 +1,4 @@
+interface:
+  display_name: "Security Review"
+  short_description: "Проверка безопасности изменений Virtual Space"
+  default_prompt: "Use $security-review to perform a read-only security review of the current changes."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Code Review"
+  short_description: "Проверка изменений на дефекты и риски"
+  default_prompt: "Use $code-review to review the current changes for defects and regressions."

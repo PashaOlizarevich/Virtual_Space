@@ -1,0 +1,4 @@
+interface:
+  display_name: "Bug Fix"
+  short_description: "ƒиагностика и минимальное исправление ошибок"
+  default_prompt: "Use $bug-fix to reproduce and fix a defect with regression coverage."

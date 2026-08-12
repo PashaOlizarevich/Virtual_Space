@@ -1,0 +1,4 @@
+interface:
+  display_name: "Database Change"
+  short_description: "Безопасные изменения Prisma и PostgreSQL"
+  default_prompt: "Use $database-change to plan and implement a safe database change."
