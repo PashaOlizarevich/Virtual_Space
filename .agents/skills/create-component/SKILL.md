@@ -1,6 +1,6 @@
 ---
 name: create-component
-description: Создать или расширить React UI-компонент Virtual Space по DESIGN.md, shadcn/ui и требованиям доступности. Использовать для компонентов, форм, карточек, drawer/dialog, состояний loading/empty/error и композиции интерфейса.
+description: Создать или расширить React UI-компонент Virtual Space по docs/DESIGN.md, shadcn/ui и требованиям доступности. Использовать для компонентов, форм, карточек, drawer/dialog, состояний loading/empty/error и композиции интерфейса.
 ---
 
 # Создание UI-компонента
@@ -11,7 +11,7 @@ description: Создать или расширить React UI-компонен�
 
 ## Порядок действий
 
-1. Проверить `DESIGN.md`, существующие компоненты, tokens и shadcn-конфигурацию.
+1. Проверить `docs/DESIGN.md`, существующие компоненты, tokens и shadcn-конфигурацию.
 2. Определить ответственность, API props, server/client границу и состояния.
 3. Переиспользовать существующий primitive; новый создавать только при отсутствии.
 4. Реализовать semantic HTML, keyboard/focus поведение, responsive layout и reduced motion.
@@ -26,5 +26,5 @@ description: Создать или расширить React UI-компонен�
 
 ## Критерии завершения
 
-- Компонент соответствует DESIGN.md, типизирован, доступен с клавиатуры и адаптивен.
+- Компонент соответствует `docs/DESIGN.md`, типизирован, доступен с клавиатуры и адаптивен.
 - Нет console errors; lint, typecheck и релевантные тесты проходят.
