@@ -15,7 +15,7 @@ test.describe("store header", () => {
     await expect(page.locator(".header__wordmark-letter")).toHaveCount(13);
     await expect(page.locator(".header__wordmark-letter").nth(1)).toHaveCSS(
       "animation-delay",
-      "0.1s",
+      "0.2s",
     );
     await expect(page.getByRole("link", { name: "Личный кабинет" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Открыть корзину" })).toBeVisible();

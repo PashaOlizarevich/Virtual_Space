@@ -22,6 +22,6 @@ describe("Header", () => {
     expect(markup).toContain('class="header__wordmark" aria-hidden="true"');
     expect(markup.match(/class="header__wordmark-letter"/g)).toHaveLength(13);
     expect(markup).toContain("animation-delay:0.0s");
-    expect(markup).toContain("animation-delay:1.2s");
+    expect(markup).toContain("animation-delay:2.4s");
   });
 });

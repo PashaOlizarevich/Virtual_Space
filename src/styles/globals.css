@@ -154,7 +154,7 @@ a {
 }
 
 .header__wordmark-letter {
-  animation: wordmark-wave 2.4s var(--motion-standard) infinite;
+  animation: wordmark-wave 4.8s var(--motion-standard) infinite;
 }
 
 @keyframes wordmark-wave {

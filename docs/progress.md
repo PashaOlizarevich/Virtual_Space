@@ -81,3 +81,14 @@ refactor или bugfix агент читает записи, связанные 
 - Переменные окружения: `PLAYWRIGHT_BASE_URL` — необязательный адрес изолированного E2E-сервера.
 - Архитектура: Header остаётся Server Component; анимация реализована CSS без новой client-границы.
 - Ограничения: Browser plugin недоступен, поэтому rendered QA выполнен через проектный Playwright; отдельные screenshots не сохранялись.
+
+## Task 6 — Замедление волны wordmark Header
+
+- Результат: скорость последовательной волны `VIRTUAL SPACE` уменьшена в два раза: полный цикл увеличен с `2.4s` до `4.8s`,
+  а шаг между буквами — с `0.1s` до `0.2s`; ритм и порядок анимации сохранены.
+- Файлы: `src/components/layout/header.tsx`, `src/components/layout/header.test.tsx`, `src/styles/globals.css`,
+  `tests/e2e/header.spec.ts`, `docs/progress.md`.
+- Проверки: `npm run lint`, `npm run typecheck`, `npm test -- --runInBand`, `npm run build` и `npm run test:e2e`.
+- Переменные окружения: `PLAYWRIGHT_BASE_URL` — необязательный адрес уже запущенного приложения для E2E.
+- Архитектура: без изменений.
+- Ограничения: Browser plugin недоступен, поэтому rendered QA выполняется через проектный Playwright.

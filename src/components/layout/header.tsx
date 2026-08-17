@@ -37,7 +37,7 @@ export function Header() {
             {[...wordmark].map((character, index) => (
               <span
                 className="header__wordmark-letter"
-                style={{ animationDelay: `${(index * 0.1).toFixed(1)}s` }}
+                style={{ animationDelay: `${(index * 0.2).toFixed(1)}s` }}
                 key={`${character}-${index}`}
               >
                 {character === " " ? "\u00a0" : character}
