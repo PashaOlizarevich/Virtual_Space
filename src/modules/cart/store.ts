@@ -14,6 +14,7 @@ type CartState = {
   setItemQuantity: (item: CartItem, quantity: number) => boolean;
   removeItem: (item: CartItem) => void;
   confirmItemPrice: (item: CartItem, currentPrice: number) => boolean;
+  clearCart: () => void;
 };
 
 function getItemKey(item: Pick<CartItem, "productId" | "selectedOptions">) {
@@ -110,6 +111,9 @@ export const useCartStore = create<CartState>()(
           ),
         }));
         return true;
+      },
+      clearCart() {
+        set({ items: [] });
       },
     }),
     {

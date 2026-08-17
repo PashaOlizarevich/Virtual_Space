@@ -82,6 +82,15 @@ describe("guest cart store", () => {
     expect(useCartStore.getState().confirmItemPrice(item, Number.NaN)).toBe(false);
   });
 
+  it("clears items after a confirmed checkout", () => {
+    useCartStore.getState().addItem(chair);
+
+    useCartStore.getState().clearCart();
+
+    expect(useCartStore.getState().items).toEqual([]);
+    expect(window.localStorage.getItem(CART_STORAGE_KEY)).toContain('"items":[]');
+  });
+
   it("discards untrusted persisted state during hydration", async () => {
     window.localStorage.setItem(
       CART_STORAGE_KEY,

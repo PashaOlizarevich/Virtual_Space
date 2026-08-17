@@ -1,6 +1,9 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { CheckCircle2, LoaderCircle } from "lucide-react";
+import Link from "next/link";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 
 import { Button } from "@/components/ui/button";
@@ -8,6 +11,12 @@ import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from "@/c
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { checkoutFormSchema, type CheckoutFormValues } from "@/modules/checkout/schemas";
+import {
+  CheckoutSubmissionError,
+  submitCheckoutOrder,
+  type CheckoutSubmissionResult,
+} from "@/modules/checkout/submit-order";
+import { useCartStore } from "@/modules/cart/store";
 
 const defaultValues: CheckoutFormValues = {
   name: "",
@@ -17,18 +26,60 @@ const defaultValues: CheckoutFormValues = {
 };
 
 export function CheckoutForm() {
+  const items = useCartStore((state) => state.items);
+  const clearCart = useCartStore((state) => state.clearCart);
+  const [submissionError, setSubmissionError] = useState<string | null>(null);
+  const [result, setResult] = useState<CheckoutSubmissionResult | null>(null);
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitted },
+    formState: { errors, isSubmitted, isSubmitting },
   } = useForm<CheckoutFormValues>({
     resolver: zodResolver(checkoutFormSchema),
     defaultValues,
     shouldFocusError: true,
   });
 
+  async function handleValidSubmit(values: CheckoutFormValues) {
+    setSubmissionError(null);
+
+    try {
+      const submissionResult = await submitCheckoutOrder({ contact: values, items });
+      clearCart();
+      setResult(submissionResult);
+    } catch (error) {
+      setSubmissionError(
+        error instanceof CheckoutSubmissionError
+          ? error.message
+          : "Не удалось оформить заявку. Попробуйте ещё раз.",
+      );
+    }
+  }
+
+  if (result) {
+    return (
+      <section
+        className="checkout-form checkout-form__success"
+        aria-labelledby="checkout-success-title"
+      >
+        <CheckCircle2 aria-hidden="true" />
+        <div>
+          <p className="text-label-caps text-secondary">Заявка принята</p>
+          <h2 id="checkout-success-title">Заказ успешно создан</h2>
+        </div>
+        <p>
+          Номер заказа: <strong>{result.orderNumber}</strong>. Мы свяжемся с вами, чтобы подтвердить
+          состав, стоимость и доставку.
+        </p>
+        <Link className="button button--secondary button--default" href="/catalog">
+          Вернуться в каталог
+        </Link>
+      </section>
+    );
+  }
+
   return (
-    <form className="checkout-form" noValidate onSubmit={handleSubmit(() => undefined)}>
+    <form className="checkout-form" noValidate onSubmit={handleSubmit(handleValidSubmit)}>
       <div className="checkout-form__heading">
         <p className="text-label-caps text-secondary">Контактные данные</p>
         <h2>Расскажите, как с вами связаться</h2>
@@ -38,6 +89,12 @@ export function CheckoutForm() {
       {isSubmitted && Object.keys(errors).length > 0 ? (
         <div className="checkout-form__error-summary" role="alert" tabIndex={-1}>
           Проверьте выделенные поля формы.
+        </div>
+      ) : null}
+
+      {submissionError ? (
+        <div className="checkout-form__error-summary" role="alert">
+          {submissionError}
         </div>
       ) : null}
 
@@ -113,8 +170,19 @@ export function CheckoutForm() {
       </FieldGroup>
 
       <div className="checkout-form__actions">
-        <Button type="submit">Оформить заявку</Button>
-        <p>Отправка и создание заказа будут подключены на следующем этапе.</p>
+        <Button type="submit" disabled={isSubmitting} aria-describedby="checkout-submit-help">
+          {isSubmitting ? (
+            <>
+              <LoaderCircle className="checkout-form__spinner" aria-hidden="true" />
+              Отправляем заявку…
+            </>
+          ) : (
+            "Оформить заявку"
+          )}
+        </Button>
+        <p id="checkout-submit-help">
+          Перед отправкой проверьте контактные данные и состав корзины.
+        </p>
       </div>
     </form>
   );
