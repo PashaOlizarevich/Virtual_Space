@@ -32,10 +32,11 @@ export default function HomePage() {
       <section className="home-hero" aria-labelledby="home-title">
         <Image
           className="home-hero__image"
-          src="/images/home/hero.png"
+          src="/images/home/hero-v2.png"
           alt="Светлая гостиная с модульным диваном и мебелью из ореха"
           fill
           preload
+          quality={100}
           sizes="100vw"
         />
         <Container className="home-hero__container">

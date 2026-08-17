@@ -506,7 +506,7 @@ a {
 
 .home-hero__image {
   object-fit: cover;
-  object-position: 58% center;
+  object-position: center;
 }
 
 .home-hero__container {
@@ -768,12 +768,19 @@ a {
 
   .home-hero__content {
     grid-column: 1 / span 6;
+    width: min(540px, 100%);
     padding: 0;
     background: transparent;
   }
 
+  .home-hero__title {
+    color: #111;
+    text-wrap: balance;
+  }
+
   .home-hero__description {
-    color: var(--color-text-primary);
+    max-width: 410px;
+    color: #272522;
   }
 
   .product-preview {
