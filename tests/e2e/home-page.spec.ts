@@ -13,6 +13,12 @@ test.describe("home page", () => {
       "Пространство, в котором хочется остаться",
     );
     await expect(page.locator(".product-preview")).toHaveCount(4);
+    await expect(page.getByRole("link", { name: "Подробнее" })).toHaveCount(4);
+    await expect(page.getByRole("button", { name: /Добавить .* в корзину/ })).toHaveCount(4);
+    await expect(page.getByRole("link", { name: "Подробнее" }).first()).toHaveAttribute(
+      "href",
+      "/product/forma-chair",
+    );
     await expect(page.getByRole("heading", { name: "Почему Virtual Space" })).toBeVisible();
     await expect(
       page.getByRole("heading", { name: "Давайте создадим пространство вместе" }),
@@ -30,6 +36,7 @@ test.describe("home page", () => {
 
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
     await expect(page.locator(".product-preview")).toHaveCount(4);
+    await expect(page.getByRole("button", { name: /Добавить .* в корзину/ }).first()).toBeVisible();
     await expect(page.locator("body")).not.toHaveCSS("overflow-x", "scroll");
   });
 });

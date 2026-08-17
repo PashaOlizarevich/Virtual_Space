@@ -1,5 +1,8 @@
+import { ShoppingBag } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
+import { Button } from "@/components/ui/button";
 import type { ProductPreview as ProductPreviewData } from "@/modules/catalog/types";
 
 const priceFormatter = new Intl.NumberFormat("ru-BY", {
@@ -27,6 +30,18 @@ export function ProductPreview({ product }: Readonly<{ product: ProductPreviewDa
         <p className="product-preview__description text-body-sm text-secondary">
           {product.description}
         </p>
+        <div className="product-preview__actions">
+          <Link
+            className="button button--secondary button--default"
+            href={`/product/${product.slug}`}
+          >
+            Подробнее
+          </Link>
+          <Button aria-label={`Добавить «${product.name}» в корзину`}>
+            <ShoppingBag data-icon="inline-start" aria-hidden="true" />
+            Добавить в корзину
+          </Button>
+        </div>
       </div>
     </article>
   );
