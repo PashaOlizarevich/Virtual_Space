@@ -10,8 +10,8 @@ export default function LoginPage() {
     <main className="auth-page">
       <div className="auth-page__media">
         <Image
-          src="/images/home/hero-v2.png"
-          alt="Светлая гостиная с современной мебелью"
+          src="/images/auth/login-interior.png"
+          alt="Светлая гостиная с модульным диваном и деревянной консолью"
           fill
           priority
           sizes="(min-width: 900px) 46vw, 100vw"
