@@ -10,8 +10,31 @@ test.describe("store header", () => {
     await page.goto("/");
 
     await expect(page).toHaveTitle(/Virtual Space/);
+    await expect(page.locator(".header")).toHaveCSS("background-color", "rgba(16, 16, 16, 0.58)");
+    await expect(page.locator(".header")).toHaveCSS(
+      "border-bottom-color",
+      "rgba(255, 255, 255, 0.18)",
+    );
+    const frostedFilter = await page.locator(".header").evaluate((element) => {
+      const style = getComputedStyle(element) as CSSStyleDeclaration & {
+        webkitBackdropFilter: string;
+      };
+      return style.backdropFilter || style.webkitBackdropFilter;
+    });
+    expect(frostedFilter).toBe("blur(18px) saturate(1.2)");
+    await expect(page.locator(".header__logo")).toHaveCSS("color", "rgb(255, 255, 255)");
+    await expect(page.locator(".header__icon-link")).toHaveCSS("color", "rgb(255, 255, 255)");
+    await expect(page.locator(".header__icon-button").first()).toHaveCSS(
+      "color",
+      "rgb(255, 255, 255)",
+    );
     await expect(page.getByRole("navigation", { name: "Основная навигация" })).toBeVisible();
     await expect(page.getByRole("link", { name: "Virtual Space — на главную" })).toBeVisible();
+    await expect(page.locator(".header__wordmark-letter")).toHaveCount(13);
+    await expect(page.locator(".header__wordmark-letter").nth(1)).toHaveCSS(
+      "animation-delay",
+      "0.2s",
+    );
     await expect(page.getByRole("link", { name: "Личный кабинет" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Открыть корзину" })).toBeVisible();
     expect(consoleErrors).toEqual([]);
@@ -35,5 +58,15 @@ test.describe("store header", () => {
     await page.keyboard.press("Escape");
     await expect(dialog).not.toBeVisible();
     expect(consoleErrors).toEqual([]);
+  });
+
+  test("disables the decorative wordmark wave for reduced motion", async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto("/");
+
+    await expect(page.locator(".header__wordmark-letter").first()).toHaveCSS(
+      "animation-name",
+      "none",
+    );
   });
 });

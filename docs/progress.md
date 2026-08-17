@@ -68,3 +68,80 @@ refactor или bugfix агент читает записи, связанные 
 - Архитектура: Header остаётся Server Component, клиентская граница ограничена интерактивной мобильной навигацией.
 - Ограничения: кнопка корзины открывает cart widget на следующем предусмотренном этапе; Browser plugin недоступен,
   поэтому rendered QA выполнен через проектный Playwright.
+
+## Task 5 — Волна в wordmark Header
+
+- Результат: заголовок `VIRTUAL SPACE` в Header разбит на буквы с последовательной бесконечной CSS-волной исчезновения и
+  появления; сохранено цельное доступное имя, а при `prefers-reduced-motion` декоративная анимация отключается.
+- Файлы: `src/components/layout/header.tsx`, `src/components/layout/header.test.tsx`, `src/styles/globals.css`,
+  `tests/e2e/header.spec.ts`, `docs/progress.md`.
+- Проверки: `npm run lint` — успешно с существующим предупреждением в `postcss.config.mjs`; `npm run typecheck` — успешно;
+  `npm test -- --runInBand` — 4 теста успешно; `npm run build` — успешно; `PLAYWRIGHT_BASE_URL=http://127.0.0.1:3100 npm run test:e2e` —
+  3 Chromium-сценария успешно, включая desktop, mobile, console health и reduced motion.
+- Переменные окружения: `PLAYWRIGHT_BASE_URL` — необязательный адрес изолированного E2E-сервера.
+- Архитектура: Header остаётся Server Component; анимация реализована CSS без новой client-границы.
+- Ограничения: Browser plugin недоступен, поэтому rendered QA выполнен через проектный Playwright; отдельные screenshots не сохранялись.
+
+## Task 6 — Замедление волны wordmark Header
+
+- Результат: скорость последовательной волны `VIRTUAL SPACE` уменьшена в два раза: полный цикл увеличен с `2.4s` до `4.8s`,
+  а шаг между буквами — с `0.1s` до `0.2s`; ритм и порядок анимации сохранены.
+- Файлы: `src/components/layout/header.tsx`, `src/components/layout/header.test.tsx`, `src/styles/globals.css`,
+  `tests/e2e/header.spec.ts`, `docs/progress.md`.
+- Проверки: `npm run lint`, `npm run typecheck`, `npm test -- --runInBand`, `npm run build` и `npm run test:e2e`.
+- Переменные окружения: `PLAYWRIGHT_BASE_URL` — необязательный адрес уже запущенного приложения для E2E.
+- Архитектура: без изменений.
+- Ограничения: Browser plugin недоступен, поэтому rendered QA выполняется через проектный Playwright.
+
+## Task 7 — Главная страница магазина
+
+- Результат: реализована адаптивная главная страница с информационным hero-блоком, витриной из четырёх товаров, преимуществами и контактами; данные товаров и магазина вынесены в отдельные типизированные mock-слои, а согласованные изображения подключены через `next/image`.
+- Файлы: `src/app/(store)/page.tsx`, `src/modules/catalog`, `src/modules/settings`, `src/styles/globals.css`, `public/images/home`, `tests/e2e/home-page.spec.ts`, `docs/progress.md`.
+- Проверки: `npm run lint` — успешно с существующим предупреждением в `postcss.config.mjs`; `npm run typecheck` — успешно; `npm test -- --runInBand` — 5 тестов успешно; `npm run build` — успешно; изолированный `npm run test:e2e` на порту 3100 — 5 Chromium-сценариев успешно; desktop 1440×900 и mobile 390×844 визуально сверены с созданным концептом.
+- Переменные окружения: `PLAYWRIGHT_BASE_URL` — необязательный адрес изолированного E2E-сервера.
+- Архитектура: существующие границы `app -> modules -> components/shared` сохранены; backend и база данных не подключались.
+- Ограничения: действия карточки товара и корзина относятся к следующим пунктам плана и не реализованы; Browser plugin недоступен, поэтому rendered QA выполнен через проектный Playwright.
+
+## Task 8 — Читаемый интерьерный hero главной
+
+- Результат: hero главной получил новое высокодетализированное интерьерное изображение, повторяющее композицию утверждённого концепта; свободная светлая зона слева и уточнённые desktop-ограничения текста обеспечивают стабильную читаемость без подложки, мобильная контрастная карточка сохранена.
+- Файлы: `next.config.ts`, `src/app/(store)/page.tsx`, `src/styles/globals.css`, `public/images/home/hero-v2.png`, `docs/progress.md`.
+- Проверки: `npm run lint` — успешно с существующим предупреждением в `postcss.config.mjs`; `npm run typecheck` — успешно; `npm test -- --runInBand` — 5 тестов успешно; `npm run build` — успешно; `PLAYWRIGHT_BASE_URL=http://127.0.0.1:3100 npm run test:e2e` — 5 Chromium-сценариев успешно; desktop 1440×900 и mobile 390×844 визуально сверены с утверждённым концептом через Playwright и `view_image`.
+- Переменные окружения: `PLAYWRIGHT_BASE_URL` — необязательный адрес изолированного E2E-сервера.
+- Архитектура: без изменений; hero остаётся Server Component и использует локальный asset через `next/image` с разрешённым качеством 100.
+- Ограничения: Browser plugin недоступен, поэтому rendered QA выполнен через проектный Playwright; исходный `hero.png` сохранён для безопасного отката и не используется страницей.
+
+## Task 9 — Действия карточки товара
+
+- Результат: карточка товара на главной дополнена отдельной зоной действий с вторичной ссылкой «Подробнее» на типизированный маршрут `/product/[slug]` и основной кнопкой «Добавить в корзину»; для кнопки добавления сформировано предметное доступное имя, а описание сохранено в пределах двух строк.
+- Файлы: `src/modules/catalog/components/product-preview.tsx`, `src/styles/globals.css`, `src/app/(store)/page.test.tsx`, `tests/e2e/home-page.spec.ts`, `docs/progress.md`.
+- Проверки: `npm run lint` — успешно с существующим предупреждением в `postcss.config.mjs`; `npm run typecheck` — успешно; `npm test -- --runInBand` — 5 тестов успешно; `npm run build` — успешно; изолированный `PLAYWRIGHT_BASE_URL=http://127.0.0.1:3101 npm run test:e2e` на production-сервере — 5 Chromium-сценариев успешно; desktop 1440×900 и mobile 390×844 визуально проверены через Playwright.
+- Переменные окружения: `PLAYWRIGHT_BASE_URL` — необязательный адрес изолированного E2E-сервера.
+- Архитектура: карточка остаётся Server Component; клиентская граница и хранилище корзины не добавлялись до отдельного этапа Zustand/persist.
+- Ограничения: маршрут `/product/[slug]` и сохранение товара в корзину относятся к следующим пунктам плана, поэтому ссылка уже формирует будущий URL, а кнопка пока представляет доступный UI-control без изменения состояния; Browser plugin недоступен, rendered QA выполнен через проектный Playwright.
+
+## Task 10 — Выравнивание действий карточек товара
+
+- Результат: исправлено вертикальное смещение действий карточки стола Linea; карточки в одной desktop-строке теперь растягивают контент до общей высоты, поэтому разделители и обе кнопки выровнены независимо от длины описания.
+- Файлы: `src/styles/globals.css`, `tests/e2e/home-page.spec.ts`, `docs/progress.md`.
+- Проверки: `npm run lint` — успешно с существующим предупреждением в `postcss.config.mjs`; `npm run typecheck` — успешно; `npm test -- --runInBand` — 5 тестов успешно; `npm run build` — успешно; изолированный `PLAYWRIGHT_BASE_URL=http://127.0.0.1:3127 npm run test:e2e` — 5 Chromium-сценариев успешно, включая regression-проверку равных координат action-зон; desktop 1440×900 визуально проверен через Playwright.
+- Переменные окружения: `PLAYWRIGHT_BASE_URL` — необязательный адрес изолированного E2E-сервера.
+- Архитектура: без изменений.
+- Ограничения: Browser plugin недоступен, rendered QA выполнен через проектный Playwright.
+
+## Task 11 — Затемнённая glass-поверхность Header
+
+- Результат: поверхность Header приведена к референсу через тёмный полупрозрачный фон с непрозрачностью `58%`, усиленный blur/saturation и тонкую светлую границу; wordmark, навигация, иконки и доступный focus получили светлый контраст без изменений геометрии, анимации и поведения mobile drawer.
+- Файлы: `src/styles/globals.css`, `tests/e2e/header.spec.ts`, `docs/progress.md`.
+- Проверки: `npm run lint` — успешно с существующим предупреждением в `postcss.config.mjs`; `npm run typecheck` — успешно; `npm test -- --runInBand` — 5 тестов успешно; `npm run build` — успешно; `PLAYWRIGHT_BASE_URL=http://127.0.0.1:3142 npm run test:e2e` — 5 Chromium-сценариев успешно; desktop 1440×900 и mobile 390×844 визуально проверены через Playwright и `view_image`.
+- Переменные окружения: `PLAYWRIGHT_BASE_URL` — необязательный адрес изолированного E2E-сервера.
+- Архитектура: без изменений; Header остаётся Server Component, правка ограничена CSS и regression-проверками поверхности.
+- Ограничения: Browser plugin недоступен, поэтому rendered QA выполнен через проектный Playwright; commit и push не выполнялись.
+
+## Task 12 — Общий фон Header и Hero
+
+- Результат: Hero главной страницы поднят под Header на его высоту `80px`; изображение `hero-v2.png` теперь непрерывно заполняет первый экран, включая область под полупрозрачной glass-поверхностью Header, а контент Hero сохранил прежнее безопасное смещение.
+- Файлы: `src/styles/globals.css`, `tests/e2e/home-page.spec.ts`, `docs/progress.md`.
+- Проверки: `npm run lint` — успешно с существующим предупреждением в `postcss.config.mjs`; `npm run typecheck` — успешно; `npm test -- --runInBand` — 5 тестов успешно; `npm run build` — успешно; `PLAYWRIGHT_BASE_URL=http://127.0.0.1:3143 npm run test:e2e -- tests/e2e/home-page.spec.ts` — 2 сценария успешно; rendered desktop-представление проверено через Chrome DevTools и `view_image`.
+- Архитектура и зависимости: без изменений.
+- Ограничения: commit и push не выполнялись.

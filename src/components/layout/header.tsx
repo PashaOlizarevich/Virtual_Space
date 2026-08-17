@@ -11,6 +11,8 @@ const navigationItems = [
   { href: "/about", label: "О нас" },
 ] as const;
 
+const wordmark = "VIRTUAL SPACE";
+
 export function Header() {
   return (
     <header className="header">
@@ -30,7 +32,18 @@ export function Header() {
         </nav>
 
         <Link className="header__logo" href="/" aria-label="Virtual Space — на главную">
-          Virtual Space
+          <span className="sr-only">Virtual Space</span>
+          <span className="header__wordmark" aria-hidden="true">
+            {[...wordmark].map((character, index) => (
+              <span
+                className="header__wordmark-letter"
+                style={{ animationDelay: `${(index * 0.2).toFixed(1)}s` }}
+                key={`${character}-${index}`}
+              >
+                {character === " " ? "\u00a0" : character}
+              </span>
+            ))}
+          </span>
         </Link>
 
         <div className="header__actions">
