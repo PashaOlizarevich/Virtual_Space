@@ -10,6 +10,7 @@ describe("Header", () => {
     expect(markup).toContain('aria-label="Основная навигация"');
     expect(markup).toContain('href="/catalog"');
     expect(markup).toContain('href="/about"');
+    expect(markup).toContain('aria-label="Открыть поиск по сайту"');
     expect(markup).toContain('aria-label="Личный кабинет"');
     expect(markup).toContain('aria-label="Открыть корзину"');
     expect(markup).toContain('aria-label="Открыть меню"');

@@ -12,6 +12,9 @@ describe("HomePage", () => {
     expect(html.match(/class=\"product-preview\"/g)).toHaveLength(4);
     expect(html.match(/>Подробнее<\/a>/g)).toHaveLength(4);
     expect(html.match(/>Добавить в корзину<\/button>/g)).toHaveLength(4);
+    expect(html.match(/>Перейти к товару<\/a>/g)).toHaveLength(4);
+    expect(html).toContain('aria-label="Кратко о товаре «Кресло Forma»"');
+    expect(html).toContain("86 × 92 × 74 см");
     expect(html).toContain('href="/product/forma-chair"');
     expect(html).toContain('aria-label="Добавить «Кресло Forma» в корзину"');
     expect(html).toContain("Почему Virtual Space");

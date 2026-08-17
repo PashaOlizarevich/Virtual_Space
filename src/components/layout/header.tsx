@@ -1,4 +1,4 @@
-import { ShoppingBag, UserRound } from "lucide-react";
+import { Search, ShoppingBag, UserRound } from "lucide-react";
 import Link from "next/link";
 
 import { Container } from "@/components/layout/container";
@@ -47,6 +47,14 @@ export function Header() {
         </Link>
 
         <div className="header__actions">
+          <Button
+            className="header__icon-button"
+            variant="ghost"
+            size="icon"
+            aria-label="Открыть поиск по сайту"
+          >
+            <Search aria-hidden="true" />
+          </Button>
           <Link
             className="header__icon-link"
             href="/profile"

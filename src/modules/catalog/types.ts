@@ -1,10 +1,28 @@
+export type ProductCurrency = "BYN";
+
+export type ProductImage = Readonly<{ src: string; alt: string }>;
+export type ProductOption = Readonly<{ id: string; label: string }>;
+export type ProductOptionGroup = Readonly<{
+  id: string;
+  label: string;
+  options: readonly ProductOption[];
+}>;
+export type ProductSpecification = Readonly<{ label: string; value: string }>;
+
 export type ProductPreview = Readonly<{
   id: string;
   slug: string;
   name: string;
   description: string;
   price: number;
-  currency: "BYN";
+  currency: ProductCurrency;
   image: string;
   imageAlt: string;
 }>;
+
+export type Product = ProductPreview &
+  Readonly<{
+    gallery: readonly ProductImage[];
+    specifications: readonly ProductSpecification[];
+    optionGroups: readonly ProductOptionGroup[];
+  }>;

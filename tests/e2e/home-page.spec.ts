@@ -46,4 +46,29 @@ test.describe("home page", () => {
     await expect(page.getByRole("button", { name: /Добавить .* в корзину/ }).first()).toBeVisible();
     await expect(page.locator("body")).not.toHaveCSS("overflow-x", "scroll");
   });
+
+  test("reveals a product quick view after a one-second hover delay", async ({ page }) => {
+    await page.goto("/");
+    const card = page.locator(".product-preview").first();
+    const quickView = card.locator(".product-preview__quick-view");
+
+    await card.hover();
+    await page.waitForTimeout(700);
+    await expect(quickView).not.toBeVisible();
+    await expect(quickView).toBeVisible({ timeout: 900 });
+    await expect(quickView).toContainText("Размеры");
+    await expect(quickView).toContainText("86 × 92 × 74 см");
+    await expect(quickView.getByRole("link", { name: "Перейти к товару" })).toHaveAttribute(
+      "href",
+      "/product/forma-chair",
+    );
+  });
+
+  test("reveals the product quick view immediately for keyboard focus", async ({ page }) => {
+    await page.goto("/");
+    const card = page.locator(".product-preview").first();
+
+    await card.getByRole("link", { name: "Подробнее" }).focus();
+    await expect(card.locator(".product-preview__quick-view")).toBeVisible();
+  });
 });
