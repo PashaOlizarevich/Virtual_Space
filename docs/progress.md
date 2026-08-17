@@ -145,3 +145,95 @@ refactor или bugfix агент читает записи, связанные 
 - Проверки: `npm run lint` — успешно с существующим предупреждением в `postcss.config.mjs`; `npm run typecheck` — успешно; `npm test -- --runInBand` — 5 тестов успешно; `npm run build` — успешно; `PLAYWRIGHT_BASE_URL=http://127.0.0.1:3143 npm run test:e2e -- tests/e2e/home-page.spec.ts` — 2 сценария успешно; rendered desktop-представление проверено через Chrome DevTools и `view_image`.
 - Архитектура и зависимости: без изменений.
 - Ограничения: commit и push не выполнялись.
+
+## Task 13 — Иконка поиска в Header
+
+- Результат: в группе действий Header перед ссылкой на личный кабинет добавлена доступная кнопка с иконкой поиска и именем «Открыть поиск по сайту»; кнопка использует существующий `Button` и визуальные правила шапки, а логика поиска оставлена для следующего этапа.
+- Файлы: `src/components/layout/header.tsx`, `src/components/layout/header.test.tsx`, `tests/e2e/header.spec.ts`, `docs/progress.md`.
+- Проверки: `npm run lint` — успешно с существующим предупреждением в `postcss.config.mjs`; `npm run typecheck` — успешно; `npm test -- --runInBand` — 5 тестов успешно; `npm run build` — успешно; `npm run test:e2e -- tests/e2e/header.spec.ts` — не завершён успешно: изолированный сервер не стартовал из-за уже запущенного `next dev`, а существующий сервер показал два не связанных с кнопкой расхождения прежних ожиданий Header (`background-color` и mobile dialog), 1 из 3 сценариев прошёл.
+- Переменные окружения: `PLAYWRIGHT_BASE_URL` использовалась только для попыток изолированного E2E-запуска.
+- Архитектура: без изменений; Header остаётся Server Component, клиентская логика поиска не добавлялась.
+- Ограничения: поиск пока не открывает интерфейс и не выполняет запросы; Browser plugin недоступен, rendered QA ограничен Playwright; commit и push не выполнялись.
+
+## Task 14 — Каталог и страница товара
+
+- Результат: добавлены второстепенная страница `/catalog` и статически генерируемые страницы `/product/[id]` для четырёх товаров; типизированный слой моков расширен галереей, характеристиками и группами вариантов; выбор конфигурации и добавление в локальный прототип корзины подтверждаются доступным live-status.
+- Файлы: `src/app/(store)/catalog/page.tsx`, `src/app/(store)/product/[id]/page.tsx`, `src/modules/catalog/types.ts`, `src/modules/catalog/mock-data.ts`, `src/modules/catalog/components/product-gallery.tsx`, `src/modules/catalog/components/product-configurator.tsx`, `src/styles/globals.css`, `src/app/(store)/catalog/catalog.test.tsx`, `tests/e2e/catalog.spec.ts`, `docs/progress.md`.
+- Проверки: `npm run lint` — успешно с существующим предупреждением в `postcss.config.mjs`; `npm run typecheck` — успешно; `npm test -- --runInBand` — 7 тестов успешно; `npm run build` — успешно, каталог статический, 4 страницы товаров SSG; `PLAYWRIGHT_BASE_URL=http://127.0.0.1:3150 npm run test:e2e -- tests/e2e/catalog.spec.ts` — 2 Chromium-сценария успешно; desktop 1440×900 и mobile 390×844 визуально проверены через Playwright и `view_image`.
+- Переменные окружения: `PLAYWRIGHT_BASE_URL` использовалась только для изолированного E2E-сервера.
+- Архитектура: существующие границы `app -> modules -> components/shared` сохранены; страницы читают отдельный типизированный mock-слой, интерактивность изолирована в минимальном Client Component.
+- Ограничения: глобальное Zustand/persist-хранилище и cart drawer относятся к пунктам 8–9 плана; текущий прототип корзины подтверждает выбранную конфигурацию локально и не сохраняет её между маршрутами. Browser plugin недоступен, поэтому rendered QA выполнен проектным Playwright; commit и push не выполнялись.
+
+## Task 15 — Быстрый просмотр товара
+
+- Результат: карточки товаров на главной и в каталоге показывают рядом компактное окно с названием, ценой, описанием и кнопкой перехода после одной секунды непрерывного наведения; для клавиатуры окно открывается сразу при фокусе внутри карточки, а на touch/mobile не выводится.
+- Файлы: `src/modules/catalog/components/product-preview.tsx`, `src/styles/globals.css`, `src/app/(store)/page.test.tsx`, `tests/e2e/home-page.spec.ts`, `docs/progress.md`.
+- Проверки: `npm run lint` — успешно с существующим предупреждением в `postcss.config.mjs`; `npm run typecheck` — успешно; `npm test -- --runInBand` — 7 тестов успешно; `npm run build` — успешно; `PLAYWRIGHT_BASE_URL=http://127.0.0.1:3152 npm run test:e2e -- tests/e2e/home-page.spec.ts tests/e2e/catalog.spec.ts` — 6 Chromium-сценариев успешно; hover-состояние при 1440×900 визуально проверено через Playwright и `view_image`.
+- Переменные окружения: `PLAYWRIGHT_BASE_URL` использовалась только для изолированного E2E-сервера.
+- Архитектура: без изменений; карточка остаётся Server Component, задержка и доступное focus-состояние реализованы CSS без клиентского JavaScript.
+- Ограничения: Browser plugin недоступен, поэтому rendered QA выполнен проектным Playwright; commit и push не выполнялись.
+
+## Task 16 — Размеры в быстром просмотре
+
+- Результат: мини-окно быстрого просмотра дополнено отдельной строкой размеров товара; значение берётся из существующей типизированной характеристики «Размер» без дублирования мок-данных.
+- Файлы: `src/modules/catalog/components/product-preview.tsx`, `src/styles/globals.css`, `src/app/(store)/page.test.tsx`, `tests/e2e/home-page.spec.ts`, `docs/progress.md`.
+- Проверки: `npm run lint` — успешно с существующим предупреждением в `postcss.config.mjs`; `npm run typecheck` — успешно; `npm test -- --runInBand` — 7 тестов успешно; `npm run build` — успешно; `PLAYWRIGHT_BASE_URL=http://127.0.0.1:3155 npm run test:e2e -- tests/e2e/home-page.spec.ts` — 4 основных Chromium-сценария успешно; hover-состояние с размерами при 1440×900 визуально проверено через Playwright и `view_image`.
+- Переменные окружения: `PLAYWRIGHT_BASE_URL` использовалась только для изолированного E2E-сервера.
+- Архитектура: без изменений.
+- Ограничения: Browser plugin недоступен, поэтому rendered QA выполнен проектным Playwright; commit и push не выполнялись.
+
+## Task 17 — Синхронизация E2E-проверки Header
+
+- Результат: E2E-ожидание прозрачности Header синхронизировано с фактическим утверждённым CSS-значением `32%`; полный пользовательский набор снова проходит.
+- Файлы: `tests/e2e/header.spec.ts`, `docs/progress.md`.
+- Проверки: `PLAYWRIGHT_BASE_URL=http://127.0.0.1:3157 npm run test:e2e` — 9 Chromium-сценариев успешно; ранее в том же финальном цикле успешно выполнены `npm run lint`, `npm run typecheck`, `npm test -- --runInBand` и `npm run build`.
+- Переменные окружения: `PLAYWRIGHT_BASE_URL` использовалась только для изолированного E2E-сервера.
+- Архитектура: без изменений.
+- Ограничения: нет.
+
+## Task 18 — Страница о магазине
+
+- Результат: создана адаптивная публичная страница `/about` с историей и подходом Virtual Space,
+  интерьерным изображением, актуальными мок-контактами шоурума и типизированным списком социальных
+  сетей; добавлены metadata и доступная семантическая разметка.
+- Файлы: `src/app/(store)/about`, `src/modules/settings/types.ts`,
+  `src/modules/settings/mock-data.ts`, `src/styles/globals.css`, `tests/e2e/about-page.spec.ts`,
+  `docs/progress.md`.
+- Проверки: `npm run lint` — успешно с существующим предупреждением в `postcss.config.mjs`;
+  `npm run typecheck` — успешно; `npm test -- --runInBand` — 8 тестов успешно; `npm run build` —
+  успешно; `PLAYWRIGHT_BASE_URL=http://127.0.0.1:3165 npm run test:e2e -- tests/e2e/about-page.spec.ts` —
+  2 Chromium-сценария успешно; desktop 1440×1100 и mobile 390×844 визуально сверены с концептом.
+- Переменные окружения: `PLAYWRIGHT_BASE_URL` использовалась только для изолированного E2E-сервера.
+- Архитектура: существующая граница `app -> modules/settings` сохранена; страница остаётся Server
+  Component, backend и база данных не подключались.
+- Ограничения: контакты и ссылки социальных сетей остаются типизированными мок-данными до этапа
+  серверных настроек; Browser plugin недоступен, поэтому rendered QA выполнен проектным Playwright.
+
+## Task 19 — Переполнение заголовков страницы о магазине
+
+- Результат: уменьшена адаптивная шкала заголовка hero на `/about`, а контактному заголовку выделена
+  более широкая desktop-колонка; оба текста больше не заходят на изображение или соседний контент на
+  ширине 1223 px, мобильная композиция сохранена.
+- Файлы: `src/styles/globals.css`, `tests/e2e/about-page.spec.ts`, `docs/progress.md`.
+- Проверки: `npm run lint` — успешно с существующим предупреждением в `postcss.config.mjs`;
+  `npm run typecheck` — успешно; `npm test -- --runInBand` — 8 тестов успешно; `npm run build` —
+  успешно; `PLAYWRIGHT_BASE_URL=http://127.0.0.1:3167 npm run test:e2e -- tests/e2e/about-page.spec.ts` —
+  3 Chromium-сценария успешно, включая regression-проверку переполнения; viewport 1223×839 и
+  mobile 390×844 визуально проверены.
+- Переменные окружения: `PLAYWRIGHT_BASE_URL` использовалась только для изолированного E2E-сервера.
+- Архитектура: без изменений.
+- Ограничения: Browser plugin недоступен, поэтому rendered QA выполнен проектным Playwright.
+
+## Task 20 — Изображение About под Header
+
+- Результат: desktop-изображение hero на `/about` поднято под полупрозрачную поверхность Header на
+  полную высоту `80px`; компенсационный отступ перенесён в текстовую колонку, поэтому заголовок и
+  описание остаются в безопасной области, а мобильная последовательность блоков не изменилась.
+- Файлы: `src/styles/globals.css`, `tests/e2e/about-page.spec.ts`, `docs/progress.md`.
+- Проверки: `npm run lint` — успешно с существующим предупреждением в `postcss.config.mjs`;
+  `npm run typecheck` — успешно; `npm test -- --runInBand` — 8 тестов успешно; `npm run build` —
+  успешно; `PLAYWRIGHT_BASE_URL=http://127.0.0.1:3168 npm run test:e2e -- tests/e2e/about-page.spec.ts` —
+  4 Chromium-сценария успешно; desktop 1223×839 и mobile 390×844 визуально проверены.
+- Переменные окружения: `PLAYWRIGHT_BASE_URL` использовалась только для изолированного E2E-сервера.
+- Архитектура: без изменений.
+- Ограничения: Browser plugin недоступен, поэтому rendered QA выполнен проектным Playwright.

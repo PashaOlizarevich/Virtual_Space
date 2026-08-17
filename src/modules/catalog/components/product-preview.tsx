@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
-import type { ProductPreview as ProductPreviewData } from "@/modules/catalog/types";
+import type { Product } from "@/modules/catalog/types";
 
 const priceFormatter = new Intl.NumberFormat("ru-BY", {
   style: "currency",
@@ -11,7 +11,10 @@ const priceFormatter = new Intl.NumberFormat("ru-BY", {
   maximumFractionDigits: 0,
 });
 
-export function ProductPreview({ product }: Readonly<{ product: ProductPreviewData }>) {
+export function ProductPreview({ product }: Readonly<{ product: Product }>) {
+  const productHref = `/product/${product.slug}`;
+  const dimensions = product.specifications.find(({ label }) => label === "Размер")?.value;
+
   return (
     <article className="product-preview">
       <div className="product-preview__media">
@@ -31,10 +34,7 @@ export function ProductPreview({ product }: Readonly<{ product: ProductPreviewDa
           {product.description}
         </p>
         <div className="product-preview__actions">
-          <Link
-            className="button button--secondary button--default"
-            href={`/product/${product.slug}`}
-          >
+          <Link className="button button--secondary button--default" href={productHref}>
             Подробнее
           </Link>
           <Button aria-label={`Добавить «${product.name}» в корзину`}>
@@ -43,6 +43,26 @@ export function ProductPreview({ product }: Readonly<{ product: ProductPreviewDa
           </Button>
         </div>
       </div>
+      <aside
+        className="product-preview__quick-view"
+        aria-label={`Кратко о товаре «${product.name}»`}
+      >
+        <p className="text-label-caps text-secondary">Быстрый просмотр</p>
+        <div className="product-preview__quick-heading">
+          <h4>{product.name}</h4>
+          <p>{priceFormatter.format(product.price)}</p>
+        </div>
+        <p className="text-body-sm text-secondary">{product.description}</p>
+        {dimensions ? (
+          <p className="product-preview__quick-dimensions">
+            <span className="text-secondary">Размеры</span>
+            <span>{dimensions}</span>
+          </p>
+        ) : null}
+        <Link className="button button--primary button--default" href={productHref}>
+          Перейти к товару
+        </Link>
+      </aside>
     </article>
   );
 }

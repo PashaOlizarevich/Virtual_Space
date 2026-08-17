@@ -10,7 +10,7 @@ test.describe("store header", () => {
     await page.goto("/");
 
     await expect(page).toHaveTitle(/Virtual Space/);
-    await expect(page.locator(".header")).toHaveCSS("background-color", "rgba(16, 16, 16, 0.58)");
+    await expect(page.locator(".header")).toHaveCSS("background-color", "rgba(16, 16, 16, 0.32)");
     await expect(page.locator(".header")).toHaveCSS(
       "border-bottom-color",
       "rgba(255, 255, 255, 0.18)",
@@ -35,6 +35,7 @@ test.describe("store header", () => {
       "animation-delay",
       "0.2s",
     );
+    await expect(page.getByRole("button", { name: "Открыть поиск по сайту" })).toBeVisible();
     await expect(page.getByRole("link", { name: "Личный кабинет" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Открыть корзину" })).toBeVisible();
     expect(consoleErrors).toEqual([]);
