@@ -1,9 +1,10 @@
-import { Search, ShoppingBag, UserRound } from "lucide-react";
+import { Search, UserRound } from "lucide-react";
 import Link from "next/link";
 
 import { Container } from "@/components/layout/container";
 import { MobileNavigation } from "@/components/layout/mobile-navigation";
 import { Button } from "@/components/ui/button";
+import { CartWidget } from "@/modules/cart/components/cart-widget";
 
 const navigationItems = [
   { href: "/", label: "Главная" },
@@ -63,14 +64,7 @@ export function Header() {
           >
             <UserRound aria-hidden="true" />
           </Link>
-          <Button
-            className="header__icon-button"
-            variant="ghost"
-            size="icon"
-            aria-label="Открыть корзину"
-          >
-            <ShoppingBag aria-hidden="true" />
-          </Button>
+          <CartWidget />
         </div>
       </Container>
     </header>

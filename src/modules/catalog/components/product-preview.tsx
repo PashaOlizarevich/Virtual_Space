@@ -1,8 +1,11 @@
+"use client";
+
 import { ShoppingBag } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
+import { useCartStore } from "@/modules/cart/store";
 import type { Product } from "@/modules/catalog/types";
 
 const priceFormatter = new Intl.NumberFormat("ru-BY", {
@@ -12,6 +15,7 @@ const priceFormatter = new Intl.NumberFormat("ru-BY", {
 });
 
 export function ProductPreview({ product }: Readonly<{ product: Product }>) {
+  const addItem = useCartStore((state) => state.addItem);
   const productHref = `/product/${product.slug}`;
   const dimensions = product.specifications.find(({ label }) => label === "Размер")?.value;
 
@@ -37,7 +41,16 @@ export function ProductPreview({ product }: Readonly<{ product: Product }>) {
           <Link className="button button--secondary button--default" href={productHref}>
             Подробнее
           </Link>
-          <Button aria-label={`Добавить «${product.name}» в корзину`}>
+          <Button
+            aria-label={`Добавить «${product.name}» в корзину`}
+            onClick={() =>
+              addItem({
+                productId: product.id,
+                selectedOptions: [],
+                observedPrice: product.price,
+              })
+            }
+          >
             <ShoppingBag data-icon="inline-start" aria-hidden="true" />
             Добавить в корзину
           </Button>

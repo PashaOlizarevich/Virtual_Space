@@ -237,3 +237,81 @@ refactor или bugfix агент читает записи, связанные 
 - Переменные окружения: `PLAYWRIGHT_BASE_URL` использовалась только для изолированного E2E-сервера.
 - Архитектура: без изменений.
 - Ограничения: Browser plugin недоступен, поэтому rendered QA выполнен проектным Playwright.
+
+## Task 21 — Клиентский кеш каталога
+
+- Результат: подключён общий TanStack Query Provider; каталог переведён на типизированный асинхронный query-слой с кешированием, ручным фоновым обновлением и доступными состояниями loading, empty и error. До появления backend-контракта query-функция использует существующие типизированные мок-данные.
+- Файлы: `src/app/providers.tsx`, `src/app/layout.tsx`, `src/app/(store)/catalog/page.tsx`, `src/modules/catalog/queries.ts`, `src/modules/catalog/components/catalog-query-grid.tsx`, `src/styles/globals.css`, `src/app/(store)/catalog/catalog.test.tsx`, `tests/e2e/catalog.spec.ts`, `docs/progress.md`.
+- Проверки: `npm run lint` — успешно с существующим предупреждением в `postcss.config.mjs`; `npm run typecheck` — успешно; `npm test -- --runInBand` — 10 тестов успешно; `npm run build` — успешно; `PLAYWRIGHT_BASE_URL=http://127.0.0.1:3172 npm run test:e2e -- tests/e2e/catalog.spec.ts` — 3 Chromium-сценария успешно; desktop-вид каталога визуально проверен снимком Playwright.
+- Переменные окружения: `PLAYWRIGHT_BASE_URL` использовалась только для изолированного E2E-сервера.
+- Архитектура: реализована уже описанная в `docs/architecture.md` граница `app -> modules/catalog` и общий `app/providers.tsx`; реальный HTTP transport остаётся этапом backend.
+- Ограничения: Browser plugin недоступен, поэтому rendered QA выполнен проектным Playwright; данные каталога остаются моковыми до реализации backend-контракта.
+
+## Task 22 — Persist-хранилище гостевой корзины
+
+- Результат: реализовано Zustand-хранилище гостевой корзины с версионированным persist-сохранением в `localStorage`; одинаковые конфигурации объединяются, количество и размер корзины ограничены, вход и восстановленное состояние валидируются Zod. Кнопки каталога и конфигуратора добавляют товар с выбранными option-id и наблюдаемой ценой.
+- Файлы: `src/modules/cart/types.ts`, `src/modules/cart/schemas.ts`, `src/modules/cart/store.ts`, `src/modules/cart/store.test.ts`, `src/modules/catalog/components/product-preview.tsx`, `src/modules/catalog/components/product-configurator.tsx`, `tests/e2e/catalog.spec.ts`, `docs/progress.md`.
+- Проверки: `npm run lint` — успешно с существующим предупреждением в `postcss.config.mjs`; `npm run typecheck` — успешно; `npm test -- --runInBand` — 14 тестов успешно; `npm run build` — успешно; `PLAYWRIGHT_BASE_URL=http://127.0.0.1:3174 npm run test:e2e -- tests/e2e/catalog.spec.ts` — 3 Chromium-сценария успешно; desktop-страница товара визуально проверена снимком Playwright; security review применимой границы localStorage — подтверждённых findings нет.
+- Переменные окружения: `PLAYWRIGHT_BASE_URL` использовалась только для изолированного E2E-сервера.
+- Архитектура: реализован уже описанный поток `Product DTO -> Zustand -> persist/localStorage`; в persisted state находятся только идентификаторы, количество, выбранные option-id и наблюдаемая цена.
+- Ограничения: Browser plugin недоступен, поэтому rendered QA выполнен проектным Playwright; серверная сверка цены и доступности относится к последующим backend-пунктам.
+
+## Task 23 — Виджет гостевой корзины
+
+- Результат: кнопка корзины в Header открывает доступный modal drawer со счётчиком товаров, изображениями, названиями, выбранными вариантами, предварительной стоимостью, quantity stepper, удалением позиций, итогом и CTA `Оформить заявку`; добавлены пустое состояние и вход в тот же drawer из мобильного меню. Native dialog удерживает focus, закрывается по кнопке, overlay и `Esc`, возвращает focus trigger’у и блокирует прокрутку фоновой страницы.
+- Файлы: `src/modules/cart/components/cart-widget.tsx`, `src/modules/cart/store.ts`, `src/modules/cart/store.test.ts`, `src/components/layout/header.tsx`, `src/components/layout/mobile-navigation.tsx`, `src/styles/globals.css`, `tests/e2e/cart.spec.ts`, `docs/progress.md`.
+- Проверки: `npm run lint` — успешно с существующим предупреждением в `postcss.config.mjs`; `npm run typecheck` — успешно; `npm test -- --runInBand` — 16 тестов успешно; `npm run build` — успешно; `PLAYWRIGHT_BASE_URL=http://127.0.0.1:3180 npm run test:e2e -- tests/e2e/cart.spec.ts` — 3 Chromium-сценария успешно. Desktop 1440×1000 и mobile 390×844 визуально сверены снимками Playwright.
+- Переменные окружения: `PLAYWRIGHT_BASE_URL` использовалась только для изолированного E2E-сервера.
+- Архитектура: сохранена граница `app/components -> modules/cart`; каталог остаётся типизированным источником отображаемых мок-данных, а недоверенное persisted-состояние продолжает проходить Zod-валидацию. Security review клиентской границы не выявил подтверждённых findings; клиентская цена и итог не считаются доверенными.
+- Ограничения: CTA резервирует маршрут `/checkout`, содержимое которого будет реализовано в пункте формы оформления; серверная сверка доступности и цены, unavailable/changed-price состояния и подтверждение новой цены относятся к следующему пункту плана. Browser plugin недоступен, поэтому rendered QA выполнен проектным Playwright.
+
+## Task 24 — Проверка актуальности гостевой корзины
+
+- Результат: сохранённые позиции сверяются с текущим типизированным mock-каталогом; удалённый товар или устаревшая конфигурация явно помечаются недоступными и исключаются из количества, суммы и оформления. Изменившаяся цена показывается вместе с прежней стоимостью, учитывается в актуальном итоге и требует явного подтверждения перед переходом к checkout.
+- Файлы: `src/modules/cart/validation.ts`, `src/modules/cart/validation.test.ts`, `src/modules/cart/store.ts`, `src/modules/cart/store.test.ts`, `src/modules/cart/components/cart-widget.tsx`, `src/styles/globals.css`, `tests/e2e/cart.spec.ts`, `docs/progress.md`.
+- Проверки: `npm run lint` — успешно с существующим предупреждением в `postcss.config.mjs`; `npm run typecheck` — успешно; `npm test -- --runInBand` — 20 тестов успешно; `npm run build` — успешно; `PLAYWRIGHT_BASE_URL=http://127.0.0.1:3180 npm run test:e2e -- tests/e2e/cart.spec.ts` — 4 Chromium-сценария успешно; desktop 1440×1000 визуально проверен снимком Playwright, console errors отсутствуют. Security review недоверенной localStorage-границы — подтверждённых findings нет.
+- Переменные окружения: `PLAYWRIGHT_BASE_URL` использовалась только для подключения к существующему локальному E2E-серверу.
+- Архитектура: добавлен чистый клиентский слой `CartItem + текущий Product mock -> validated cart item`; persisted-данные по-прежнему проходят Zod-валидацию, а клиентские цена и итог остаются недоверенными и подлежат финальной серверной проверке при создании заявки.
+- Ограничения: реальная серверная сверка существования, доступности, вариантов и цены будет подключена в backend-пунктах 24 и 30; текущая frontend-итерация использует mock-каталог как источник актуальности. Browser plugin недоступен, поэтому rendered QA выполнен проектным Playwright.
+
+## Task 25 — Форма оформления заявки
+
+- Результат: создан статический маршрут `/checkout` с адаптивной формой имени, телефона, email и необязательного комментария. React Hook Form использует общую Zod-схему, показывает связанные с полями ошибки, summary после неуспешного submit и переводит фокус на первое неверное поле; добавлены переиспользуемые form-примитивы `Field`, `Input` и `Textarea`.
+- Файлы: `src/app/(store)/checkout/page.tsx`, `src/modules/checkout/schemas.ts`, `src/modules/checkout/schemas.test.ts`, `src/modules/checkout/components/checkout-form.tsx`, `src/components/ui/field.tsx`, `src/components/ui/input.tsx`, `src/components/ui/textarea.tsx`, `src/styles/globals.css`, `tests/e2e/checkout.spec.ts`, `docs/progress.md`.
+- Проверки: `npm run lint` — успешно с существующим предупреждением в `postcss.config.mjs`; `npm run typecheck` — успешно; `npm test -- --runInBand` — 23 теста успешно; `npm run build` — успешно; `PLAYWRIGHT_BASE_URL=http://127.0.0.1:3180 npm run test:e2e -- tests/e2e/checkout.spec.ts` — 3 Chromium-сценария успешно. Desktop 1440×1000 и mobile 390×844 визуально проверены снимками Playwright, console errors отсутствуют. Security review клиентского ввода — подтверждённых findings нет.
+- Переменные окружения: `PLAYWRIGHT_BASE_URL` использовалась только для подключения к существующему локальному E2E-серверу.
+- Архитектура: страница остаётся Server Component, интерактивная форма изолирована Client Component-островом; общий контракт `checkoutFormSchema` размещён в checkout-модуле для последующего повторного использования серверной границей.
+- Ограничения: отправка, pending/error/success-состояния и создание заказа относятся к пункту 12 и намеренно не реализованы. Клиентская валидация не заменяет будущую обязательную серверную проверку. Browser plugin недоступен, поэтому rendered QA выполнен проектным Playwright.
+
+## Task 26 — Состояния отправки заявки
+
+- Результат: checkout-форма получила блокируемое pending-состояние, доступные сообщения ожидаемых
+  ошибок без потери введённых данных и экран подтверждения с номером заказа; после подтверждённого
+  успеха гостевая корзина очищается. Типизированный временный transport повторно валидирует форму и
+  корзину и отклоняет недоступные позиции или неподтверждённую цену.
+- Файлы: `src/modules/checkout/submit-order.ts`,
+  `src/modules/checkout/components/checkout-form.tsx`, `src/modules/cart/store.ts`,
+  `src/modules/cart/store.test.ts`, `src/styles/globals.css`, `tests/e2e/checkout.spec.ts`,
+  `docs/progress.md`.
+- Проверки: `npm run lint` — успешно с существующим предупреждением в `postcss.config.mjs`;
+  `npm run typecheck` — успешно; `npm test -- --runInBand` — 24 теста успешно; `npm run build` —
+  успешно; `PLAYWRIGHT_BASE_URL=http://127.0.0.1:3180 npm run test:e2e -- tests/e2e/checkout.spec.ts` —
+  4 Chromium-сценария успешно. Desktop 1440×900 визуально проверен снимком Playwright; pending,
+  success, offline-error, сохранение значений и очистка корзины проверены поведением.
+- Переменные окружения: `PLAYWRIGHT_BASE_URL` использовалась только для подключения к существующему
+  локальному dev-серверу.
+- Архитектура: контракт отправки изолирован в checkout-модуле и пригоден для замены реальным
+  серверным transport без изменения UI. Security review клиентских границ не выявил новых
+  подтверждённых findings; данные формы, localStorage, цена и номер остаются недоверенными.
+- Ограничения: до backend-пунктов 30–31 transport создаёт только клиентский mock-заказ и не сохраняет
+  его на сервере; серверная валидация, атомарная запись и настоящий номер заказа обязательны перед
+  production. Browser plugin недоступен, поэтому rendered QA выполнен проектным Playwright.
+
+## Task 27 — Пользовательские формы авторизации
+
+- Результат: создана адаптивная страница `/login` с режимами входа, регистрации и восстановления пароля, React Hook Form + Zod-валидацией, доступным показом пароля и состояниями pending/error/success; интерфейс честно обозначает frontend preview до подключения Auth.js.
+- Файлы: `src/app/(store)/login/page.tsx`, `src/modules/auth/`, `src/styles/globals.css`, `tests/e2e/auth.spec.ts`, `docs/progress.md`.
+- Проверки: `npm run lint` — успешно с существующим предупреждением `postcss.config.mjs`; `npm run typecheck` — успешно; `npm test -- --runInBand` — 26 тестов успешно; `npm run build` — успешно; `PLAYWRIGHT_BASE_URL=http://127.0.0.1:3180 npx playwright test tests/e2e/auth.spec.ts` — 4 Chromium-сценария успешно; desktop 1440×1000 и mobile 390×844 визуально проверены через Playwright и `view_image`.
+- Переменные окружения: `PLAYWRIGHT_BASE_URL` использовалась только для подключения к существующему локальному dev-серверу.
+- Архитектура: без изменений; клиентский mock transport изолирован в auth-модуле и предназначен для замены серверной интеграцией. Security review не выявил подтверждённых уязвимостей в добавленной frontend-границе.
+- Ограничения: до backend-пункта 25 аккаунты, сессии и письма восстановления не создаются; production требует серверной валидации, безопасного хранения паролей, Auth.js, rate limiting и унифицированных ответов без раскрытия существования email. Browser plugin недоступен, поэтому rendered QA выполнен проектным Playwright.
