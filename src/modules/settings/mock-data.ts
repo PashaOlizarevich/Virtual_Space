@@ -14,4 +14,9 @@ export const storeProfile: StoreProfile = {
     },
     { label: "Часы работы", value: "Пн–Пт: 10:00–19:00 · Сб–Вс: 11:00–17:00" },
   ],
+  socials: [
+    { label: "Instagram", href: "https://www.instagram.com/virtualspace" },
+    { label: "Pinterest", href: "https://www.pinterest.com/virtualspace" },
+    { label: "Telegram", href: "https://t.me/virtualspace" },
+  ],
 };

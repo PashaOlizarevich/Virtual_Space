@@ -190,3 +190,21 @@ refactor или bugfix агент читает записи, связанные 
 - Переменные окружения: `PLAYWRIGHT_BASE_URL` использовалась только для изолированного E2E-сервера.
 - Архитектура: без изменений.
 - Ограничения: нет.
+
+## Task 18 — Страница о магазине
+
+- Результат: создана адаптивная публичная страница `/about` с историей и подходом Virtual Space,
+  интерьерным изображением, актуальными мок-контактами шоурума и типизированным списком социальных
+  сетей; добавлены metadata и доступная семантическая разметка.
+- Файлы: `src/app/(store)/about`, `src/modules/settings/types.ts`,
+  `src/modules/settings/mock-data.ts`, `src/styles/globals.css`, `tests/e2e/about-page.spec.ts`,
+  `docs/progress.md`.
+- Проверки: `npm run lint` — успешно с существующим предупреждением в `postcss.config.mjs`;
+  `npm run typecheck` — успешно; `npm test -- --runInBand` — 8 тестов успешно; `npm run build` —
+  успешно; `PLAYWRIGHT_BASE_URL=http://127.0.0.1:3165 npm run test:e2e -- tests/e2e/about-page.spec.ts` —
+  2 Chromium-сценария успешно; desktop 1440×1100 и mobile 390×844 визуально сверены с концептом.
+- Переменные окружения: `PLAYWRIGHT_BASE_URL` использовалась только для изолированного E2E-сервера.
+- Архитектура: существующая граница `app -> modules/settings` сохранена; страница остаётся Server
+  Component, backend и база данных не подключались.
+- Ограничения: контакты и ссылки социальных сетей остаются типизированными мок-данными до этапа
+  серверных настроек; Browser plugin недоступен, поэтому rendered QA выполнен проектным Playwright.
