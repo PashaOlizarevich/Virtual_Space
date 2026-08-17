@@ -33,6 +33,21 @@ test.describe("about page", () => {
       .toBe(true);
   });
 
+  test("extends the desktop hero image beneath the header", async ({ page }) => {
+    await page.setViewportSize({ width: 1223, height: 839 });
+    await page.goto("/about");
+
+    const headerBox = await page.locator(".header").boundingBox();
+    const mediaBox = await page.locator(".about-hero__media").boundingBox();
+    const contentBox = await page.locator(".about-hero__content").boundingBox();
+
+    expect(headerBox).not.toBeNull();
+    expect(mediaBox).not.toBeNull();
+    expect(contentBox).not.toBeNull();
+    expect(mediaBox?.y).toBe(headerBox?.y);
+    expect(contentBox?.y).toBe(headerBox?.y);
+  });
+
   test("keeps the contact section readable on mobile", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/about");

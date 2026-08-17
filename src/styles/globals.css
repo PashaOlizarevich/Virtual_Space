@@ -1306,17 +1306,21 @@ a {
 }
 
 @media (min-width: 900px) {
+  .about-page {
+    padding-top: 0;
+  }
+
   .about-hero {
     grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
     padding-top: 0;
   }
 
   .about-hero__content {
-    padding: 88px 56px 88px 0;
+    padding: 168px 56px 88px 0;
   }
 
   .about-hero__media {
-    min-height: 640px;
+    min-height: 720px;
   }
 
   .about-story {

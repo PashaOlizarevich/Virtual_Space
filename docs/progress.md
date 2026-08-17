@@ -223,3 +223,17 @@ refactor или bugfix агент читает записи, связанные 
 - Переменные окружения: `PLAYWRIGHT_BASE_URL` использовалась только для изолированного E2E-сервера.
 - Архитектура: без изменений.
 - Ограничения: Browser plugin недоступен, поэтому rendered QA выполнен проектным Playwright.
+
+## Task 20 — Изображение About под Header
+
+- Результат: desktop-изображение hero на `/about` поднято под полупрозрачную поверхность Header на
+  полную высоту `80px`; компенсационный отступ перенесён в текстовую колонку, поэтому заголовок и
+  описание остаются в безопасной области, а мобильная последовательность блоков не изменилась.
+- Файлы: `src/styles/globals.css`, `tests/e2e/about-page.spec.ts`, `docs/progress.md`.
+- Проверки: `npm run lint` — успешно с существующим предупреждением в `postcss.config.mjs`;
+  `npm run typecheck` — успешно; `npm test -- --runInBand` — 8 тестов успешно; `npm run build` —
+  успешно; `PLAYWRIGHT_BASE_URL=http://127.0.0.1:3168 npm run test:e2e -- tests/e2e/about-page.spec.ts` —
+  4 Chromium-сценария успешно; desktop 1223×839 и mobile 390×844 визуально проверены.
+- Переменные окружения: `PLAYWRIGHT_BASE_URL` использовалась только для изолированного E2E-сервера.
+- Архитектура: без изменений.
+- Ограничения: Browser plugin недоступен, поэтому rendered QA выполнен проектным Playwright.
