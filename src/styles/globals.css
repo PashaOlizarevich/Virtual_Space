@@ -103,9 +103,15 @@ a {
   top: 0;
   z-index: 10;
   height: 80px;
-  border-bottom: 1px solid var(--color-border);
-  background: rgb(255 255 255 / 92%);
-  backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgb(255 255 255 / 18%);
+  background: rgb(16 16 16 / 28%);
+  color: var(--color-text-on-dark);
+  -webkit-backdrop-filter: blur(18px) saturate(120%);
+  backdrop-filter: blur(18px) saturate(120%);
+}
+
+.header :focus-visible {
+  outline-color: var(--color-text-on-dark);
 }
 
 .header__container {
@@ -190,7 +196,15 @@ a {
 }
 
 .header__icon-link:hover {
-  background: var(--color-surface-soft);
+  background: rgb(255 255 255 / 12%);
+}
+
+.header .header__icon-button {
+  color: var(--color-text-on-dark);
+}
+
+.header .header__icon-button:hover {
+  background: rgb(255 255 255 / 12%);
 }
 
 .header__icon-link svg,
@@ -499,7 +513,9 @@ a {
 
 .home-hero {
   position: relative;
-  min-height: min(760px, calc(100svh - 80px));
+  min-height: min(840px, 100svh);
+  margin-top: -80px;
+  padding-top: 80px;
   overflow: hidden;
   background: var(--color-surface-soft);
 }

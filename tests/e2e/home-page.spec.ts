@@ -9,6 +9,9 @@ test.describe("home page", () => {
 
     await page.goto("/");
 
+    await expect(page.locator(".home-hero")).toHaveCSS("margin-top", "-80px");
+    await expect(page.locator(".home-hero")).toHaveCSS("padding-top", "80px");
+
     await expect(page.getByRole("heading", { level: 1 })).toContainText(
       "Пространство, в котором хочется остаться",
     );
