@@ -80,7 +80,17 @@ export function MobileNavigation() {
               <UserRound aria-hidden="true" />
               Личный кабинет
             </Link>
-            <button className="mobile-navigation__action" type="button" onClick={closeNavigation}>
+            <button
+              className="mobile-navigation__action"
+              type="button"
+              onClick={() => {
+                closeNavigation();
+                const cartTrigger =
+                  document.querySelector<HTMLButtonElement>("#cart-widget-trigger");
+                cartTrigger?.focus();
+                cartTrigger?.click();
+              }}
+            >
               <ShoppingBag aria-hidden="true" />
               Корзина
             </button>

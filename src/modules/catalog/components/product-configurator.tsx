@@ -4,6 +4,7 @@ import { ShoppingBag } from "lucide-react";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { useCartStore } from "@/modules/cart/store";
 import type { Product } from "@/modules/catalog/types";
 
 const priceFormatter = new Intl.NumberFormat("ru-BY", {
@@ -13,6 +14,7 @@ const priceFormatter = new Intl.NumberFormat("ru-BY", {
 });
 
 export function ProductConfigurator({ product }: Readonly<{ product: Product }>) {
+  const addItem = useCartStore((state) => state.addItem);
   const [selection, setSelection] = useState<Record<string, string>>(() =>
     Object.fromEntries(product.optionGroups.map((group) => [group.id, group.options[0]?.id ?? ""])),
   );
@@ -50,9 +52,21 @@ export function ProductConfigurator({ product }: Readonly<{ product: Product }>)
       </div>
       <Button
         className="product-configurator__submit"
-        onClick={() =>
-          setConfirmation(`«${product.name}» добавлен в корзину: ${selectedLabels.join(", ")}.`)
-        }
+        onClick={() => {
+          const added = addItem({
+            productId: product.id,
+            selectedOptions: product.optionGroups.map((group) => ({
+              groupId: group.id,
+              optionId: selection[group.id] ?? "",
+            })),
+            observedPrice: product.price,
+          });
+          setConfirmation(
+            added
+              ? `«${product.name}» добавлен в корзину: ${selectedLabels.join(", ")}.`
+              : "Не удалось добавить товар. Обновите страницу и попробуйте ещё раз.",
+          );
+        }}
       >
         <ShoppingBag data-icon="inline-start" aria-hidden="true" />
         Добавить в корзину
