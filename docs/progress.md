@@ -332,3 +332,15 @@ refactor или bugfix агент читает записи, связанные 
 - Ограничения: Browser plugin недоступен, поэтому rendered QA выполнен проектным Playwright;
   стандартный Turbopack build в изолированном worktree не поддержал внешнюю junction-ссылку на
   `node_modules`, поэтому эквивалентная production-сборка проверена штатным webpack fallback Next.js.
+
+## Task 29 — Изображение Login под Header
+
+- Результат: desktop-изображение на `/login` поднято под полупрозрачный Header на его полную высоту
+  `80px`; форма и мобильная последовательность блоков сохранены без смещения.
+- Файлы: `src/styles/globals.css`, `tests/e2e/auth.spec.ts`, `docs/progress.md`.
+- Проверки: `npm run lint`, `npm run typecheck`, `npm run build` и
+  `PLAYWRIGHT_BASE_URL=http://127.0.0.1:3180 npm run test:e2e -- tests/e2e/auth.spec.ts`;
+  5 Chromium-сценариев успешно, desktop 1440×1000 визуально проверен.
+- Переменные окружения: `PLAYWRIGHT_BASE_URL` использовалась только для локальной E2E-проверки.
+- Архитектура: без изменений.
+- Ограничения: Browser plugin недоступен, поэтому rendered QA выполнен проектным Playwright.

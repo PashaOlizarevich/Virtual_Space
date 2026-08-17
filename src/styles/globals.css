@@ -1856,7 +1856,8 @@ body:has(dialog[open]) {
     padding-top: 80px;
   }
   .auth-page__media {
-    min-height: calc(100svh - 80px);
+    min-height: 100svh;
+    margin-top: -80px;
   }
   .auth-panel {
     padding: 72px 8vw 96px;

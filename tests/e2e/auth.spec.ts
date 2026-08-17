@@ -67,3 +67,15 @@ test("keeps the active form visible on mobile", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Войти в аккаунт" })).toBeVisible();
   await expect(page.getByLabel("Email")).toBeVisible();
 });
+
+test("extends the desktop image beneath the translucent header", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto("/login");
+
+  const headerBox = await page.locator(".header").boundingBox();
+  const mediaBox = await page.locator(".auth-page__media").boundingBox();
+
+  expect(headerBox?.y).toBe(0);
+  expect(mediaBox?.y).toBe(0);
+  expect(mediaBox?.height).toBeGreaterThanOrEqual(1000);
+});
