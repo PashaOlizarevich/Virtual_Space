@@ -68,3 +68,16 @@ refactor или bugfix агент читает записи, связанные 
 - Архитектура: Header остаётся Server Component, клиентская граница ограничена интерактивной мобильной навигацией.
 - Ограничения: кнопка корзины открывает cart widget на следующем предусмотренном этапе; Browser plugin недоступен,
   поэтому rendered QA выполнен через проектный Playwright.
+
+## Task 5 — Волна в wordmark Header
+
+- Результат: заголовок `VIRTUAL SPACE` в Header разбит на буквы с последовательной бесконечной CSS-волной исчезновения и
+  появления; сохранено цельное доступное имя, а при `prefers-reduced-motion` декоративная анимация отключается.
+- Файлы: `src/components/layout/header.tsx`, `src/components/layout/header.test.tsx`, `src/styles/globals.css`,
+  `tests/e2e/header.spec.ts`, `docs/progress.md`.
+- Проверки: `npm run lint` — успешно с существующим предупреждением в `postcss.config.mjs`; `npm run typecheck` — успешно;
+  `npm test -- --runInBand` — 4 теста успешно; `npm run build` — успешно; `PLAYWRIGHT_BASE_URL=http://127.0.0.1:3100 npm run test:e2e` —
+  3 Chromium-сценария успешно, включая desktop, mobile, console health и reduced motion.
+- Переменные окружения: `PLAYWRIGHT_BASE_URL` — необязательный адрес изолированного E2E-сервера.
+- Архитектура: Header остаётся Server Component; анимация реализована CSS без новой client-границы.
+- Ограничения: Browser plugin недоступен, поэтому rendered QA выполнен через проектный Playwright; отдельные screenshots не сохранялись.

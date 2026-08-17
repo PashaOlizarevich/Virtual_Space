@@ -12,6 +12,11 @@ test.describe("store header", () => {
     await expect(page).toHaveTitle(/Virtual Space/);
     await expect(page.getByRole("navigation", { name: "Основная навигация" })).toBeVisible();
     await expect(page.getByRole("link", { name: "Virtual Space — на главную" })).toBeVisible();
+    await expect(page.locator(".header__wordmark-letter")).toHaveCount(13);
+    await expect(page.locator(".header__wordmark-letter").nth(1)).toHaveCSS(
+      "animation-delay",
+      "0.1s",
+    );
     await expect(page.getByRole("link", { name: "Личный кабинет" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Открыть корзину" })).toBeVisible();
     expect(consoleErrors).toEqual([]);
@@ -35,5 +40,15 @@ test.describe("store header", () => {
     await page.keyboard.press("Escape");
     await expect(dialog).not.toBeVisible();
     expect(consoleErrors).toEqual([]);
+  });
+
+  test("disables the decorative wordmark wave for reduced motion", async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto("/");
+
+    await expect(page.locator(".header__wordmark-letter").first()).toHaveCSS(
+      "animation-name",
+      "none",
+    );
   });
 });

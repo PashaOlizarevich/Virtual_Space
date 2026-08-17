@@ -149,6 +149,26 @@ a {
   text-transform: uppercase;
 }
 
+.header__wordmark {
+  display: inline-flex;
+}
+
+.header__wordmark-letter {
+  animation: wordmark-wave 2.4s var(--motion-standard) infinite;
+}
+
+@keyframes wordmark-wave {
+  0%,
+  45%,
+  100% {
+    opacity: 1;
+  }
+
+  22% {
+    opacity: 0;
+  }
+}
+
 .header__actions {
   display: flex;
   grid-column: 3;
@@ -510,6 +530,10 @@ a {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .header__wordmark-letter {
+    animation: none;
+  }
+
   *,
   *::before,
   *::after {
