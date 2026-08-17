@@ -58,7 +58,7 @@ export function Header() {
           </Button>
           <Link
             className="header__icon-link"
-            href="/profile"
+            href="/login"
             prefetch={false}
             aria-label="Личный кабинет"
           >
