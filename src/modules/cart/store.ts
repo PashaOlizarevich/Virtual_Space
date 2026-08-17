@@ -13,6 +13,7 @@ type CartState = {
   addItem: (input: AddCartItemInput) => boolean;
   setItemQuantity: (item: CartItem, quantity: number) => boolean;
   removeItem: (item: CartItem) => void;
+  confirmItemPrice: (item: CartItem, currentPrice: number) => boolean;
 };
 
 function getItemKey(item: Pick<CartItem, "productId" | "selectedOptions">) {
@@ -95,6 +96,20 @@ export const useCartStore = create<CartState>()(
         set((state) => ({
           items: state.items.filter((currentItem) => getItemKey(currentItem) !== itemKey),
         }));
+      },
+      confirmItemPrice(item, currentPrice) {
+        const parsed = cartItemSchema.safeParse({ ...item, observedPrice: currentPrice });
+        if (!parsed.success) return false;
+
+        const itemKey = getItemKey(item);
+        set((state) => ({
+          items: state.items.map((currentItem) =>
+            getItemKey(currentItem) === itemKey
+              ? { ...currentItem, observedPrice: parsed.data.observedPrice }
+              : currentItem,
+          ),
+        }));
+        return true;
       },
     }),
     {

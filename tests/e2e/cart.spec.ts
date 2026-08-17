@@ -70,4 +70,52 @@ test.describe("cart widget", () => {
     await page.keyboard.press("Escape");
     await expect(page.getByRole("button", { name: "Открыть корзину" })).toBeFocused();
   });
+
+  test("blocks checkout until changed prices are confirmed and excludes unavailable items", async ({
+    page,
+  }) => {
+    await page.addInitScript(() => {
+      window.localStorage.setItem(
+        "virtual-space:guest-cart:v1",
+        JSON.stringify({
+          state: {
+            items: [
+              {
+                productId: "forma-chair",
+                quantity: 1,
+                selectedOptions: [{ groupId: "color", optionId: "milk" }],
+                observedPrice: 1290,
+              },
+              {
+                productId: "removed-product",
+                quantity: 1,
+                selectedOptions: [],
+                observedPrice: 500,
+              },
+            ],
+          },
+          version: 1,
+        }),
+      );
+    });
+
+    await page.goto("/");
+    await page.getByRole("button", { name: /Открыть корзину/ }).click();
+
+    const dialog = page.getByRole("dialog", { name: "Корзина" });
+    await expect(dialog.getByText("Цена изменилась. Подтвердите новую стоимость.")).toBeVisible();
+    await expect(
+      dialog.getByText("Недоступен — позиция исключена из суммы и оформления."),
+    ).toBeVisible();
+    await expect(dialog.getByText("1 290 Br")).toBeVisible();
+    await expect(dialog.getByText("1 390 Br")).toHaveCount(2);
+
+    const checkout = dialog.getByRole("link", { name: "Оформить заявку" });
+    await expect(checkout).toHaveAttribute("aria-disabled", "true");
+    await dialog.getByRole("button", { name: "Подтвердить цену" }).click();
+    await expect(
+      dialog.getByText("Цена изменилась. Подтвердите новую стоимость."),
+    ).not.toBeVisible();
+    await expect(checkout).not.toHaveAttribute("aria-disabled", "true");
+  });
 });

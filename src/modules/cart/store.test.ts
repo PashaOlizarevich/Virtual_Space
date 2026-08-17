@@ -71,6 +71,17 @@ describe("guest cart store", () => {
     expect(useCartStore.getState().items).toEqual([]);
   });
 
+  it("confirms a current price without changing the selected configuration", () => {
+    useCartStore.getState().addItem(chair);
+    const item = useCartStore.getState().items[0];
+    expect(item).toBeDefined();
+    if (!item) return;
+
+    expect(useCartStore.getState().confirmItemPrice(item, 1490)).toBe(true);
+    expect(useCartStore.getState().items).toEqual([{ ...chair, quantity: 1, observedPrice: 1490 }]);
+    expect(useCartStore.getState().confirmItemPrice(item, Number.NaN)).toBe(false);
+  });
+
   it("discards untrusted persisted state during hydration", async () => {
     window.localStorage.setItem(
       CART_STORAGE_KEY,
