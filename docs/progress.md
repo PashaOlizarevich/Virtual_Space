@@ -35,3 +35,36 @@ refactor или bugfix агент читает записи, связанные 
 - Переменные окружения: нет.
 - Архитектура: без изменений.
 - Ограничения: workflow управляет действиями Codex, но защита веток на GitHub настраивается отдельно в репозитории.
+
+## Task 3 — Базовый frontend-фундамент
+
+- Результат: создана основа Next.js App Router с публичной route group, глобальными дизайн-токенами,
+  адаптивной 12-колоночной сеткой, типографикой, layout-компонентами, UI-кнопкой и доступными
+  состояниями loading, empty, error и not-found.
+- Файлы: `src/app`, `src/components/layout`, `src/components/ui`, `src/shared/utils.ts`,
+  `src/styles/globals.css`, `tsconfig.json`.
+- Проверки: `npm run lint` — успешно с одним существующим предупреждением в
+  `postcss.config.mjs`; `npm run typecheck` — успешно; `npm test -- --runInBand` — 2 теста
+  успешно; `npm run build` — успешно; desktop и mobile визуальная проверка Playwright — успешно.
+- Переменные окружения: нет.
+- Архитектура: реализована ранее утверждённая структура `app -> components/ui|shared`, без
+  изменения архитектурных границ.
+- Ограничения: `npm ci` распаковал зависимости, но завершился ошибкой существующего `postinstall`,
+  потому что Prisma schema относится к будущему этапу и пока отсутствует.
+
+## Task 4 — Общий Header магазина
+
+- Результат: реализован адаптивный Header с центрированным логотипом Virtual Space, основной навигацией,
+  кнопкой корзины и переходом в личный кабинет; на мобильных экранах навигация открывается в modal drawer
+  и закрывается по явной кнопке, overlay и `Esc`.
+- Файлы: `src/app/(store)/layout.tsx`, `src/components/layout/header.tsx`,
+  `src/components/layout/mobile-navigation.tsx`, `src/components/layout/header.test.tsx`,
+  `src/styles/globals.css`, `tests/e2e/header.spec.ts`, `jest.config.ts`, `playwright.config.ts`,
+  `docs/progress.md`.
+- Проверки: `npm run lint` — успешно с существующим предупреждением в `postcss.config.mjs`;
+  `npm run typecheck` — успешно; `npm test -- --runInBand` — 3 теста успешно; `npm run build` — успешно;
+  `npm run test:e2e` — 2 Chromium-сценария успешно; визуальная проверка desktop 1440×900 и mobile 390×844 — успешно.
+- Переменные окружения: `PLAYWRIGHT_BASE_URL` — необязательный адрес уже запущенного приложения для E2E.
+- Архитектура: Header остаётся Server Component, клиентская граница ограничена интерактивной мобильной навигацией.
+- Ограничения: кнопка корзины открывает cart widget на следующем предусмотренном этапе; Browser plugin недоступен,
+  поэтому rendered QA выполнен через проектный Playwright.
