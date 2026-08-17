@@ -237,3 +237,12 @@ refactor или bugfix агент читает записи, связанные 
 - Переменные окружения: `PLAYWRIGHT_BASE_URL` использовалась только для изолированного E2E-сервера.
 - Архитектура: без изменений.
 - Ограничения: Browser plugin недоступен, поэтому rendered QA выполнен проектным Playwright.
+
+## Task 21 — Клиентский кеш каталога
+
+- Результат: подключён общий TanStack Query Provider; каталог переведён на типизированный асинхронный query-слой с кешированием, ручным фоновым обновлением и доступными состояниями loading, empty и error. До появления backend-контракта query-функция использует существующие типизированные мок-данные.
+- Файлы: `src/app/providers.tsx`, `src/app/layout.tsx`, `src/app/(store)/catalog/page.tsx`, `src/modules/catalog/queries.ts`, `src/modules/catalog/components/catalog-query-grid.tsx`, `src/styles/globals.css`, `src/app/(store)/catalog/catalog.test.tsx`, `tests/e2e/catalog.spec.ts`, `docs/progress.md`.
+- Проверки: `npm run lint` — успешно с существующим предупреждением в `postcss.config.mjs`; `npm run typecheck` — успешно; `npm test -- --runInBand` — 10 тестов успешно; `npm run build` — успешно; `PLAYWRIGHT_BASE_URL=http://127.0.0.1:3172 npm run test:e2e -- tests/e2e/catalog.spec.ts` — 3 Chromium-сценария успешно; desktop-вид каталога визуально проверен снимком Playwright.
+- Переменные окружения: `PLAYWRIGHT_BASE_URL` использовалась только для изолированного E2E-сервера.
+- Архитектура: реализована уже описанная в `docs/architecture.md` граница `app -> modules/catalog` и общий `app/providers.tsx`; реальный HTTP transport остаётся этапом backend.
+- Ограничения: Browser plugin недоступен, поэтому rendered QA выполнен проектным Playwright; данные каталога остаются моковыми до реализации backend-контракта.

@@ -993,6 +993,27 @@ a {
   gap: 48px 16px;
 }
 
+.catalog-query {
+  display: grid;
+  gap: 24px;
+}
+
+.catalog-query__toolbar {
+  display: flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.catalog-query__toolbar .button {
+  gap: 8px;
+}
+
+.catalog-query-state .loading-state {
+  grid-column: span 6;
+}
+
 .product-detail__breadcrumbs {
   display: flex;
   min-height: 44px;
