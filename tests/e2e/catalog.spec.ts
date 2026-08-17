@@ -27,6 +27,12 @@ test.describe("catalog and product", () => {
     await page.getByLabel("Песочный").check();
     await page.getByRole("button", { name: "Добавить в корзину" }).click();
     await expect(page.getByRole("status")).toContainText("Букле, Песочный");
+    await page.reload();
+    const persistedCart = await page.evaluate(() =>
+      window.localStorage.getItem("virtual-space:guest-cart:v1"),
+    );
+    expect(persistedCart).toContain('"productId":"forma-chair"');
+    expect(persistedCart).toContain('"optionId":"sand"');
     expect(consoleErrors).toEqual([]);
   });
 

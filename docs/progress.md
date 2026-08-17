@@ -246,3 +246,12 @@ refactor или bugfix агент читает записи, связанные 
 - Переменные окружения: `PLAYWRIGHT_BASE_URL` использовалась только для изолированного E2E-сервера.
 - Архитектура: реализована уже описанная в `docs/architecture.md` граница `app -> modules/catalog` и общий `app/providers.tsx`; реальный HTTP transport остаётся этапом backend.
 - Ограничения: Browser plugin недоступен, поэтому rendered QA выполнен проектным Playwright; данные каталога остаются моковыми до реализации backend-контракта.
+
+## Task 22 — Persist-хранилище гостевой корзины
+
+- Результат: реализовано Zustand-хранилище гостевой корзины с версионированным persist-сохранением в `localStorage`; одинаковые конфигурации объединяются, количество и размер корзины ограничены, вход и восстановленное состояние валидируются Zod. Кнопки каталога и конфигуратора добавляют товар с выбранными option-id и наблюдаемой ценой.
+- Файлы: `src/modules/cart/types.ts`, `src/modules/cart/schemas.ts`, `src/modules/cart/store.ts`, `src/modules/cart/store.test.ts`, `src/modules/catalog/components/product-preview.tsx`, `src/modules/catalog/components/product-configurator.tsx`, `tests/e2e/catalog.spec.ts`, `docs/progress.md`.
+- Проверки: `npm run lint` — успешно с существующим предупреждением в `postcss.config.mjs`; `npm run typecheck` — успешно; `npm test -- --runInBand` — 14 тестов успешно; `npm run build` — успешно; `PLAYWRIGHT_BASE_URL=http://127.0.0.1:3174 npm run test:e2e -- tests/e2e/catalog.spec.ts` — 3 Chromium-сценария успешно; desktop-страница товара визуально проверена снимком Playwright; security review применимой границы localStorage — подтверждённых findings нет.
+- Переменные окружения: `PLAYWRIGHT_BASE_URL` использовалась только для изолированного E2E-сервера.
+- Архитектура: реализован уже описанный поток `Product DTO -> Zustand -> persist/localStorage`; в persisted state находятся только идентификаторы, количество, выбранные option-id и наблюдаемая цена.
+- Ограничения: Browser plugin недоступен, поэтому rendered QA выполнен проектным Playwright; серверная сверка цены и доступности относится к последующим backend-пунктам.
