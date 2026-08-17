@@ -306,3 +306,12 @@ refactor или bugfix агент читает записи, связанные 
 - Ограничения: до backend-пунктов 30–31 transport создаёт только клиентский mock-заказ и не сохраняет
   его на сервере; серверная валидация, атомарная запись и настоящий номер заказа обязательны перед
   production. Browser plugin недоступен, поэтому rendered QA выполнен проектным Playwright.
+
+## Task 27 — Пользовательские формы авторизации
+
+- Результат: создана адаптивная страница `/login` с режимами входа, регистрации и восстановления пароля, React Hook Form + Zod-валидацией, доступным показом пароля и состояниями pending/error/success; интерфейс честно обозначает frontend preview до подключения Auth.js.
+- Файлы: `src/app/(store)/login/page.tsx`, `src/modules/auth/`, `src/styles/globals.css`, `tests/e2e/auth.spec.ts`, `docs/progress.md`.
+- Проверки: `npm run lint` — успешно с существующим предупреждением `postcss.config.mjs`; `npm run typecheck` — успешно; `npm test -- --runInBand` — 26 тестов успешно; `npm run build` — успешно; `PLAYWRIGHT_BASE_URL=http://127.0.0.1:3180 npx playwright test tests/e2e/auth.spec.ts` — 2 Chromium-сценария успешно; desktop 1440×1000 и mobile 390×844 визуально проверены через Playwright и `view_image`.
+- Переменные окружения: `PLAYWRIGHT_BASE_URL` использовалась только для подключения к существующему локальному dev-серверу.
+- Архитектура: без изменений; клиентский mock transport изолирован в auth-модуле и предназначен для замены серверной интеграцией. Security review не выявил подтверждённых уязвимостей в добавленной frontend-границе.
+- Ограничения: до backend-пункта 25 аккаунты, сессии и письма восстановления не создаются; production требует серверной валидации, безопасного хранения паролей, Auth.js, rate limiting и унифицированных ответов без раскрытия существования email. Browser plugin недоступен, поэтому rendered QA выполнен проектным Playwright.
