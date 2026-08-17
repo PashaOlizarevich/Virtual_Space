@@ -51,3 +51,20 @@ refactor или bugfix агент читает записи, связанные 
   изменения архитектурных границ.
 - Ограничения: `npm ci` распаковал зависимости, но завершился ошибкой существующего `postinstall`,
   потому что Prisma schema относится к будущему этапу и пока отсутствует.
+
+## Task 4 — Общий Header магазина
+
+- Результат: реализован адаптивный Header с центрированным логотипом Virtual Space, основной навигацией,
+  кнопкой корзины и переходом в личный кабинет; на мобильных экранах навигация открывается в modal drawer
+  и закрывается по явной кнопке, overlay и `Esc`.
+- Файлы: `src/app/(store)/layout.tsx`, `src/components/layout/header.tsx`,
+  `src/components/layout/mobile-navigation.tsx`, `src/components/layout/header.test.tsx`,
+  `src/styles/globals.css`, `tests/e2e/header.spec.ts`, `jest.config.ts`, `playwright.config.ts`,
+  `docs/progress.md`.
+- Проверки: `npm run lint` — успешно с существующим предупреждением в `postcss.config.mjs`;
+  `npm run typecheck` — успешно; `npm test -- --runInBand` — 3 теста успешно; `npm run build` — успешно;
+  `npm run test:e2e` — 2 Chromium-сценария успешно; визуальная проверка desktop 1440×900 и mobile 390×844 — успешно.
+- Переменные окружения: `PLAYWRIGHT_BASE_URL` — необязательный адрес уже запущенного приложения для E2E.
+- Архитектура: Header остаётся Server Component, клиентская граница ограничена интерактивной мобильной навигацией.
+- Ограничения: кнопка корзины открывает cart widget на следующем предусмотренном этапе; Browser plugin недоступен,
+  поэтому rendered QA выполнен через проектный Playwright.
