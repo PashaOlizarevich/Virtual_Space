@@ -1,54 +1,104 @@
+import { Box, Leaf, Truck } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+
 import { Container } from "@/components/layout/container";
-import { PageShell } from "@/components/layout/page-shell";
 import { Section } from "@/components/layout/section";
-import { Button } from "@/components/ui/button";
-import { FeedbackState, LoadingState } from "@/components/ui/feedback-state";
+import { ProductPreview } from "@/modules/catalog/components/product-preview";
+import { featuredProducts } from "@/modules/catalog/mock-data";
+import { storeProfile } from "@/modules/settings/mock-data";
+
+const advantages = [
+  {
+    title: "Честные материалы",
+    description: "Выбираем натуральные и долговечные материалы, безопасные для дома.",
+    icon: Leaf,
+  },
+  {
+    title: "Продуманный дизайн",
+    description: "Лаконичные формы и внимание к деталям для гармоничных интерьеров.",
+    icon: Box,
+  },
+  {
+    title: "Заботливая доставка",
+    description: "Аккуратно доставим и соберём мебель в удобное для вас время.",
+    icon: Truck,
+  },
+] as const;
 
 export default function HomePage() {
   return (
-    <PageShell>
-      <Container>
-        <Section className="foundation-intro" aria-labelledby="foundation-title">
-          <p className="text-label-caps text-secondary">Virtual Space</p>
-          <div className="foundation-intro__content">
-            <h1 id="foundation-title" className="text-display">
-              Основа интерфейса
+    <main>
+      <section className="home-hero" aria-labelledby="home-title">
+        <Image
+          className="home-hero__image"
+          src="/images/home/hero.png"
+          alt="Светлая гостиная с модульным диваном и мебелью из ореха"
+          fill
+          preload
+          sizes="100vw"
+        />
+        <Container className="home-hero__container">
+          <div className="home-hero__content">
+            <h1 id="home-title" className="home-hero__title">
+              Пространство, в котором хочется остаться
             </h1>
-            <p className="text-heading-lg">Спокойное пространство для важных вещей</p>
-            <p className="foundation-intro__description text-body-md text-secondary">
-              Адаптивная сетка, типографика и общие состояния готовы для следующих экранов магазина.
-            </p>
-            <div className="foundation-intro__actions">
-              <Button>Основное действие</Button>
-              <Button variant="secondary">Вторичное действие</Button>
-            </div>
+            <p className="home-hero__description">{storeProfile.description}</p>
+            <Link className="button button--primary button--default" href="#showcase">
+              Смотреть коллекцию
+            </Link>
+          </div>
+        </Container>
+      </section>
+
+      <Container>
+        <Section id="showcase" className="home-showcase" aria-labelledby="showcase-title">
+          <div className="home-section-heading">
+            <p className="text-label-caps text-secondary">Коллекция</p>
+            <h2 id="showcase-title" className="text-heading-lg">
+              Избранное для вашего дома
+            </h2>
+          </div>
+          <div className="home-showcase__grid">
+            {featuredProducts.map((product) => (
+              <ProductPreview key={product.id} product={product} />
+            ))}
           </div>
         </Section>
 
-        <Section className="foundation-states" aria-labelledby="states-title">
-          <div className="foundation-states__heading">
-            <h2 id="states-title" className="text-heading-md">
-              Системные состояния
-            </h2>
-            <p className="text-body-sm text-secondary">
-              Единые шаблоны для загрузки, пустого результата и ошибки.
-            </p>
-          </div>
-          <div className="foundation-states__grid">
-            <LoadingState />
-            <FeedbackState
-              title="Ничего не найдено"
-              description="Измените параметры поиска или вернитесь к каталогу."
-            />
-            <FeedbackState
-              kind="error"
-              title="Не удалось загрузить данные"
-              description="Проверьте соединение и попробуйте снова."
-              action={<Button>Повторить</Button>}
-            />
+        <Section className="home-advantages" aria-labelledby="advantages-title">
+          <h2 id="advantages-title" className="text-heading-lg">
+            Почему Virtual Space
+          </h2>
+          <div className="home-advantages__grid">
+            {advantages.map(({ title, description, icon: Icon }) => (
+              <article className="home-advantage" key={title}>
+                <Icon className="home-advantage__icon" aria-hidden="true" />
+                <h3>{title}</h3>
+                <p className="text-body-sm text-secondary">{description}</p>
+              </article>
+            ))}
           </div>
         </Section>
       </Container>
-    </PageShell>
+
+      <section className="home-contact" aria-labelledby="contact-title">
+        <Container className="home-contact__container">
+          <div className="home-contact__intro">
+            <p className="text-label-caps">{storeProfile.name}</p>
+            <h2 id="contact-title">Давайте создадим пространство вместе</h2>
+            <p>Поможем выбрать мебель и спланировать спокойный, цельный интерьер.</p>
+          </div>
+          <address className="home-contact__details">
+            {storeProfile.contacts.map((contact) => (
+              <div className="home-contact__item" key={contact.label}>
+                <span>{contact.label}</span>
+                {contact.href ? <a href={contact.href}>{contact.value}</a> : <p>{contact.value}</p>}
+              </div>
+            ))}
+          </address>
+        </Container>
+      </section>
+    </main>
   );
 }

@@ -1,0 +1,17 @@
+import { describe, expect, it } from "@jest/globals";
+import { renderToStaticMarkup } from "react-dom/server";
+
+import HomePage from "@/app/(store)/page";
+
+describe("HomePage", () => {
+  it("renders the store information, featured products, advantages, and contacts", () => {
+    const html = renderToStaticMarkup(<HomePage />);
+
+    expect(html).toContain("Пространство, в котором хочется остаться");
+    expect(html).toContain("Избранное для вашего дома");
+    expect(html.match(/class=\"product-preview\"/g)).toHaveLength(4);
+    expect(html).toContain("Почему Virtual Space");
+    expect(html).toContain("hello@virtualspace.example");
+    expect(html).not.toContain("Рейтинг");
+  });
+});
