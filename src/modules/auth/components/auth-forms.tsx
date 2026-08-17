@@ -2,8 +2,8 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, LoaderCircle } from "lucide-react";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { type KeyboardEvent, useRef, useState } from "react";
+import { type UseFormRegisterReturn, useForm } from "react-hook-form";
 
 import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
@@ -25,10 +25,12 @@ const modes: { id: AuthMode; label: string }[] = [
 ];
 
 function PasswordField({
-  register,
+  registered,
+  autoComplete,
   error,
 }: {
-  register: ReturnType<typeof useForm<LoginValues>>["register"];
+  registered: UseFormRegisterReturn<"password">;
+  autoComplete: "current-password" | "new-password";
   error?: string;
 }) {
   const [visible, setVisible] = useState(false);
@@ -39,10 +41,10 @@ function PasswordField({
         <Input
           id="password"
           type={visible ? "text" : "password"}
-          autoComplete="current-password"
+          autoComplete={autoComplete}
           aria-invalid={Boolean(error)}
           aria-describedby={error ? "password-error" : undefined}
-          {...register("password")}
+          {...registered}
         />
         <Button
           type="button"
@@ -94,7 +96,11 @@ function LoginForm({ onMode }: { onMode: (mode: AuthMode) => void }) {
             registered={form.register("email")}
             error={form.formState.errors.email?.message}
           />
-          <PasswordField register={form.register} error={form.formState.errors.password?.message} />
+          <PasswordField
+            registered={form.register("password")}
+            autoComplete="current-password"
+            error={form.formState.errors.password?.message}
+          />
         </FieldGroup>
         <button className="auth-form__text-action" type="button" onClick={() => onMode("recovery")}>
           Забыли пароль?
@@ -155,7 +161,8 @@ function RegistrationForm() {
             error={form.formState.errors.email?.message}
           />
           <PasswordField
-            register={form.register as ReturnType<typeof useForm<LoginValues>>["register"]}
+            registered={form.register("password")}
+            autoComplete="new-password"
             error={form.formState.errors.password?.message}
           />
         </FieldGroup>
@@ -274,22 +281,44 @@ function AuthFormShell({
 
 export function AuthForms() {
   const [mode, setMode] = useState<AuthMode>("login");
+  const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
+
+  const handleTabKeyDown = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
+    let nextIndex: number | null = null;
+    if (event.key === "ArrowRight") nextIndex = (index + 1) % modes.length;
+    if (event.key === "ArrowLeft") nextIndex = (index - 1 + modes.length) % modes.length;
+    if (event.key === "Home") nextIndex = 0;
+    if (event.key === "End") nextIndex = modes.length - 1;
+    if (nextIndex === null) return;
+
+    event.preventDefault();
+    setMode(modes[nextIndex].id);
+    tabRefs.current[nextIndex]?.focus();
+  };
+
   return (
     <section className="auth-panel" aria-label="Авторизация">
       <div className="auth-tabs" role="tablist" aria-label="Выберите форму">
-        {modes.map((item) => (
+        {modes.map((item, index) => (
           <button
             key={item.id}
             type="button"
             role="tab"
+            id={`auth-tab-${item.id}`}
+            aria-controls="auth-panel"
             aria-selected={mode === item.id}
+            tabIndex={mode === item.id ? 0 : -1}
+            ref={(element) => {
+              tabRefs.current[index] = element;
+            }}
+            onKeyDown={(event) => handleTabKeyDown(event, index)}
             onClick={() => setMode(item.id)}
           >
             {item.label}
           </button>
         ))}
       </div>
-      <div role="tabpanel">
+      <div id="auth-panel" role="tabpanel" aria-labelledby={`auth-tab-${mode}`} tabIndex={0}>
         {mode === "login" ? (
           <LoginForm onMode={setMode} />
         ) : mode === "registration" ? (
