@@ -344,3 +344,21 @@ refactor или bugfix агент читает записи, связанные 
 - Переменные окружения: `PLAYWRIGHT_BASE_URL` использовалась только для локальной E2E-проверки.
 - Архитектура: без изменений.
 - Ограничения: Browser plugin недоступен, поэтому rendered QA выполнен проектным Playwright.
+
+## Task 30 — Референсное изображение About
+
+- Результат: прежний общий hero-asset на `/about` заменён отдельной production-фотографией,
+  воссозданной из исходного визуального концепта страницы: сохранены деревянная консоль, лампа,
+  абстрактная работа, журнальный стол, плетёное кресло, дерево и столовая зона справа.
+- Файлы: `public/images/about/about-interior.png`, `src/app/(store)/about/page.tsx`,
+  `src/app/(store)/about/page.test.tsx`, `docs/progress.md`.
+- Проверки: `npm run lint` — успешно с двумя существующими предупреждениями PostCSS из основного
+  дерева и локального worktree; `npm run typecheck` — успешно; `npm test -- --runInBand` — 52 теста
+  успешно с предупреждением Jest о дублирующем `package.json` в существующем worktree;
+  `npm run build` — успешно; `PLAYWRIGHT_BASE_URL=http://127.0.0.1:3192 npm run test:e2e -- tests/e2e/about-page.spec.ts` —
+  4 Chromium-сценария успешно; desktop 1440×1000 и mobile 390×844 визуально сверены с исходным
+  About-концептом.
+- Переменные окружения: `PLAYWRIGHT_BASE_URL` использовалась только для локальной E2E-проверки.
+- Архитектура: без изменений.
+- Ограничения: Browser plugin недоступен, поэтому rendered QA выполнен проектным Playwright;
+  изображение создано встроенным Image Gen из сохранённого референса.

@@ -23,8 +23,8 @@ export default function AboutPage() {
         </div>
         <div className="about-hero__media">
           <Image
-            src="/images/home/hero-v2.png"
-            alt="Светлая гостиная с мебелью из натуральных материалов"
+            src="/images/about/about-interior.png"
+            alt="Гостиная с деревянной консолью, журнальным столом и плетёным креслом"
             fill
             priority
             sizes="(min-width: 900px) 58vw, 100vw"
