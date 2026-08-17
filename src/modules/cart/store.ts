@@ -11,6 +11,8 @@ export const CART_STORAGE_KEY = "virtual-space:guest-cart:v1";
 type CartState = {
   items: readonly CartItem[];
   addItem: (input: AddCartItemInput) => boolean;
+  setItemQuantity: (item: CartItem, quantity: number) => boolean;
+  removeItem: (item: CartItem) => void;
 };
 
 function getItemKey(item: Pick<CartItem, "productId" | "selectedOptions">) {
@@ -75,6 +77,24 @@ export const useCartStore = create<CartState>()(
           };
         });
         return true;
+      },
+      setItemQuantity(item, quantity) {
+        const parsed = cartItemSchema.safeParse({ ...item, quantity });
+        if (!parsed.success) return false;
+
+        const itemKey = getItemKey(parsed.data);
+        set((state) => ({
+          items: state.items.map((currentItem) =>
+            getItemKey(currentItem) === itemKey ? parsed.data : currentItem,
+          ),
+        }));
+        return true;
+      },
+      removeItem(item) {
+        const itemKey = getItemKey(item);
+        set((state) => ({
+          items: state.items.filter((currentItem) => getItemKey(currentItem) !== itemKey),
+        }));
       },
     }),
     {

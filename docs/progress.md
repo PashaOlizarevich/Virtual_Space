@@ -255,3 +255,12 @@ refactor или bugfix агент читает записи, связанные 
 - Переменные окружения: `PLAYWRIGHT_BASE_URL` использовалась только для изолированного E2E-сервера.
 - Архитектура: реализован уже описанный поток `Product DTO -> Zustand -> persist/localStorage`; в persisted state находятся только идентификаторы, количество, выбранные option-id и наблюдаемая цена.
 - Ограничения: Browser plugin недоступен, поэтому rendered QA выполнен проектным Playwright; серверная сверка цены и доступности относится к последующим backend-пунктам.
+
+## Task 23 — Виджет гостевой корзины
+
+- Результат: кнопка корзины в Header открывает доступный modal drawer со счётчиком товаров, изображениями, названиями, выбранными вариантами, предварительной стоимостью, quantity stepper, удалением позиций, итогом и CTA `Оформить заявку`; добавлены пустое состояние и вход в тот же drawer из мобильного меню. Native dialog удерживает focus, закрывается по кнопке, overlay и `Esc`, возвращает focus trigger’у и блокирует прокрутку фоновой страницы.
+- Файлы: `src/modules/cart/components/cart-widget.tsx`, `src/modules/cart/store.ts`, `src/modules/cart/store.test.ts`, `src/components/layout/header.tsx`, `src/components/layout/mobile-navigation.tsx`, `src/styles/globals.css`, `tests/e2e/cart.spec.ts`, `docs/progress.md`.
+- Проверки: `npm run lint` — успешно с существующим предупреждением в `postcss.config.mjs`; `npm run typecheck` — успешно; `npm test -- --runInBand` — 16 тестов успешно; `npm run build` — успешно; `PLAYWRIGHT_BASE_URL=http://127.0.0.1:3180 npm run test:e2e -- tests/e2e/cart.spec.ts` — 3 Chromium-сценария успешно. Desktop 1440×1000 и mobile 390×844 визуально сверены снимками Playwright.
+- Переменные окружения: `PLAYWRIGHT_BASE_URL` использовалась только для изолированного E2E-сервера.
+- Архитектура: сохранена граница `app/components -> modules/cart`; каталог остаётся типизированным источником отображаемых мок-данных, а недоверенное persisted-состояние продолжает проходить Zod-валидацию. Security review клиентской границы не выявил подтверждённых findings; клиентская цена и итог не считаются доверенными.
+- Ограничения: CTA резервирует маршрут `/checkout`, содержимое которого будет реализовано в пункте формы оформления; серверная сверка доступности и цены, unavailable/changed-price состояния и подтверждение новой цены относятся к следующему пункту плана. Browser plugin недоступен, поэтому rendered QA выполнен проектным Playwright.

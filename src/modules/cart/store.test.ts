@@ -32,6 +32,37 @@ describe("guest cart store", () => {
     expect(useCartStore.getState().items).toHaveLength(2);
   });
 
+  it("changes quantity and removes only the selected configuration", () => {
+    useCartStore.getState().addItem(chair);
+    useCartStore.getState().addItem({
+      ...chair,
+      selectedOptions: [{ groupId: "color", optionId: "sand" }],
+    });
+
+    const milkChair = useCartStore.getState().items[0];
+    expect(milkChair).toBeDefined();
+    if (!milkChair) return;
+
+    expect(useCartStore.getState().setItemQuantity(milkChair, 3)).toBe(true);
+    expect(useCartStore.getState().items[0]?.quantity).toBe(3);
+
+    useCartStore.getState().removeItem(milkChair);
+    expect(useCartStore.getState().items).toEqual([
+      { ...chair, quantity: 1, selectedOptions: [{ groupId: "color", optionId: "sand" }] },
+    ]);
+  });
+
+  it("rejects an out-of-range quantity", () => {
+    useCartStore.getState().addItem(chair);
+    const item = useCartStore.getState().items[0];
+    expect(item).toBeDefined();
+    if (!item) return;
+
+    expect(useCartStore.getState().setItemQuantity(item, 0)).toBe(false);
+    expect(useCartStore.getState().setItemQuantity(item, 100)).toBe(false);
+    expect(useCartStore.getState().items[0]?.quantity).toBe(1);
+  });
+
   it("rejects malformed cart input", () => {
     const addItem = useCartStore.getState().addItem as (input: unknown) => boolean;
 
