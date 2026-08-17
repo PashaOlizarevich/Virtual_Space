@@ -19,6 +19,10 @@ test.describe("home page", () => {
       "href",
       "/product/forma-chair",
     );
+    const actionOffsets = await page
+      .locator(".product-preview__actions")
+      .evaluateAll((actions) => actions.map((action) => action.getBoundingClientRect().top));
+    expect(Math.max(...actionOffsets) - Math.min(...actionOffsets)).toBeLessThan(1);
     await expect(page.getByRole("heading", { name: "Почему Virtual Space" })).toBeVisible();
     await expect(
       page.getByRole("heading", { name: "Давайте создадим пространство вместе" }),
