@@ -1,5 +1,13 @@
-import type { AdminLoginValues } from "@/modules/admin/schemas";
-import type { AdminOrder, AdminProduct } from "@/modules/admin/types";
+import {
+  adminOrderStatusUpdateSchema,
+  type AdminLoginValues,
+  type AdminOrderStatusUpdate,
+} from "@/modules/admin/schemas";
+import {
+  canTransitionAdminOrderStatus,
+  type AdminOrder,
+  type AdminProduct,
+} from "@/modules/admin/types";
 import { adminOrdersPreview, adminProductsPreview } from "@/modules/admin/mock-data";
 
 export async function submitAdminLoginPreview(values: AdminLoginValues): Promise<void> {
@@ -44,5 +52,24 @@ export async function deleteAdminProductPreview(productId: string): Promise<void
 
 export async function getAdminOrdersPreview(): Promise<AdminOrder[]> {
   await previewDelay();
-  return structuredClone(adminOrdersPreview);
+  return structuredClone(previewOrders);
+}
+
+let previewOrders = structuredClone(adminOrdersPreview);
+
+export async function updateAdminOrderStatusPreview(
+  input: AdminOrderStatusUpdate,
+): Promise<AdminOrder> {
+  await previewDelay();
+  const update = adminOrderStatusUpdateSchema.parse(input);
+  const order = previewOrders.find((item) => item.id === update.orderId);
+
+  if (!order) throw new Error("Заказ не найден. Обновите список и повторите попытку.");
+  if (!canTransitionAdminOrderStatus(order.status, update.status)) {
+    throw new Error("Этот переход статуса недоступен для текущего состояния заказа.");
+  }
+
+  const updatedOrder = { ...order, status: update.status };
+  previewOrders = previewOrders.map((item) => (item.id === order.id ? updatedOrder : item));
+  return structuredClone(updatedOrder);
 }

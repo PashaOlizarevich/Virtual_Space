@@ -48,3 +48,18 @@ export const adminProductImagesSchema = z
   .max(ADMIN_PRODUCT_IMAGE_LIMIT, `Не более ${ADMIN_PRODUCT_IMAGE_LIMIT} изображений`);
 
 export type AdminProductValues = z.infer<typeof adminProductSchema>;
+
+export const adminOrderStatusSchema = z.enum([
+  "new",
+  "confirmed",
+  "in-progress",
+  "completed",
+  "cancelled",
+]);
+
+export const adminOrderStatusUpdateSchema = z.strictObject({
+  orderId: z.string().trim().min(1).max(40),
+  status: adminOrderStatusSchema,
+});
+
+export type AdminOrderStatusUpdate = z.infer<typeof adminOrderStatusUpdateSchema>;

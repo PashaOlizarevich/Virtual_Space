@@ -486,3 +486,27 @@ tests/e2e/admin.spec.ts` — 3 Chromium-сценария успешно. Desktop
 - Ограничения: preview-session в `sessionStorage` является только UI-gate; данные демонстрационные,
   смена статуса относится к пункту 19. Security review не выявил подтверждённых findings в новой
   read-only frontend-границе. Browser plugin недоступен, поэтому rendered QA выполнен Playwright.
+
+## Task 37 — Управление статусами заказов
+
+- Результат: в деталях заказа добавлены только допустимые действия смены статуса, состояние
+  сохранения и доступная ошибка; после успешной preview-мутации badge и набор следующих действий
+  обновляются без повторной загрузки списка. Переходы и строгий DTO централизованы и повторно
+  проверяются transport-слоем.
+- Файлы: `src/modules/admin/types.ts`, `src/modules/admin/schemas.ts`,
+  `src/modules/admin/mock-transport.ts`, `src/modules/admin/components/admin-order-details.tsx`,
+  `src/modules/admin/components/admin-orders-manager.tsx`, `src/styles/globals.css`,
+  `src/modules/admin/*.test.ts*`, `tests/e2e/admin.spec.ts`, `docs/progress.md`.
+- Проверки: `npm run lint` — без ошибок, с двумя существующими предупреждениями PostCSS;
+  `npm run typecheck` — успешно; `npm test -- --runInBand` — 23 suite и 68 тестов успешно;
+  transport regression — 2 теста успешно; `npm run build` — успешно;
+  `PLAYWRIGHT_BASE_URL=http://localhost:3194 npx playwright test tests/e2e/admin.spec.ts
+  --project=chromium` — 5 Chromium-сценариев успешно. Desktop 1440×900 и mobile 390×844
+  визуально проверены, console errors отсутствуют; `git diff --check` — успешно.
+- Переменные окружения: `PLAYWRIGHT_BASE_URL` использовалась только для локальной E2E-проверки.
+- Архитектура: без изменений; доменный инвариант переходов размещён в admin-модуле, transport
+  остаётся preview-адаптером до реализации серверного контракта.
+- Ограничения: preview-session и данные остаются клиентскими и хранятся только в памяти; реальная
+  серверная авторизация администратора, конкурентная проверка текущего статуса и атомарное сохранение
+  относятся к backend-пунктам 25–26 и 33. Security review не выявил подтверждённых findings в
+  реализованной frontend-границе. Browser plugin недоступен, поэтому rendered QA выполнен Playwright.

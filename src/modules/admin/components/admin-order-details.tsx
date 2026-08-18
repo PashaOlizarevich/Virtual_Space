@@ -1,6 +1,11 @@
 import { Mail, Phone } from "lucide-react";
 
-import type { AdminOrder, AdminOrderStatus } from "@/modules/admin/types";
+import { Button } from "@/components/ui/button";
+import {
+  adminOrderStatusTransitions,
+  type AdminOrder,
+  type AdminOrderStatus,
+} from "@/modules/admin/types";
 import { cn } from "@/shared/utils";
 
 export const adminOrderStatusLabels: Record<AdminOrderStatus, string> = {
@@ -25,7 +30,21 @@ export function formatAdminOrderDate(value: string) {
   );
 }
 
-export function AdminOrderDetails({ order }: Readonly<{ order: AdminOrder }>) {
+type AdminOrderDetailsProps = Readonly<{
+  order: AdminOrder;
+  savingStatus?: AdminOrderStatus | null;
+  statusError?: string;
+  onStatusChange?: (status: AdminOrderStatus) => void;
+}>;
+
+export function AdminOrderDetails({
+  order,
+  savingStatus = null,
+  statusError = "",
+  onStatusChange,
+}: AdminOrderDetailsProps) {
+  const nextStatuses = adminOrderStatusTransitions[order.status];
+
   return (
     <article className="admin-order-details" aria-labelledby="admin-order-details-title">
       <header className="admin-order-details__header">
@@ -38,6 +57,40 @@ export function AdminOrderDetails({ order }: Readonly<{ order: AdminOrder }>) {
           {adminOrderStatusLabels[order.status]}
         </span>
       </header>
+
+      <section className="admin-order-status-control" aria-labelledby="admin-order-status-title">
+        <div>
+          <h3 id="admin-order-status-title">Изменить статус</h3>
+          <p>
+            {nextStatuses.length
+              ? "Доступны только следующие шаги обработки заказа."
+              : "Заказ находится в финальном статусе."}
+          </p>
+        </div>
+        {nextStatuses.length && onStatusChange ? (
+          <div className="admin-order-status-control__actions">
+            {nextStatuses.map((status) => (
+              <Button
+                key={status}
+                type="button"
+                variant={status === "cancelled" ? "secondary" : "primary"}
+                disabled={savingStatus !== null}
+                aria-busy={savingStatus === status}
+                onClick={() => onStatusChange(status)}
+              >
+                {savingStatus === status ? "Сохраняем…" : adminOrderStatusLabels[status]}
+              </Button>
+            ))}
+          </div>
+        ) : null}
+        <p
+          className="admin-order-status-control__feedback"
+          aria-live="polite"
+          role={statusError ? "alert" : undefined}
+        >
+          {statusError}
+        </p>
+      </section>
 
       <section className="admin-order-customer" aria-labelledby="admin-order-customer-title">
         <h3 id="admin-order-customer-title">Покупатель</h3>

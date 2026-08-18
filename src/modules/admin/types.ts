@@ -38,6 +38,23 @@ export type AdminProduct = {
 
 export type AdminOrderStatus = "new" | "confirmed" | "in-progress" | "completed" | "cancelled";
 
+export const adminOrderStatusTransitions: Readonly<
+  Record<AdminOrderStatus, readonly AdminOrderStatus[]>
+> = {
+  new: ["confirmed", "cancelled"],
+  confirmed: ["in-progress", "cancelled"],
+  "in-progress": ["completed", "cancelled"],
+  completed: [],
+  cancelled: [],
+};
+
+export function canTransitionAdminOrderStatus(
+  currentStatus: AdminOrderStatus,
+  nextStatus: AdminOrderStatus,
+): boolean {
+  return adminOrderStatusTransitions[currentStatus].includes(nextStatus);
+}
+
 export type AdminOrderItem = {
   id: string;
   name: string;

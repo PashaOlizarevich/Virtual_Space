@@ -11,8 +11,11 @@ import {
   formatAdminOrderMoney,
 } from "@/modules/admin/components/admin-order-details";
 import { AdminShell } from "@/modules/admin/components/admin-shell";
-import { getAdminOrdersPreview } from "@/modules/admin/mock-transport";
-import type { AdminOrder } from "@/modules/admin/types";
+import {
+  getAdminOrdersPreview,
+  updateAdminOrderStatusPreview,
+} from "@/modules/admin/mock-transport";
+import type { AdminOrder, AdminOrderStatus } from "@/modules/admin/types";
 
 export function AdminOrdersManager() {
   const [orders, setOrders] = useState<AdminOrder[]>([]);
@@ -20,6 +23,8 @@ export function AdminOrdersManager() {
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [savingStatus, setSavingStatus] = useState<AdminOrderStatus | null>(null);
+  const [statusError, setStatusError] = useState("");
 
   async function loadOrders() {
     setLoading(true);
@@ -66,6 +71,28 @@ export function AdminOrdersManager() {
       .includes(normalizedQuery),
   );
   const selectedOrder = orders.find((order) => order.id === selectedId) ?? null;
+
+  async function changeSelectedOrderStatus(status: AdminOrderStatus) {
+    if (!selectedOrder || savingStatus) return;
+
+    setSavingStatus(status);
+    setStatusError("");
+    try {
+      const updatedOrder = await updateAdminOrderStatusPreview({
+        orderId: selectedOrder.id,
+        status,
+      });
+      setOrders((current) =>
+        current.map((order) => (order.id === updatedOrder.id ? updatedOrder : order)),
+      );
+    } catch (saveError) {
+      setStatusError(
+        saveError instanceof Error ? saveError.message : "Не удалось изменить статус заказа.",
+      );
+    } finally {
+      setSavingStatus(null);
+    }
+  }
 
   return (
     <AdminShell active="orders">
@@ -148,7 +175,14 @@ export function AdminOrdersManager() {
                 ))}
               </ul>
             </section>
-            {selectedOrder ? <AdminOrderDetails order={selectedOrder} /> : null}
+            {selectedOrder ? (
+              <AdminOrderDetails
+                order={selectedOrder}
+                savingStatus={savingStatus}
+                statusError={statusError}
+                onStatusChange={(status) => void changeSelectedOrderStatus(status)}
+              />
+            ) : null}
           </div>
         ) : null}
       </main>

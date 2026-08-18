@@ -84,3 +84,26 @@ test("opens an order and filters the admin order list", async ({ page }) => {
   await expect(page.getByRole("button", { name: /VS-23998/ })).toBeVisible();
   await expect(page.getByRole("button", { name: /VS-24042/ })).toHaveCount(0);
 });
+
+test("updates an order through allowed status transitions", async ({ page }) => {
+  await page.evaluate(() =>
+    sessionStorage.setItem("virtual-space:admin-preview-session:v1", "admin"),
+  );
+  await page.goto("/admin/orders");
+
+  const details = page.locator(".admin-order-details");
+  await expect(details.getByText("Новый", { exact: true })).toBeVisible();
+  await expect(details.getByRole("button", { name: "Завершён" })).toHaveCount(0);
+
+  await details.getByRole("button", { name: "Подтверждён" }).click();
+  await expect(details.getByText("Подтверждён", { exact: true })).toBeVisible();
+  await expect(details.getByRole("button", { name: "В обработке" })).toBeVisible();
+
+  await details.getByRole("button", { name: "В обработке" }).click();
+  await expect(details.getByText("В обработке", { exact: true })).toBeVisible();
+  await details.getByRole("button", { name: "Завершён" }).click();
+
+  await expect(details.getByText("Завершён", { exact: true })).toBeVisible();
+  await expect(details.getByText("Заказ находится в финальном статусе.")).toBeVisible();
+  await expect(details.getByRole("button")).toHaveCount(0);
+});

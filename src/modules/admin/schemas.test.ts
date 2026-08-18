@@ -2,6 +2,7 @@ import { describe, expect, it } from "@jest/globals";
 
 import {
   adminLoginSchema,
+  adminOrderStatusUpdateSchema,
   adminProductImagesSchema,
   adminProductSchema,
 } from "@/modules/admin/schemas";
@@ -16,6 +17,27 @@ describe("adminLoginSchema", () => {
     { login: "admin", password: "wrong" },
   ])("rejects invalid preview credentials", (credentials) => {
     expect(adminLoginSchema.safeParse(credentials).success).toBe(false);
+  });
+});
+
+describe("adminOrderStatusUpdateSchema", () => {
+  it("accepts a known status and rejects unknown fields", () => {
+    expect(
+      adminOrderStatusUpdateSchema.safeParse({ orderId: "VS-24042", status: "confirmed" }).success,
+    ).toBe(true);
+    expect(
+      adminOrderStatusUpdateSchema.safeParse({
+        orderId: "VS-24042",
+        status: "confirmed",
+        total: 1,
+      }).success,
+    ).toBe(false);
+  });
+
+  it("rejects an unknown status", () => {
+    expect(
+      adminOrderStatusUpdateSchema.safeParse({ orderId: "VS-24042", status: "paid" }).success,
+    ).toBe(false);
   });
 });
 
