@@ -835,9 +835,10 @@ a {
 
   .header__navigation {
     display: block;
-    grid-column: 1;
+    grid-column: 1 / -1;
     grid-row: 2;
     align-self: stretch;
+    justify-self: center;
   }
 
   .header__links {
