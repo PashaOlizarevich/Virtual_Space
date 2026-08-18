@@ -35,3 +35,29 @@ export type AdminProduct = {
   published: boolean;
   images: AdminProductImage[];
 };
+
+export type AdminOrderStatus = "new" | "confirmed" | "in-progress" | "completed" | "cancelled";
+
+export type AdminOrderItem = {
+  id: string;
+  name: string;
+  configuration: string;
+  quantity: number;
+  unitPrice: number;
+};
+
+export type AdminOrderCustomer = {
+  name: string;
+  email: string;
+  phone: string;
+  comment?: string;
+};
+
+export type AdminOrder = {
+  id: string;
+  createdAt: string;
+  status: AdminOrderStatus;
+  customer: AdminOrderCustomer;
+  items: AdminOrderItem[];
+  total: number;
+};

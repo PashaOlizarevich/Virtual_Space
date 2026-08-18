@@ -1,6 +1,6 @@
 import type { AdminLoginValues } from "@/modules/admin/schemas";
-import type { AdminProduct } from "@/modules/admin/types";
-import { adminProductsPreview } from "@/modules/admin/mock-data";
+import type { AdminOrder, AdminProduct } from "@/modules/admin/types";
+import { adminOrdersPreview, adminProductsPreview } from "@/modules/admin/mock-data";
 
 export async function submitAdminLoginPreview(values: AdminLoginValues): Promise<void> {
   await new Promise((resolve) => window.setTimeout(resolve, 450));
@@ -40,4 +40,9 @@ export async function saveAdminProductPreview(product: AdminProduct): Promise<Ad
 export async function deleteAdminProductPreview(productId: string): Promise<void> {
   await previewDelay();
   previewProducts = previewProducts.filter((product) => product.id !== productId);
+}
+
+export async function getAdminOrdersPreview(): Promise<AdminOrder[]> {
+  await previewDelay();
+  return structuredClone(adminOrdersPreview);
 }

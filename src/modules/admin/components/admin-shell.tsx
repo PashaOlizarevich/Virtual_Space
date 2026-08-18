@@ -8,13 +8,14 @@ import { Button } from "@/components/ui/button";
 import { useAdminPreviewSession } from "@/modules/admin/session-provider";
 import { cn } from "@/shared/utils";
 
-type AdminSection = "dashboard" | "products";
+type AdminSection = "dashboard" | "products" | "orders";
 
 export function AdminShell({ active, children }: { active: AdminSection; children: ReactNode }) {
   const session = useAdminPreviewSession();
   const links = [
     { href: "/admin", label: "Обзор", icon: LayoutDashboard, id: "dashboard" as const },
     { href: "/admin/products", label: "Товары", icon: Boxes, id: "products" as const },
+    { href: "/admin/orders", label: "Заказы", icon: ClipboardList, id: "orders" as const },
   ];
 
   return (
@@ -40,10 +41,7 @@ export function AdminShell({ active, children }: { active: AdminSection; childre
                 </Link>
               </li>
             ))}
-            {[
-              { label: "Заказы", icon: ClipboardList },
-              { label: "Настройки", icon: Settings },
-            ].map(({ label, icon: Icon }) => (
+            {[{ label: "Настройки", icon: Settings }].map(({ label, icon: Icon }) => (
               <li key={label}>
                 <span
                   className="admin-sidebar__link admin-sidebar__link--disabled"

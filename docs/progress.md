@@ -464,3 +464,25 @@ tests/e2e/admin.spec.ts` — 3 Chromium-сценария успешно. Desktop
   повторная Zod-валидация, проверка сигнатуры файлов и постоянное хранение обязательны перед
   production. Security review не выявил подтверждённых findings в реализованной frontend-границе.
   Browser plugin недоступен, поэтому rendered QA выполнен проектным Playwright.
+
+## Task 36 — Просмотр заказов в админ-панели
+
+- Результат: реализован защищённый preview-маршрут `/admin/orders` со списком и поиском заказов,
+  выбором заявки и адаптивной панелью деталей; отображаются состав, количество, итоговая сумма,
+  контактные данные покупателя, комментарий и текущий статус.
+- Файлы: `src/app/admin/orders/page.tsx`, `src/modules/admin/components/admin-order-details.tsx`,
+  `src/modules/admin/components/admin-orders-gate.tsx`,
+  `src/modules/admin/components/admin-orders-manager.tsx`, `src/modules/admin/mock-data.ts`,
+  `src/modules/admin/mock-transport.ts`, `src/modules/admin/types.ts`, `src/styles/globals.css`,
+  `tests/e2e/admin.spec.ts`, `docs/progress.md`.
+- Проверки: `npm test -- --runInBand src/modules/admin` — 2 suites и 7 тестов успешно;
+  `npm run typecheck` — успешно; `npm run lint` — без ошибок, с двумя существующими
+  предупреждениями PostCSS; `npm run build` — успешно;
+  `PLAYWRIGHT_BASE_URL=http://localhost:3194 npx playwright test tests/e2e/admin.spec.ts
+--project=chromium` — 4 Chromium-сценария успешно; `git diff --check` — успешно.
+- Переменные окружения: `PLAYWRIGHT_BASE_URL` использовалась только для локальной E2E-проверки.
+- Архитектура: UI использует типизированный read-only mock-transport и общий admin shell; реальные
+  серверные заказы, role-check и DTO остаются за backend-пунктами 25–26 и 32.
+- Ограничения: preview-session в `sessionStorage` является только UI-gate; данные демонстрационные,
+  смена статуса относится к пункту 19. Security review не выявил подтверждённых findings в новой
+  read-only frontend-границе. Browser plugin недоступен, поэтому rendered QA выполнен Playwright.

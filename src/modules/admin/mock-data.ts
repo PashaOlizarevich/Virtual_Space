@@ -1,5 +1,4 @@
-import type { AdminDashboardData } from "@/modules/admin/types";
-import type { AdminProduct } from "@/modules/admin/types";
+import type { AdminDashboardData, AdminOrder, AdminProduct } from "@/modules/admin/types";
 import { products } from "@/modules/catalog/mock-data";
 
 export const adminDashboardPreview: AdminDashboardData = {
@@ -61,3 +60,66 @@ export const adminProductsPreview: AdminProduct[] = products.map((product, index
     name: image.src.split("/").at(-1) ?? "Изображение товара",
   })),
 }));
+
+export const adminOrdersPreview: AdminOrder[] = [
+  {
+    id: "VS-24042",
+    createdAt: "2026-08-18T09:24:00+03:00",
+    status: "new",
+    customer: {
+      name: "Анна Ковалёва",
+      email: "anna@example.com",
+      phone: "+375 29 123-45-67",
+      comment: "Пожалуйста, позвоните перед доставкой.",
+    },
+    items: [
+      {
+        id: "item-24042-1",
+        name: "Диван Forma",
+        configuration: "Бежевый · 3 места",
+        quantity: 1,
+        unitPrice: 3120,
+      },
+      {
+        id: "item-24042-2",
+        name: "Столик Linea",
+        configuration: "Дуб",
+        quantity: 2,
+        unitPrice: 420,
+      },
+    ],
+    total: 3960,
+  },
+  {
+    id: "VS-24031",
+    createdAt: "2026-08-17T15:10:00+03:00",
+    status: "confirmed",
+    customer: { name: "Илья Морозов", email: "ilya@example.com", phone: "+375 44 765-43-21" },
+    items: [
+      {
+        id: "item-24031-1",
+        name: "Кресло Mono",
+        configuration: "Графит",
+        quantity: 2,
+        unitPrice: 1240,
+      },
+    ],
+    total: 2480,
+  },
+  {
+    id: "VS-23998",
+    createdAt: "2026-08-14T11:45:00+03:00",
+    status: "completed",
+    customer: { name: "Мария Соколова", email: "maria@example.com", phone: "+375 33 222-18-90" },
+    items: [
+      {
+        id: "item-23998-1",
+        name: "Стул Arc",
+        configuration: "Чёрный ясень",
+        quantity: 4,
+        unitPrice: 380,
+      },
+    ],
+    total: 1520,
+  },
+];

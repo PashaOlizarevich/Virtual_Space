@@ -62,3 +62,25 @@ test("creates, edits and deletes a product preview", async ({ page }) => {
   await page.getByRole("button", { name: "Удалить товар", exact: true }).click();
   await expect(page.getByRole("row", { name: /Пуф Solo/ })).toHaveCount(0);
 });
+
+test("opens an order and filters the admin order list", async ({ page }) => {
+  await page.evaluate(() =>
+    sessionStorage.setItem("virtual-space:admin-preview-session:v1", "admin"),
+  );
+  await page.goto("/admin/orders");
+
+  await expect(page).toHaveTitle(/Заказы/);
+  await expect(page.getByRole("heading", { name: "Заказы" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "VS-24042" })).toBeVisible();
+  await expect(page.getByText("Диван Forma")).toBeVisible();
+  await expect(page.locator(".admin-order-details").getByText("Анна Ковалёва")).toBeVisible();
+
+  await page.getByRole("button", { name: /VS-24031/ }).click();
+  await expect(page.getByRole("heading", { name: "VS-24031" })).toBeVisible();
+  await expect(page.getByText("Кресло Mono")).toBeVisible();
+  await expect(page.getByText("Подтверждён")).toBeVisible();
+
+  await page.getByLabel("Поиск заказов").fill("Мария");
+  await expect(page.getByRole("button", { name: /VS-23998/ })).toBeVisible();
+  await expect(page.getByRole("button", { name: /VS-24042/ })).toHaveCount(0);
+});
