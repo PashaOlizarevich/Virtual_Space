@@ -680,3 +680,13 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 - Product Tour: обновлён раздел «Шапка сайта» и карта ключевых файлов.
 - Ограничения: категории временно ведут на общий `/catalog`; фильтрация по категории не реализована.
   Browser plugin недоступен, rendered QA выполнен через проектный Playwright.
+
+## Task 48 — Плавное раскрытие mega-menu
+
+- Результат: mega-menu каталога плавно выезжает сверху вниз и сохраняется в DOM до завершения обратного перехода; содержимое появляется вместе с панелью с коротким stagger, а нижний разделитель меняет контраст во время движения. Для reduced motion переходы отключены. Пять desktop-пунктов навигации распределены равномерно относительно прежнего центра и без смещения всей группы.
+- Файлы: `src/components/layout/catalog-menu.tsx`, `src/styles/globals.css`, `tests/e2e/header.spec.ts`, `docs/progress.md`.
+- Проверки: Prettier, ESLint, TypeScript, 17 Jest suites / 50 тестов, production build и 6 header E2E-сценариев в Chromium — успешно; desktop 1280×720 и mobile 390×844 проверены через Playwright и `view_image`.
+- Переменные окружения: `PLAYWRIGHT_BASE_URL` и `QA_SCREENSHOT_DIR` использованы только для локального E2E-запуска.
+- Архитектура: без изменений; управляемая фаза закрытия остаётся внутри существующего Client Component и завершается по `transitionend`, без таймеров.
+- Product Tour: без изменений; маршруты, переходы, ключевые файлы и пользовательский сценарий не изменились.
+- Ограничения: категории по-прежнему ведут на общий `/catalog`; Browser plugin недоступен, rendered QA выполнен через проектный Playwright.

@@ -4,6 +4,7 @@ import { ArrowRight, ChevronDown, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import type { TransitionEvent } from "react";
 import { createPortal } from "react-dom";
 
 import { Button } from "@/components/ui/button";
@@ -28,15 +29,38 @@ export function CatalogMenu() {
   );
 
   useEffect(() => {
-    dialogRef.current?.close();
+    const dialog = dialogRef.current;
+    if (dialog?.open) dialog.close();
   }, [pathname]);
 
   function openMenu() {
-    if (!dialogRef.current?.open) dialogRef.current?.showModal();
+    const dialog = dialogRef.current;
+    if (!dialog || dialog.open) return;
+
+    dialog.dataset.state = "open";
+    dialog.showModal();
   }
 
   function closeMenu() {
-    dialogRef.current?.close();
+    const dialog = dialogRef.current;
+    if (!dialog?.open || dialog.dataset.state === "closing") return;
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      dialog.close();
+      return;
+    }
+
+    dialog.dataset.state = "closing";
+  }
+
+  function finishClosing(event: TransitionEvent<HTMLDivElement>) {
+    if (
+      event.target === event.currentTarget &&
+      event.propertyName === "transform" &&
+      dialogRef.current?.dataset.state === "closing"
+    ) {
+      dialogRef.current.close();
+    }
   }
 
   const trigger = (
@@ -60,13 +84,24 @@ export function CatalogMenu() {
       ref={dialogRef}
       className="catalog-menu__dialog"
       aria-labelledby="catalog-menu-title"
-      onClose={() => setIsOpen(false)}
+      data-state="closed"
+      onCancel={(event) => {
+        event.preventDefault();
+        closeMenu();
+      }}
+      onClose={(event) => {
+        event.currentTarget.dataset.state = "closed";
+        setIsOpen(false);
+      }}
       onClick={(event) => {
         if (event.target === event.currentTarget) closeMenu();
       }}
-      onToggle={(event) => setIsOpen(event.currentTarget.open)}
+      onToggle={(event) => {
+        if (event.currentTarget.open) event.currentTarget.dataset.state = "open";
+        setIsOpen(event.currentTarget.open);
+      }}
     >
-      <div className="catalog-menu__panel">
+      <div className="catalog-menu__panel" onTransitionEnd={finishClosing}>
         <div className="catalog-menu__header">
           <p id="catalog-menu-title">Категории</p>
           <Button variant="ghost" size="icon" aria-label="Закрыть каталог" onClick={closeMenu}>

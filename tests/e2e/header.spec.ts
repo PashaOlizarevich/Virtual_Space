@@ -49,6 +49,11 @@ test.describe("store header", () => {
     const catalog = page.getByRole("dialog", { name: "Категории" });
 
     await expect(catalog).toBeVisible();
+    await expect(catalog).toHaveAttribute("data-state", "open");
+    await expect(catalog.locator(".catalog-menu__panel")).toHaveCSS(
+      "transition-property",
+      "transform",
+    );
     await expect(catalog.locator(".catalog-menu__groups a")).toHaveText([
       "Диваны",
       "Кресла",
@@ -66,12 +71,32 @@ test.describe("store header", () => {
       "/catalog",
     );
     if (process.env.QA_SCREENSHOT_DIR) {
+      await page.waitForTimeout(500);
       await page.screenshot({ path: `${process.env.QA_SCREENSHOT_DIR}/catalog-desktop.png` });
     }
 
     await page.keyboard.press("Escape");
+    await expect(catalog).toHaveAttribute("data-state", "closing");
+    await expect(catalog).toBeVisible();
     await expect(catalog).not.toBeVisible();
     await expect(trigger).toBeFocused();
+  });
+
+  test("keeps desktop navigation items evenly spaced around its original center", async ({
+    page,
+  }) => {
+    await page.goto("/");
+
+    const centers = await page.locator(".header__links > li").evaluateAll((items) =>
+      items.map((item) => {
+        const bounds = item.getBoundingClientRect();
+        return bounds.x + bounds.width / 2;
+      }),
+    );
+    const intervals = centers.slice(1).map((center, index) => center - centers[index]);
+
+    expect(Math.max(...intervals) - Math.min(...intervals)).toBeLessThanOrEqual(1);
+    expect((centers[0] + centers.at(-1)!) / 2).toBeCloseTo(1280 / 2, 0);
   });
 
   test("opens and closes mobile navigation", async ({ page }) => {
@@ -116,6 +141,7 @@ test.describe("store header", () => {
     await expect(catalog).toBeVisible();
     await expect(catalog.getByRole("link", { name: "Посуда" })).toBeVisible();
     if (process.env.QA_SCREENSHOT_DIR) {
+      await page.waitForTimeout(500);
       await page.screenshot({ path: `${process.env.QA_SCREENSHOT_DIR}/catalog-mobile.png` });
     }
     await catalog.getByRole("button", { name: "Закрыть каталог" }).click();
