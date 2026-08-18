@@ -57,6 +57,34 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+.skip-link {
+  position: fixed;
+  top: 12px;
+  left: var(--page-gutter);
+  z-index: 100;
+  min-height: 44px;
+  padding: 11px 16px;
+  border-radius: var(--radius-sm);
+  background: var(--color-primary);
+  color: var(--color-text-on-dark);
+  box-shadow: var(--shadow-soft);
+  transform: translateY(calc(-100% - 24px));
+  transition: transform var(--motion-fast) var(--motion-standard);
+}
+
+.skip-link:focus-visible {
+  outline-color: var(--color-text-on-dark);
+  transform: translateY(0);
+}
+
+.route-transition {
+  min-width: 0;
+}
+
+.route-transition:focus {
+  outline: none;
+}
+
 button,
 input,
 select,
@@ -285,6 +313,14 @@ a {
   font: inherit;
   cursor: pointer;
 }
+
+@media (max-width: 599px) {
+  .header__actions > .header__icon-button,
+  .header__icon-link {
+    display: none;
+  }
+}
+
 .section {
   padding-block: var(--section-space);
 }
@@ -2509,6 +2545,10 @@ body:has(dialog[open]) {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .skip-link {
+    transition: none;
+  }
+
   .header__wordmark-letter {
     animation: none;
   }
@@ -2530,6 +2570,7 @@ body:has(dialog[open]) {
 
 .about-hero {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   min-height: 640px;
   padding-top: 56px;
 }

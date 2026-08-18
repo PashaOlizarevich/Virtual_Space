@@ -535,3 +535,22 @@ tests/e2e/admin.spec.ts --project=chromium` — 6 Chromium-сценариев у
   server-side role-check, повторная валидация и постоянное хранение обязательны перед production.
   Security review не выявил подтверждённых findings в реализованной frontend-границе. Browser
   plugin недоступен, поэтому interaction QA выполнен проектным Playwright.
+
+## Task 39 — Доступность, адаптивность и анимации frontend
+
+- Результат: добавлены доступный skip-link и перенос фокуса к основному содержимому, единый
+  умеренный Framer Motion-переход экранов с поддержкой `prefers-reduced-motion`; устранены
+  горизонтальные переполнения мобильного header и hero страницы `/about` на ширине 320 px.
+  Клавиатурное открытие, закрытие по Escape и возврат фокуса для мобильного меню закреплены E2E.
+- Файлы: `src/app/layout.tsx`, `src/components/layout/route-transition.tsx`,
+  `src/styles/globals.css`, `tests/e2e/accessibility.spec.ts`, `docs/progress.md`.
+- Проверки: `npm run lint` — без ошибок, с двумя существующими предупреждениями PostCSS;
+  `npm run typecheck` — успешно; `npm test -- --runInBand` — 24 suites и 72 теста успешно;
+  `npm run build` — успешно; `PLAYWRIGHT_BASE_URL=http://localhost:3194 npm run test:e2e --
+tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` — 9 сценариев
+  успешно; desktop 1440×900 и mobile 390×844 проверены Chromium-скриншотами вне репозитория.
+- Переменные окружения: `PLAYWRIGHT_BASE_URL` использовалась только для локальной E2E-проверки.
+- Архитектура: без изменений; клиентская motion-обёртка расположена в layout-слое и использует
+  `LazyMotion`, не меняя границы feature-модулей.
+- Ограничения: Browser plugin недоступен, поэтому rendered QA выполнен проектным Playwright;
+  установлен только Chromium, межбраузерная проверка не выполнялась.
