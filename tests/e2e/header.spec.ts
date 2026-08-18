@@ -77,6 +77,7 @@ test.describe("store header", () => {
 
     await page.keyboard.press("Escape");
     await expect(catalog).toHaveAttribute("data-state", "closing");
+    await expect(trigger).toHaveAttribute("aria-expanded", "false");
     await expect(catalog).toBeVisible();
     await expect(catalog).not.toBeVisible();
     const closedCatalog = page.locator("#catalog-menu-dialog");

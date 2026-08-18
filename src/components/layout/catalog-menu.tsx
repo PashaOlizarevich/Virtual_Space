@@ -45,6 +45,8 @@ export function CatalogMenu() {
     const dialog = dialogRef.current;
     if (!dialog?.open || dialog.dataset.state === "closing") return;
 
+    setIsOpen(false);
+
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       dialog.close();
       return;
