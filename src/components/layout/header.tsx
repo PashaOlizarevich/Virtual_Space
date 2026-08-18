@@ -8,6 +8,9 @@ import { CartWidget } from "@/modules/cart/components/cart-widget";
 
 const navigationItems = [
   { href: "/catalog", label: "Каталог" },
+  { href: "/about#about-contact-title", label: "Магазины" },
+  { href: "/catalog", label: "Новинки" },
+  { href: "/catalog", label: "Акции" },
   { href: "/about", label: "О нас" },
 ] as const;
 
@@ -22,7 +25,7 @@ export function Header() {
         <nav className="header__navigation" aria-label="Основная навигация">
           <ul className="header__links">
             {navigationItems.map((item) => (
-              <li key={item.href}>
+              <li key={item.label}>
                 <Link href={item.href} prefetch={false}>
                   {item.label}
                 </Link>

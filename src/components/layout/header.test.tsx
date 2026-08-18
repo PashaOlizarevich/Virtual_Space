@@ -9,7 +9,9 @@ describe("Header", () => {
 
     expect(markup).toContain('aria-label="Основная навигация"');
     expect(markup).toContain('href="/catalog"');
+    expect(markup).toContain('href="/about#about-contact-title"');
     expect(markup).toContain('href="/about"');
+    expect(markup).toMatch(/Каталог[\s\S]*Магазины[\s\S]*Новинки[\s\S]*Акции[\s\S]*О нас/);
     expect(markup).toContain('aria-label="Открыть поиск по сайту"');
     expect(markup).toContain('aria-label="Личный кабинет"');
     expect(markup).toContain('aria-label="Открыть корзину"');

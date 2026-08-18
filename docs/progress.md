@@ -642,3 +642,22 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 - Product Tour: без изменений; задача меняет правило сопровождения, а не карту продукта.
 - Ограничения: правило выполняется агентом в протоколе завершения и не является автоматической
   проверкой содержимого документа в CI.
+
+## Task 46 — Двухуровневая навигация Header
+
+- Результат: desktop-шапка перестроена в два уровня с центрированным логотипом сверху и единой
+  нижней строкой навигации и действий; порядок ссылок — «Каталог», «Магазины», «Новинки», «Акции»,
+  «О нас». Мобильное меню синхронизировано с desktop-навигацией.
+- Файлы: `src/components/layout/header.tsx`, `src/components/layout/mobile-navigation.tsx`,
+  `src/styles/globals.css`, `src/components/layout/header.test.tsx`, `tests/e2e/header.spec.ts`,
+  `docs/ProductTour.md`, `docs/progress.md`.
+- Проверки: Prettier, ESLint, TypeScript и production build — успешно; 3 header E2E-сценария в
+  Chromium — успешно; desktop 1440×900 и mobile 390×844 проверены через Playwright и `view_image`,
+  ошибок Console, перекрытий и обрезки нет.
+- Переменные окружения: `PLAYWRIGHT_BASE_URL` использована только для локального E2E-запуска.
+- Архитектура: без изменений; Header остаётся Server Component, мобильный dialog — клиентской
+  границей.
+- Product Tour: обновлён раздел «Общая навигация и Header».
+- Ограничения: отдельные маршруты акций и новинок пока отсутствуют, поэтому ссылки ведут на
+  существующий каталог; «Магазины» ведёт к контактам существующего шоурума на странице «О нас».
+  Browser plugin недоступен, rendered QA выполнен через проектный Playwright.

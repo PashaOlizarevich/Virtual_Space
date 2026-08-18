@@ -29,6 +29,8 @@ test.describe("store header", () => {
       "rgb(255, 255, 255)",
     );
     await expect(page.getByRole("navigation", { name: "Основная навигация" })).toBeVisible();
+    const desktopLinks = page.locator(".header__links a");
+    await expect(desktopLinks).toHaveText(["Каталог", "Магазины", "Новинки", "Акции", "О нас"]);
     await expect(page.getByRole("link", { name: "Virtual Space — на главную" })).toBeVisible();
     await expect(page.locator(".header__wordmark-letter")).toHaveCount(13);
     await expect(page.locator(".header__wordmark-letter").nth(1)).toHaveCSS(
@@ -54,6 +56,13 @@ test.describe("store header", () => {
     const dialog = page.getByRole("dialog", { name: "Навигация" });
     await expect(dialog).toBeVisible();
     await expect(dialog.getByRole("link", { name: "Каталог" })).toBeVisible();
+    await expect(dialog.locator(".mobile-navigation__links a")).toHaveText([
+      "Каталог",
+      "Магазины",
+      "Новинки",
+      "Акции",
+      "О нас",
+    ]);
     await expect(dialog.getByRole("link", { name: "Личный кабинет" })).toBeVisible();
 
     await page.keyboard.press("Escape");

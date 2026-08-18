@@ -7,8 +7,10 @@ import { useRef } from "react";
 import { Button } from "@/components/ui/button";
 
 const navigationItems = [
-  { href: "/", label: "Главная" },
   { href: "/catalog", label: "Каталог" },
+  { href: "/about#about-contact-title", label: "Магазины" },
+  { href: "/catalog", label: "Новинки" },
+  { href: "/catalog", label: "Акции" },
   { href: "/about", label: "О нас" },
 ] as const;
 
@@ -57,12 +59,8 @@ export function MobileNavigation() {
           <nav aria-label="Мобильная навигация">
             <ul className="mobile-navigation__links">
               {navigationItems.map((item) => (
-                <li key={item.href}>
-                  <Link
-                    href={item.href}
-                    prefetch={item.href === "/" ? undefined : false}
-                    onClick={closeNavigation}
-                  >
+                <li key={item.label}>
+                  <Link href={item.href} prefetch={false} onClick={closeNavigation}>
                     {item.label}
                   </Link>
                 </li>
