@@ -554,3 +554,35 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
   `LazyMotion`, не меняя границы feature-модулей.
 - Ограничения: Browser plugin недоступен, поэтому rendered QA выполнен проектным Playwright;
   установлен только Chromium, межбраузерная проверка не выполнялась.
+
+## Task 40 — Тесты ключевых frontend-сценариев
+
+- Результат: добавлены Jest component-тесты конфигуратора товара и корзины, а также сквозной
+  Playwright-сценарий от каталога и выбора конфигурации до успешного оформления заказа и очистки
+  корзины. Стабилизированы существующие геометрические E2E-проверки после route-анимации и
+  одноразовая подготовка preview-корзины между навигациями.
+- Файлы: `src/modules/catalog/components/product-configurator.test.tsx`,
+  `src/modules/cart/components/cart-widget.test.tsx`, `tests/e2e/shopping-journey.spec.ts`,
+  `tests/e2e/about-page.spec.ts`, `tests/e2e/auth.spec.ts`, `docs/progress.md`.
+- Проверки: `npm run lint` — без ошибок, с двумя существующими предупреждениями PostCSS;
+  `npm run typecheck` — успешно; `npm test -- --runInBand` — 26 suites и 76 тестов успешно;
+  `npm run build` — успешно; `PLAYWRIGHT_BASE_URL=http://localhost:3194 npx playwright test
+--project=chromium` — 43 сценария успешно; `git diff --check` — успешно.
+- Переменные окружения: `PLAYWRIGHT_BASE_URL` использовалась только для локальной E2E-проверки.
+- Архитектура: без изменений; добавлены только тесты наблюдаемого поведения.
+- Ограничения: Browser plugin недоступен, поэтому rendered QA выполнен проектным Playwright;
+  установлен только Chromium, межбраузерная проверка не выполнялась.
+
+## Task 41 — Карта страниц и функций сайта
+
+- Результат: создан Product Tour с фактическими публичными и административными URL, обзором
+  разделов, общей навигации и основных функций, а также прямой картой файлов для корректировки
+  контента, компонентов, данных и стилей. Отдельно отмечены preview-сценарии и ещё не реализованные
+  возможности.
+- Файлы: `docs/ProductTour.md`, `docs/progress.md`.
+- Проверки: `npx prettier --check docs/ProductTour.md docs/progress.md` — успешно;
+  `git diff --check` — успешно.
+- Переменные окружения: нет.
+- Архитектура: без изменений; документ описывает существующие App Router routes и модульные границы.
+- Ограничения: карта отражает фактическое состояние проекта на момент создания и требует обновления
+  при добавлении маршрутов или переносе компонентов.

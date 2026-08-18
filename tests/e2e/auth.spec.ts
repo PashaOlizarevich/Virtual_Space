@@ -72,12 +72,17 @@ test("extends the desktop image beneath the translucent header", async ({ page }
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.goto("/login");
 
-  const headerBox = await page.locator(".header").boundingBox();
-  const mediaBox = await page.locator(".auth-page__media").boundingBox();
-
-  expect(headerBox?.y).toBe(0);
-  expect(mediaBox?.y).toBe(0);
-  expect(mediaBox?.height).toBeGreaterThanOrEqual(1000);
+  await expect
+    .poll(async () => {
+      const headerBox = await page.locator(".header").boundingBox();
+      const mediaBox = await page.locator(".auth-page__media").boundingBox();
+      if (!headerBox || !mediaBox) return false;
+      return Math.abs(headerBox.y) < 0.5 && Math.abs(mediaBox.y) < 0.5;
+    })
+    .toBe(true);
+  await expect
+    .poll(async () => (await page.locator(".auth-page__media").boundingBox())?.height ?? 0)
+    .toBeGreaterThanOrEqual(1000);
 });
 
 test("merges guest and server carts, preserves them on logout and restores on re-login", async ({
@@ -91,6 +96,7 @@ test("merges guest and server carts, preserves them on logout and restores on re
   };
 
   await page.addInitScript((cartItem) => {
+    if (sessionStorage.getItem("virtual-space:e2e-cart-seeded") === "true") return;
     localStorage.setItem(
       "virtual-space:guest-cart:v1",
       JSON.stringify({ state: { items: [cartItem] }, version: 1 }),
@@ -99,6 +105,7 @@ test("merges guest and server carts, preserves them on logout and restores on re
       "virtual-space:preview-server-cart:v1",
       JSON.stringify({ items: [{ ...cartItem, quantity: 2 }] }),
     );
+    sessionStorage.setItem("virtual-space:e2e-cart-seeded", "true");
   }, item);
 
   await page.goto("/login");
