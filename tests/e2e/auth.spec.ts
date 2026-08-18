@@ -79,3 +79,55 @@ test("extends the desktop image beneath the translucent header", async ({ page }
   expect(mediaBox?.y).toBe(0);
   expect(mediaBox?.height).toBeGreaterThanOrEqual(1000);
 });
+
+test("merges guest and server carts, preserves them on logout and restores on re-login", async ({
+  page,
+}) => {
+  const item = {
+    productId: "forma-chair",
+    quantity: 1,
+    selectedOptions: [{ groupId: "color", optionId: "milk" }],
+    observedPrice: 1390,
+  };
+
+  await page.addInitScript((cartItem) => {
+    localStorage.setItem(
+      "virtual-space:guest-cart:v1",
+      JSON.stringify({ state: { items: [cartItem] }, version: 1 }),
+    );
+    localStorage.setItem(
+      "virtual-space:preview-server-cart:v1",
+      JSON.stringify({ items: [{ ...cartItem, quantity: 2 }] }),
+    );
+  }, item);
+
+  await page.goto("/login");
+  await page.getByLabel("Email").fill("anna@example.com");
+  await page.getByLabel("Пароль", { exact: true }).fill("password1");
+  await page.getByRole("button", { name: "Войти" }).click();
+
+  await expect(page).toHaveURL(/\/profile$/);
+  await expect(page.getByText("Демонстрационный вход выполнен")).toBeVisible();
+  await expect(page.locator(".profile-cart-summary").getByText("3", { exact: true })).toBeVisible();
+
+  await page.getByRole("button", { name: "Выйти из аккаунта" }).click();
+  await expect(page.getByText("Гостевой режим", { exact: true })).toBeVisible();
+  const afterLogout = await page.evaluate(() => ({
+    guest: localStorage.getItem("virtual-space:guest-cart:v1"),
+    server: localStorage.getItem("virtual-space:preview-server-cart:v1"),
+  }));
+  expect(afterLogout.guest).toContain('"items":[]');
+  expect(afterLogout.server).toContain('"quantity":3');
+
+  await page.evaluate((cartItem) => {
+    localStorage.setItem(
+      "virtual-space:guest-cart:v1",
+      JSON.stringify({ state: { items: [cartItem] }, version: 1 }),
+    );
+  }, item);
+  await page.goto("/login");
+  await page.getByLabel("Email").fill("anna@example.com");
+  await page.getByLabel("Пароль", { exact: true }).fill("password1");
+  await page.getByRole("button", { name: "Войти" }).click();
+  await expect(page.locator(".profile-cart-summary").getByText("4", { exact: true })).toBeVisible();
+});

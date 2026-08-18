@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, LoaderCircle } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { type KeyboardEvent, useRef, useState } from "react";
 import { type UseFormRegisterReturn, useForm } from "react-hook-form";
 
@@ -9,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { submitAuthPreview, type AuthMode } from "@/modules/auth/mock-transport";
+import { usePreviewSession } from "@/modules/auth/session-provider";
 import {
   loginSchema,
   recoverySchema,
@@ -70,6 +72,8 @@ function Status({ value }: { value: string | null }) {
 }
 
 function LoginForm({ onMode }: { onMode: (mode: AuthMode) => void }) {
+  const router = useRouter();
+  const session = usePreviewSession();
   const [status, setStatus] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const form = useForm<LoginValues>({
@@ -80,7 +84,9 @@ function LoginForm({ onMode }: { onMode: (mode: AuthMode) => void }) {
     setError(null);
     try {
       await submitAuthPreview("login");
-      setStatus("Данные формы проверены. Реальный вход будет доступен после подключения Auth.js.");
+      await session.signIn();
+      setStatus("Корзина синхронизирована. Открываем личный кабинет…");
+      router.push("/profile");
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : "Не удалось обработать форму.");
     }
@@ -88,7 +94,7 @@ function LoginForm({ onMode }: { onMode: (mode: AuthMode) => void }) {
   return (
     <AuthFormShell
       title="Войти в аккаунт"
-      description="Доступ к профилю и истории заказов появится после подключения авторизации."
+      description="В демонстрационном режиме вход синхронизирует гостевую корзину с серверным transport."
     >
       <form onSubmit={submit} noValidate>
         <FieldGroup>

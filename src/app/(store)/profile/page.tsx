@@ -19,8 +19,8 @@ export default function ProfilePage() {
           <p>Управляйте контактами, возвращайтесь к текущему выбору и следите за заказами.</p>
         </header>
         <aside className="profile-preview-notice" aria-label="Режим предварительного просмотра">
-          Профиль открыт в демонстрационном режиме. Авторизация и серверное хранение будут
-          подключены на backend-этапе.
+          Профиль открыт в демонстрационном режиме. Сессия и серверная корзина имитируются
+          типизированным transport до подключения Auth.js и PostgreSQL.
         </aside>
         <ProfileDashboard profile={previewProfile} orders={previewOrders} />
       </Container>

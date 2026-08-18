@@ -7,6 +7,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 
 import { Button } from "@/components/ui/button";
+import { usePreviewSession } from "@/modules/auth/session-provider";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { useCartStore } from "@/modules/cart/store";
@@ -217,8 +218,38 @@ export function ProfileDashboard({
   profile,
   orders,
 }: Readonly<{ profile: ProfileDetails; orders: readonly ProfileOrder[] }>) {
+  const session = usePreviewSession();
   return (
     <div className="profile-dashboard">
+      <section className="profile-card" aria-labelledby="profile-session-title">
+        <header className="profile-card__header">
+          <p className="text-label-caps text-secondary">Сессия</p>
+          <h2 id="profile-session-title">
+            {session.authenticated ? "Демонстрационный вход выполнен" : "Гостевой режим"}
+          </h2>
+          <p>
+            {session.authenticated
+              ? "Изменения корзины сохраняются через серверный transport-прототип."
+              : "Войдите, чтобы восстановить сохранённую корзину."}
+          </p>
+        </header>
+        {session.authenticated ? (
+          <Button
+            variant="secondary"
+            disabled={session.pending}
+            onClick={async () => {
+              await session.signOut();
+            }}
+          >
+            {session.pending ? "Выход…" : "Выйти из аккаунта"}
+          </Button>
+        ) : (
+          <Link className="button button--secondary button--default" href="/login">
+            Войти
+          </Link>
+        )}
+        {session.error ? <p role="alert">{session.error}</p> : null}
+      </section>
       <ProfileForm profile={profile} />
       <CurrentCart />
       <OrderHistory orders={orders} />

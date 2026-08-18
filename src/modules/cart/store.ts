@@ -10,6 +10,7 @@ export const CART_STORAGE_KEY = "virtual-space:guest-cart:v1";
 
 type CartState = {
   items: readonly CartItem[];
+  replaceItems: (items: readonly CartItem[]) => boolean;
   addItem: (input: AddCartItemInput) => boolean;
   setItemQuantity: (item: CartItem, quantity: number) => boolean;
   removeItem: (item: CartItem) => void;
@@ -53,6 +54,12 @@ export const useCartStore = create<CartState>()(
   persist(
     (set) => ({
       items: [],
+      replaceItems(items) {
+        const parsed = persistedCartSchema.safeParse({ items });
+        if (!parsed.success) return false;
+        set({ items: parsed.data.items });
+        return true;
+      },
       addItem(input) {
         const parsed = cartItemSchema.safeParse({ ...input, quantity: input.quantity ?? 1 });
         if (!parsed.success) return false;
