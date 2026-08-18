@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { CartWidget } from "@/modules/cart/components/cart-widget";
 
 const navigationItems = [
-  { href: "/", label: "Главная" },
   { href: "/catalog", label: "Каталог" },
   { href: "/about", label: "О нас" },
 ] as const;
@@ -24,7 +23,7 @@ export function Header() {
           <ul className="header__links">
             {navigationItems.map((item) => (
               <li key={item.href}>
-                <Link href={item.href} prefetch={item.href === "/" ? undefined : false}>
+                <Link href={item.href} prefetch={false}>
                   {item.label}
                 </Link>
               </li>
