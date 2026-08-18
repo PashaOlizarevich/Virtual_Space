@@ -408,3 +408,23 @@ refactor или bugfix агент читает записи, связанные 
   серверная безопасность или межустройственная синхронизация. Security review не выявил
   подтверждённых findings; недоверенные localStorage-данные повторно валидируются Zod, цены и права
   не считаются доверенными.
+
+## Task 33 — Административный вход и Dashboard
+
+- Результат: создан маршрут `/admin` с отдельной формой административного входа, восстановлением и
+  завершением демонстрационной сессии, responsive Dashboard с типизированными mock-показателями и
+  активностью, а также навигацией, которая не ведёт на ещё не реализованные разделы.
+- Файлы: `src/app/admin/page.tsx`, `src/modules/admin/`, `src/styles/globals.css`,
+  `tests/e2e/admin.spec.ts`, `docs/progress.md`.
+- Проверки: `npm run lint` — успешно с двумя существующими предупреждениями PostCSS;
+  `npm run typecheck` — успешно; `npm test -- --runInBand` — 22 suite и 59 тестов успешно;
+  `npm run build` — успешно; `PLAYWRIGHT_BASE_URL=http://localhost:3194 npx playwright test
+tests/e2e/admin.spec.ts` — 2 сценария успешно; desktop 1440×900 и mobile 390×844 проверены
+  Chromium-скриншотами вне репозитория.
+- Переменные окружения: `PLAYWRIGHT_BASE_URL` использовалась только для локальной E2E-проверки.
+- Архитектура: без изменений; route-композиция находится в `app`, логика формы, preview-сессия,
+  mock transport и безопасные DTO изолированы в frontend-модуле `admin`.
+- Ограничения: до backend-пунктов 25–26 preview-маркер в `sessionStorage` является только UI-gate,
+  не серверной аутентификацией или авторизацией. Реальные admin-данные и мутации не подключены.
+  Browser plugin недоступен, поэтому rendered QA выполнен проектным Playwright; WebKit-бинарник
+  локально отсутствует, responsive-проверка выполнена в Chromium.
