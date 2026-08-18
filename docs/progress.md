@@ -601,3 +601,19 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 - Архитектура: без изменений; Prisma остаётся запланированным server-only data-access слоем.
 - Ограничения: `prisma:generate`, `prisma:validate`, `prisma:migrate` и `prisma:studio` станут
   рабочими после добавления schema в отдельной database-задаче.
+
+## Task 43 — Усиление ESLint-проверок
+
+- Результат: lint исключает вложенные worktree и генерируемые отчёты; для TypeScript включены
+  type-aware проверки потерянных и некорректно используемых Promise и исчерпывающих `switch`.
+  Архитектурные overrides запрещают зависимости `shared` от верхних слоёв и импорт privileged
+  server-кода из UI и клиентских entry points.
+- Файлы: `eslint.config.mjs`, `docs/progress.md`.
+- Проверки: `npm run lint` — без ошибок, с одним существующим предупреждением PostCSS;
+  `npm run typecheck` — успешно; `npm test -- --runInBand` — 34 suites и 100 тестов успешно;
+  `npm run build` — успешно; effective config проверен программно для `shared` и UI-файлов.
+- Переменные окружения: нет.
+- Архитектура: документ не изменялся; ESLint теперь автоматически контролирует часть существующих
+  границ из `docs/architecture.md`.
+- Ограничения: глубокие межмодульные импорты и циклы пока не проверяются автоматически, поскольку
+  для этого сначала нужны публичные entry points модулей либо отдельный ESLint-плагин.
