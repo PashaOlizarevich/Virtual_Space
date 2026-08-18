@@ -89,10 +89,7 @@ export function CatalogMenu() {
         event.preventDefault();
         closeMenu();
       }}
-      onClose={(event) => {
-        event.currentTarget.dataset.state = "closed";
-        setIsOpen(false);
-      }}
+      onClose={() => setIsOpen(false)}
       onClick={(event) => {
         if (event.target === event.currentTarget) closeMenu();
       }}

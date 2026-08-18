@@ -79,6 +79,15 @@ test.describe("store header", () => {
     await expect(catalog).toHaveAttribute("data-state", "closing");
     await expect(catalog).toBeVisible();
     await expect(catalog).not.toBeVisible();
+    const closedCatalog = page.locator("#catalog-menu-dialog");
+    await expect(closedCatalog).toHaveAttribute("data-state", "closing");
+    const closedPanelState = await closedCatalog
+      .locator(".catalog-menu__panel")
+      .evaluate((panel) => ({
+        height: panel.scrollHeight,
+        offsetY: new DOMMatrixReadOnly(getComputedStyle(panel).transform).m42,
+      }));
+    expect(closedPanelState.offsetY).toBeLessThanOrEqual(-closedPanelState.height + 1);
     await expect(trigger).toBeFocused();
   });
 
