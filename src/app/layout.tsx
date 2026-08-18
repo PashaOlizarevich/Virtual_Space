@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 
 import { Providers } from "@/app/providers";
+import { RouteTransition } from "@/components/layout/route-transition";
 import "@/styles/globals.css";
 
 export const metadata: Metadata = {
@@ -16,7 +17,12 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
   return (
     <html lang="ru">
       <body>
-        <Providers>{children}</Providers>
+        <a className="skip-link" href="#main-content">
+          Перейти к основному содержимому
+        </a>
+        <Providers>
+          <RouteTransition>{children}</RouteTransition>
+        </Providers>
       </body>
     </html>
   );

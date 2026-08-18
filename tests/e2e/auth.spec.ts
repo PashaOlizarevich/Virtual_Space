@@ -67,3 +67,74 @@ test("keeps the active form visible on mobile", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Войти в аккаунт" })).toBeVisible();
   await expect(page.getByLabel("Email")).toBeVisible();
 });
+
+test("extends the desktop image beneath the translucent header", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto("/login");
+
+  await expect
+    .poll(async () => {
+      const headerBox = await page.locator(".header").boundingBox();
+      const mediaBox = await page.locator(".auth-page__media").boundingBox();
+      if (!headerBox || !mediaBox) return false;
+      return Math.abs(headerBox.y) < 0.5 && Math.abs(mediaBox.y) < 0.5;
+    })
+    .toBe(true);
+  await expect
+    .poll(async () => (await page.locator(".auth-page__media").boundingBox())?.height ?? 0)
+    .toBeGreaterThanOrEqual(1000);
+});
+
+test("merges guest and server carts, preserves them on logout and restores on re-login", async ({
+  page,
+}) => {
+  const item = {
+    productId: "forma-chair",
+    quantity: 1,
+    selectedOptions: [{ groupId: "color", optionId: "milk" }],
+    observedPrice: 1390,
+  };
+
+  await page.addInitScript((cartItem) => {
+    if (sessionStorage.getItem("virtual-space:e2e-cart-seeded") === "true") return;
+    localStorage.setItem(
+      "virtual-space:guest-cart:v1",
+      JSON.stringify({ state: { items: [cartItem] }, version: 1 }),
+    );
+    localStorage.setItem(
+      "virtual-space:preview-server-cart:v1",
+      JSON.stringify({ items: [{ ...cartItem, quantity: 2 }] }),
+    );
+    sessionStorage.setItem("virtual-space:e2e-cart-seeded", "true");
+  }, item);
+
+  await page.goto("/login");
+  await page.getByLabel("Email").fill("anna@example.com");
+  await page.getByLabel("Пароль", { exact: true }).fill("password1");
+  await page.getByRole("button", { name: "Войти" }).click();
+
+  await expect(page).toHaveURL(/\/profile$/);
+  await expect(page.getByText("Демонстрационный вход выполнен")).toBeVisible();
+  await expect(page.locator(".profile-cart-summary").getByText("3", { exact: true })).toBeVisible();
+
+  await page.getByRole("button", { name: "Выйти из аккаунта" }).click();
+  await expect(page.getByText("Гостевой режим", { exact: true })).toBeVisible();
+  const afterLogout = await page.evaluate(() => ({
+    guest: localStorage.getItem("virtual-space:guest-cart:v1"),
+    server: localStorage.getItem("virtual-space:preview-server-cart:v1"),
+  }));
+  expect(afterLogout.guest).toContain('"items":[]');
+  expect(afterLogout.server).toContain('"quantity":3');
+
+  await page.evaluate((cartItem) => {
+    localStorage.setItem(
+      "virtual-space:guest-cart:v1",
+      JSON.stringify({ state: { items: [cartItem] }, version: 1 }),
+    );
+  }, item);
+  await page.goto("/login");
+  await page.getByLabel("Email").fill("anna@example.com");
+  await page.getByLabel("Пароль", { exact: true }).fill("password1");
+  await page.getByRole("button", { name: "Войти" }).click();
+  await expect(page.locator(".profile-cart-summary").getByText("4", { exact: true })).toBeVisible();
+});

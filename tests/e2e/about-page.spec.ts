@@ -37,15 +37,17 @@ test.describe("about page", () => {
     await page.setViewportSize({ width: 1223, height: 839 });
     await page.goto("/about");
 
-    const headerBox = await page.locator(".header").boundingBox();
-    const mediaBox = await page.locator(".about-hero__media").boundingBox();
-    const contentBox = await page.locator(".about-hero__content").boundingBox();
-
-    expect(headerBox).not.toBeNull();
-    expect(mediaBox).not.toBeNull();
-    expect(contentBox).not.toBeNull();
-    expect(mediaBox?.y).toBe(headerBox?.y);
-    expect(contentBox?.y).toBe(headerBox?.y);
+    await expect
+      .poll(async () => {
+        const headerBox = await page.locator(".header").boundingBox();
+        const mediaBox = await page.locator(".about-hero__media").boundingBox();
+        const contentBox = await page.locator(".about-hero__content").boundingBox();
+        if (!headerBox || !mediaBox || !contentBox) return false;
+        return (
+          Math.abs(mediaBox.y - headerBox.y) < 0.5 && Math.abs(contentBox.y - headerBox.y) < 0.5
+        );
+      })
+      .toBe(true);
   });
 
   test("keeps the contact section readable on mobile", async ({ page }) => {
