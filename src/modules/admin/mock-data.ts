@@ -1,4 +1,6 @@
 import type { AdminDashboardData } from "@/modules/admin/types";
+import type { AdminProduct } from "@/modules/admin/types";
+import { products } from "@/modules/catalog/mock-data";
 
 export const adminDashboardPreview: AdminDashboardData = {
   metrics: [
@@ -42,3 +44,20 @@ export const adminDashboardPreview: AdminDashboardData = {
     },
   ],
 };
+
+export const adminProductsPreview: AdminProduct[] = products.map((product, index) => ({
+  id: product.id,
+  name: product.name,
+  slug: product.slug,
+  category: index < 2 ? "Мягкая мебель" : "Столы и стулья",
+  description: product.description,
+  price: product.price,
+  stock: [7, 3, 12, 0][index] ?? 0,
+  published: index !== 3,
+  images: product.gallery.map((image, imageIndex) => ({
+    id: `${product.id}-${imageIndex}`,
+    src: image.src,
+    alt: image.alt,
+    name: image.src.split("/").at(-1) ?? "Изображение товара",
+  })),
+}));

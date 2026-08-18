@@ -1,55 +1,11 @@
 "use client";
 
-import { Boxes, ClipboardList, LayoutDashboard, LogOut, Settings } from "lucide-react";
-import Link from "next/link";
-
-import { Button } from "@/components/ui/button";
+import { AdminShell } from "@/modules/admin/components/admin-shell";
 import { adminDashboardPreview } from "@/modules/admin/mock-data";
-import { useAdminPreviewSession } from "@/modules/admin/session-provider";
-
-const futureSections = [
-  { label: "Товары", icon: Boxes },
-  { label: "Заказы", icon: ClipboardList },
-  { label: "Настройки", icon: Settings },
-];
 
 export function AdminDashboard() {
-  const session = useAdminPreviewSession();
-
   return (
-    <div className="admin-shell">
-      <aside className="admin-sidebar" aria-label="Навигация администратора">
-        <Link className="admin-sidebar__brand" href="/" aria-label="Virtual Space — на главную">
-          Virtual Space
-        </Link>
-        <nav>
-          <ul className="admin-sidebar__navigation">
-            <li>
-              <Link className="admin-sidebar__link" href="/admin" aria-current="page">
-                <LayoutDashboard aria-hidden="true" />
-                Обзор
-              </Link>
-            </li>
-            {futureSections.map(({ label, icon: Icon }) => (
-              <li key={label}>
-                <span
-                  className="admin-sidebar__link admin-sidebar__link--disabled"
-                  aria-disabled="true"
-                >
-                  <Icon aria-hidden="true" />
-                  {label}
-                  <span className="admin-sidebar__soon">Скоро</span>
-                </span>
-              </li>
-            ))}
-          </ul>
-        </nav>
-        <Button className="admin-sidebar__logout" variant="ghost" onClick={session.signOut}>
-          <LogOut data-icon="inline-start" aria-hidden="true" />
-          Выйти
-        </Button>
-      </aside>
-
+    <AdminShell active="dashboard">
       <main className="admin-dashboard">
         <header className="admin-dashboard__header">
           <div>
@@ -94,6 +50,6 @@ export function AdminDashboard() {
           </ol>
         </section>
       </main>
-    </div>
+    </AdminShell>
   );
 }
