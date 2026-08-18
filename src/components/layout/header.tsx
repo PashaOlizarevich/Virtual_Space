@@ -1,13 +1,13 @@
 import { Search, UserRound } from "lucide-react";
 import Link from "next/link";
 
+import { CatalogMenu } from "@/components/layout/catalog-menu";
 import { Container } from "@/components/layout/container";
 import { MobileNavigation } from "@/components/layout/mobile-navigation";
 import { Button } from "@/components/ui/button";
 import { CartWidget } from "@/modules/cart/components/cart-widget";
 
 const navigationItems = [
-  { href: "/catalog", label: "Каталог" },
   { href: "/about#about-contact-title", label: "Магазины" },
   { href: "/catalog", label: "Новинки" },
   { href: "/catalog", label: "Акции" },
@@ -24,6 +24,9 @@ export function Header() {
 
         <nav className="header__navigation" aria-label="Основная навигация">
           <ul className="header__links">
+            <li>
+              <CatalogMenu />
+            </li>
             {navigationItems.map((item) => (
               <li key={item.label}>
                 <Link href={item.href} prefetch={false}>

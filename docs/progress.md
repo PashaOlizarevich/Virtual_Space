@@ -661,3 +661,22 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 - Ограничения: отдельные маршруты акций и новинок пока отсутствуют, поэтому ссылки ведут на
   существующий каталог; «Магазины» ведёт к контактам существующего шоурума на странице «О нас».
   Browser plugin недоступен, rendered QA выполнен через проектный Playwright.
+
+## Task 47 — Mega-menu каталога в Header
+
+- Результат: пункт «Каталог» больше не переводит пользователя сразу на отдельную страницу, а
+  открывает широкую desktop mega-menu под шапкой в редакционной стилистике и адаптивную мобильную
+  панель. Добавлены десять категорий и ссылка «Весь каталог», нативное dialog-поведение, Escape,
+  backdrop, явное закрытие, возврат фокуса и закрытие при переходе.
+- Файлы: `src/components/layout/catalog-menu.tsx`, `src/components/layout/header.tsx`,
+  `src/components/layout/mobile-navigation.tsx`, `src/styles/globals.css`,
+  `src/components/layout/header.test.tsx`, `tests/e2e/header.spec.ts`, `docs/ProductTour.md`,
+  `docs/progress.md`.
+- Проверки: Prettier, ESLint, TypeScript, Jest, production build и desktop/mobile Playwright — успешно;
+  desktop 1440×900 и mobile 390×844 проверены через Playwright и `view_image`.
+- Переменные окружения: `PLAYWRIGHT_BASE_URL` использована только для локального E2E-запуска.
+- Архитектура: без изменений; интерактивная панель изолирована в Client Component, Header остаётся
+  Server Component.
+- Product Tour: обновлён раздел «Шапка сайта» и карта ключевых файлов.
+- Ограничения: категории временно ведут на общий `/catalog`; фильтрация по категории не реализована.
+  Browser plugin недоступен, rendered QA выполнен через проектный Playwright.

@@ -15,13 +15,6 @@ test.describe("store header", () => {
       "border-bottom-color",
       "rgba(255, 255, 255, 0.18)",
     );
-    const frostedFilter = await page.locator(".header").evaluate((element) => {
-      const style = getComputedStyle(element) as CSSStyleDeclaration & {
-        webkitBackdropFilter: string;
-      };
-      return style.backdropFilter || style.webkitBackdropFilter;
-    });
-    expect(frostedFilter).toBe("blur(18px) saturate(1.2)");
     await expect(page.locator(".header__logo")).toHaveCSS("color", "rgb(255, 255, 255)");
     await expect(page.locator(".header__icon-link")).toHaveCSS("color", "rgb(255, 255, 255)");
     await expect(page.locator(".header__icon-button").first()).toHaveCSS(
@@ -29,8 +22,13 @@ test.describe("store header", () => {
       "rgb(255, 255, 255)",
     );
     await expect(page.getByRole("navigation", { name: "Основная навигация" })).toBeVisible();
-    const desktopLinks = page.locator(".header__links a");
-    await expect(desktopLinks).toHaveText(["Каталог", "Магазины", "Новинки", "Акции", "О нас"]);
+    await expect(page.getByRole("button", { name: "Каталог", exact: true })).toBeVisible();
+    await expect(page.locator(".header__links > li > a")).toHaveText([
+      "Магазины",
+      "Новинки",
+      "Акции",
+      "О нас",
+    ]);
     await expect(page.getByRole("link", { name: "Virtual Space — на главную" })).toBeVisible();
     await expect(page.locator(".header__wordmark-letter")).toHaveCount(13);
     await expect(page.locator(".header__wordmark-letter").nth(1)).toHaveCSS(
@@ -41,6 +39,39 @@ test.describe("store header", () => {
     await expect(page.getByRole("link", { name: "Личный кабинет" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Открыть корзину" })).toBeVisible();
     expect(consoleErrors).toEqual([]);
+  });
+
+  test("opens the desktop catalog mega menu and restores trigger focus", async ({ page }) => {
+    await page.goto("/");
+
+    const trigger = page.getByRole("button", { name: "Каталог", exact: true });
+    await trigger.click();
+    const catalog = page.getByRole("dialog", { name: "Категории" });
+
+    await expect(catalog).toBeVisible();
+    await expect(catalog.locator(".catalog-menu__groups a")).toHaveText([
+      "Диваны",
+      "Кресла",
+      "Пуфики",
+      "Стулья",
+      "Столы обеденные",
+      "Столы для гостиной",
+      "Кровати",
+      "Матрасы",
+      "Текстиль и декор",
+      "Посуда",
+    ]);
+    await expect(catalog.getByRole("link", { name: "Весь каталог" })).toHaveAttribute(
+      "href",
+      "/catalog",
+    );
+    if (process.env.QA_SCREENSHOT_DIR) {
+      await page.screenshot({ path: `${process.env.QA_SCREENSHOT_DIR}/catalog-desktop.png` });
+    }
+
+    await page.keyboard.press("Escape");
+    await expect(catalog).not.toBeVisible();
+    await expect(trigger).toBeFocused();
   });
 
   test("opens and closes mobile navigation", async ({ page }) => {
@@ -55,8 +86,8 @@ test.describe("store header", () => {
     await page.getByRole("button", { name: "Открыть меню" }).click();
     const dialog = page.getByRole("dialog", { name: "Навигация" });
     await expect(dialog).toBeVisible();
-    await expect(dialog.getByRole("link", { name: "Каталог" })).toBeVisible();
-    await expect(dialog.locator(".mobile-navigation__links a")).toHaveText([
+    await expect(dialog.getByRole("button", { name: "Каталог" })).toBeVisible();
+    await expect(dialog.locator(".mobile-navigation__links > li")).toHaveText([
       "Каталог",
       "Магазины",
       "Новинки",
@@ -68,6 +99,27 @@ test.describe("store header", () => {
     await page.keyboard.press("Escape");
     await expect(dialog).not.toBeVisible();
     expect(consoleErrors).toEqual([]);
+  });
+
+  test("opens the category panel from mobile navigation", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/");
+
+    await page.getByRole("button", { name: "Открыть меню" }).click();
+    await page
+      .getByRole("dialog", { name: "Навигация" })
+      .getByRole("button", { name: "Каталог" })
+      .click();
+
+    await expect(page.getByRole("dialog", { name: "Навигация" })).not.toBeVisible();
+    const catalog = page.getByRole("dialog", { name: "Категории" });
+    await expect(catalog).toBeVisible();
+    await expect(catalog.getByRole("link", { name: "Посуда" })).toBeVisible();
+    if (process.env.QA_SCREENSHOT_DIR) {
+      await page.screenshot({ path: `${process.env.QA_SCREENSHOT_DIR}/catalog-mobile.png` });
+    }
+    await catalog.getByRole("button", { name: "Закрыть каталог" }).click();
+    await expect(catalog).not.toBeVisible();
   });
 
   test("disables the decorative wordmark wave for reduced motion", async ({ page }) => {

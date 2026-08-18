@@ -7,7 +7,6 @@ import { useRef } from "react";
 import { Button } from "@/components/ui/button";
 
 const navigationItems = [
-  { href: "/catalog", label: "Каталог" },
   { href: "/about#about-contact-title", label: "Магазины" },
   { href: "/catalog", label: "Новинки" },
   { href: "/catalog", label: "Акции" },
@@ -58,6 +57,21 @@ export function MobileNavigation() {
 
           <nav aria-label="Мобильная навигация">
             <ul className="mobile-navigation__links">
+              <li>
+                <button
+                  type="button"
+                  onClick={() => {
+                    closeNavigation();
+                    setTimeout(() => {
+                      const catalogDialog =
+                        document.querySelector<HTMLDialogElement>("#catalog-menu-dialog");
+                      if (catalogDialog && !catalogDialog.open) catalogDialog.showModal();
+                    }, 0);
+                  }}
+                >
+                  Каталог
+                </button>
+              </li>
               {navigationItems.map((item) => (
                 <li key={item.label}>
                   <Link href={item.href} prefetch={false} onClick={closeNavigation}>
