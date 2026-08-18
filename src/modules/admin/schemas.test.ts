@@ -3,14 +3,14 @@ import { describe, expect, it } from "@jest/globals";
 import { adminLoginSchema } from "@/modules/admin/schemas";
 
 describe("adminLoginSchema", () => {
-  it("accepts valid administrative credentials shape", () => {
-    expect(
-      adminLoginSchema.safeParse({ email: "admin@example.com", password: "password1" }).success,
-    ).toBe(true);
+  it("accepts the configured preview credentials", () => {
+    expect(adminLoginSchema.safeParse({ login: "admin", password: "123" }).success).toBe(true);
   });
 
-  it("rejects malformed email and short password", () => {
-    const result = adminLoginSchema.safeParse({ email: "admin", password: "123" });
-    expect(result.success).toBe(false);
+  it.each([
+    { login: "user", password: "123" },
+    { login: "admin", password: "wrong" },
+  ])("rejects invalid preview credentials", (credentials) => {
+    expect(adminLoginSchema.safeParse(credentials).success).toBe(false);
   });
 });

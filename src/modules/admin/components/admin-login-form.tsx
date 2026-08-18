@@ -18,7 +18,7 @@ export function AdminLoginForm() {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const form = useForm<AdminLoginValues>({
     resolver: zodResolver(adminLoginSchema),
-    defaultValues: { email: "", password: "" },
+    defaultValues: { login: "", password: "" },
   });
 
   const onSubmit = form.handleSubmit(async (values) => {
@@ -48,21 +48,20 @@ export function AdminLoginForm() {
 
         <form onSubmit={onSubmit} noValidate>
           <FieldGroup>
-            <Field data-invalid={Boolean(form.formState.errors.email)}>
-              <FieldLabel htmlFor="admin-email">Email</FieldLabel>
+            <Field data-invalid={Boolean(form.formState.errors.login)}>
+              <FieldLabel htmlFor="admin-login">Логин</FieldLabel>
               <Input
-                id="admin-email"
-                type="email"
-                inputMode="email"
+                id="admin-login"
+                type="text"
                 autoComplete="username"
-                placeholder="admin@example.com"
-                aria-invalid={Boolean(form.formState.errors.email)}
-                aria-describedby={form.formState.errors.email ? "admin-email-error" : undefined}
-                {...form.register("email")}
+                placeholder="admin"
+                aria-invalid={Boolean(form.formState.errors.login)}
+                aria-describedby={form.formState.errors.login ? "admin-login-error" : undefined}
+                {...form.register("login")}
               />
-              {form.formState.errors.email ? (
-                <FieldError id="admin-email-error">
-                  {form.formState.errors.email.message}
+              {form.formState.errors.login ? (
+                <FieldError id="admin-login-error">
+                  {form.formState.errors.login.message}
                 </FieldError>
               ) : null}
             </Field>

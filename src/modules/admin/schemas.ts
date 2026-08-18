@@ -1,8 +1,11 @@
 import { z } from "zod";
 
 export const adminLoginSchema = z.object({
-  email: z.string().trim().min(1, "Введите email").email("Введите корректный email").max(254),
-  password: z.string().min(8, "Не менее 8 символов").max(128, "Не более 128 символов"),
+  login: z
+    .string()
+    .trim()
+    .refine((value): boolean => value === "admin", "Неверный логин"),
+  password: z.string().refine((value): boolean => value === "123", "Неверный пароль"),
 });
 
 export type AdminLoginValues = z.infer<typeof adminLoginSchema>;

@@ -10,11 +10,11 @@ test("validates admin login and opens dashboard", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Вход администратора" })).toBeVisible();
 
   await page.getByRole("button", { name: "Войти в Dashboard" }).click();
-  await expect(page.getByText("Введите email")).toBeVisible();
-  await expect(page.getByText("Не менее 8 символов")).toBeVisible();
+  await expect(page.getByText("Неверный логин")).toBeVisible();
+  await expect(page.getByText("Неверный пароль")).toBeVisible();
 
-  await page.getByLabel("Email").fill("admin@example.com");
-  await page.locator("#admin-password").fill("password1");
+  await page.getByLabel("Логин").fill("admin");
+  await page.locator("#admin-password").fill("123");
   await page.getByRole("button", { name: "Войти в Dashboard" }).click();
 
   await expect(page.getByRole("heading", { name: "Добро пожаловать" })).toBeVisible();

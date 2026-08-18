@@ -428,3 +428,19 @@ tests/e2e/admin.spec.ts` — 2 сценария успешно; desktop 1440×90
   не серверной аутентификацией или авторизацией. Реальные admin-данные и мутации не подключены.
   Browser plugin недоступен, поэтому rendered QA выполнен проектным Playwright; WebKit-бинарник
   локально отсутствует, responsive-проверка выполнена в Chromium.
+
+## Task 34 — Логин для демонстрационной админ-панели
+
+- Результат: административная preview-форма переведена с email на логин и проверяет фиксированную
+  демонстрационную пару логина и пароля; неверные значения показывают связанные с полями ошибки и
+  не открывают Dashboard.
+- Файлы: `src/modules/admin/components/admin-login-form.tsx`, `src/modules/admin/schemas.ts`,
+  `src/modules/admin/schemas.test.ts`, `tests/e2e/admin.spec.ts`, `docs/progress.md`.
+- Проверки: `npm run lint` — успешно с двумя существующими предупреждениями PostCSS;
+  `npm run typecheck` — успешно; `npm test -- --runInBand` — 22 suite и 60 тестов успешно;
+  `PLAYWRIGHT_BASE_URL=http://localhost:3194 npx playwright test tests/e2e/admin.spec.ts` —
+  2 сценария успешно; `npm run build` — успешно.
+- Переменные окружения: `PLAYWRIGHT_BASE_URL` использовалась только для локальной E2E-проверки.
+- Архитектура: без изменений.
+- Ограничения: фиксированная пара находится в клиентском bundle и предназначена только для preview;
+  это не серверная аутентификация или защита реальных административных данных.
