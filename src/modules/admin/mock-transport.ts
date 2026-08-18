@@ -1,14 +1,21 @@
 import {
   adminOrderStatusUpdateSchema,
+  adminStoreSettingsSchema,
   type AdminLoginValues,
   type AdminOrderStatusUpdate,
+  type AdminStoreSettingsValues,
 } from "@/modules/admin/schemas";
 import {
   canTransitionAdminOrderStatus,
   type AdminOrder,
   type AdminProduct,
+  type AdminStoreSettings,
 } from "@/modules/admin/types";
-import { adminOrdersPreview, adminProductsPreview } from "@/modules/admin/mock-data";
+import {
+  adminOrdersPreview,
+  adminProductsPreview,
+  adminStoreSettingsPreview,
+} from "@/modules/admin/mock-data";
 
 export async function submitAdminLoginPreview(values: AdminLoginValues): Promise<void> {
   await new Promise((resolve) => window.setTimeout(resolve, 450));
@@ -72,4 +79,19 @@ export async function updateAdminOrderStatusPreview(
   const updatedOrder = { ...order, status: update.status };
   previewOrders = previewOrders.map((item) => (item.id === order.id ? updatedOrder : item));
   return structuredClone(updatedOrder);
+}
+
+let previewStoreSettings = structuredClone(adminStoreSettingsPreview);
+
+export async function getAdminStoreSettingsPreview(): Promise<AdminStoreSettings> {
+  await previewDelay();
+  return structuredClone(previewStoreSettings);
+}
+
+export async function saveAdminStoreSettingsPreview(
+  values: AdminStoreSettingsValues,
+): Promise<AdminStoreSettings> {
+  await previewDelay();
+  previewStoreSettings = adminStoreSettingsSchema.parse(values);
+  return structuredClone(previewStoreSettings);
 }

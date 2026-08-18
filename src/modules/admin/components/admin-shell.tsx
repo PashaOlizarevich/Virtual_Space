@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { useAdminPreviewSession } from "@/modules/admin/session-provider";
 import { cn } from "@/shared/utils";
 
-type AdminSection = "dashboard" | "products" | "orders";
+type AdminSection = "dashboard" | "products" | "orders" | "settings";
 
 export function AdminShell({ active, children }: { active: AdminSection; children: ReactNode }) {
   const session = useAdminPreviewSession();
@@ -16,6 +16,7 @@ export function AdminShell({ active, children }: { active: AdminSection; childre
     { href: "/admin", label: "Обзор", icon: LayoutDashboard, id: "dashboard" as const },
     { href: "/admin/products", label: "Товары", icon: Boxes, id: "products" as const },
     { href: "/admin/orders", label: "Заказы", icon: ClipboardList, id: "orders" as const },
+    { href: "/admin/settings", label: "Настройки", icon: Settings, id: "settings" as const },
   ];
 
   return (
@@ -39,18 +40,6 @@ export function AdminShell({ active, children }: { active: AdminSection; childre
                   <Icon aria-hidden="true" />
                   {label}
                 </Link>
-              </li>
-            ))}
-            {[{ label: "Настройки", icon: Settings }].map(({ label, icon: Icon }) => (
-              <li key={label}>
-                <span
-                  className="admin-sidebar__link admin-sidebar__link--disabled"
-                  aria-disabled="true"
-                >
-                  <Icon aria-hidden="true" />
-                  {label}
-                  <span className="admin-sidebar__soon">Скоро</span>
-                </span>
               </li>
             ))}
           </ul>

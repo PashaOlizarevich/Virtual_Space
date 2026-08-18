@@ -501,7 +501,7 @@ tests/e2e/admin.spec.ts` — 3 Chromium-сценария успешно. Desktop
   `npm run typecheck` — успешно; `npm test -- --runInBand` — 23 suite и 68 тестов успешно;
   transport regression — 2 теста успешно; `npm run build` — успешно;
   `PLAYWRIGHT_BASE_URL=http://localhost:3194 npx playwright test tests/e2e/admin.spec.ts
-  --project=chromium` — 5 Chromium-сценариев успешно. Desktop 1440×900 и mobile 390×844
+--project=chromium` — 5 Chromium-сценариев успешно. Desktop 1440×900 и mobile 390×844
   визуально проверены, console errors отсутствуют; `git diff --check` — успешно.
 - Переменные окружения: `PLAYWRIGHT_BASE_URL` использовалась только для локальной E2E-проверки.
 - Архитектура: без изменений; доменный инвариант переходов размещён в admin-модуле, transport
@@ -510,3 +510,28 @@ tests/e2e/admin.spec.ts` — 3 Chromium-сценария успешно. Desktop
   серверная авторизация администратора, конкурентная проверка текущего статуса и атомарное сохранение
   относятся к backend-пунктам 25–26 и 33. Security review не выявил подтверждённых findings в
   реализованной frontend-границе. Browser plugin недоступен, поэтому rendered QA выполнен Playwright.
+
+## Task 38 — Настройки магазина в админ-панели
+
+- Результат: реализован защищённый preview-маршрут `/admin/settings` с адаптивной формой названия,
+  описания, телефона, почты, часов работы, адреса и ссылок Instagram, Pinterest и Telegram;
+  добавлены состояния загрузки, ошибки и сохранения, строгая Zod-валидация и обновление интерфейса
+  без перезагрузки страницы.
+- Файлы: `src/app/admin/settings/page.tsx`, `src/modules/admin/components/admin-settings-gate.tsx`,
+  `src/modules/admin/components/admin-settings-manager.tsx`, `src/modules/admin/components/admin-shell.tsx`,
+  `src/modules/admin/mock-data.ts`, `src/modules/admin/mock-transport.ts`,
+  `src/modules/admin/schemas.ts`, `src/modules/admin/types.ts`, `src/styles/globals.css`,
+  `src/modules/admin/schemas.test.ts`, `tests/e2e/admin.spec.ts`, `docs/progress.md`.
+- Проверки: `npm run lint` — без ошибок, с двумя существующими предупреждениями PostCSS;
+  `npm run typecheck` — успешно; `npm test -- --runInBand` — 24 suites и 72 теста успешно;
+  `npm run build` — успешно; `PLAYWRIGHT_BASE_URL=http://localhost:3194 npx playwright test
+tests/e2e/admin.spec.ts --project=chromium` — 6 Chromium-сценариев успешно; `git diff --check` —
+  успешно.
+- Переменные окружения: `PLAYWRIGHT_BASE_URL` использовалась только для локальной E2E-проверки.
+- Архитектура: без изменений; настройки проходят через типизированный mock-transport и строгий DTO,
+  интерактивность изолирована в client-компоненте внутри статического App Router route.
+- Ограничения: до backend-пунктов 25–26, 34 и database-пункта 43 preview-session остаётся только
+  UI-gate, а настройки хранятся в памяти процесса и не изменяют публичные страницы. Реальные
+  server-side role-check, повторная валидация и постоянное хранение обязательны перед production.
+  Security review не выявил подтверждённых findings в реализованной frontend-границе. Browser
+  plugin недоступен, поэтому interaction QA выполнен проектным Playwright.

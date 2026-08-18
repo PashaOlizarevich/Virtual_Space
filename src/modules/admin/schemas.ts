@@ -63,3 +63,22 @@ export const adminOrderStatusUpdateSchema = z.strictObject({
 });
 
 export type AdminOrderStatusUpdate = z.infer<typeof adminOrderStatusUpdateSchema>;
+
+const optionalSocialUrl = z.union([
+  z.literal(""),
+  z.string().trim().url("Введите полный адрес, начиная с https://").max(200),
+]);
+
+export const adminStoreSettingsSchema = z.strictObject({
+  name: z.string().trim().min(2, "Введите название").max(80, "Не более 80 символов"),
+  description: z.string().trim().min(20, "Минимум 20 символов").max(600, "Не более 600 символов"),
+  phone: z.string().trim().min(7, "Введите телефон").max(30, "Не более 30 символов"),
+  email: z.string().trim().email("Введите корректную почту").max(120),
+  workingHours: z.string().trim().min(3, "Введите часы работы").max(120),
+  address: z.string().trim().min(5, "Введите адрес").max(200),
+  instagram: optionalSocialUrl,
+  pinterest: optionalSocialUrl,
+  telegram: optionalSocialUrl,
+});
+
+export type AdminStoreSettingsValues = z.infer<typeof adminStoreSettingsSchema>;

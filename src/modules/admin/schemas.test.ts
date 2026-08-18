@@ -5,6 +5,7 @@ import {
   adminOrderStatusUpdateSchema,
   adminProductImagesSchema,
   adminProductSchema,
+  adminStoreSettingsSchema,
 } from "@/modules/admin/schemas";
 
 describe("adminLoginSchema", () => {
@@ -17,6 +18,31 @@ describe("adminLoginSchema", () => {
     { login: "admin", password: "wrong" },
   ])("rejects invalid preview credentials", (credentials) => {
     expect(adminLoginSchema.safeParse(credentials).success).toBe(false);
+  });
+});
+
+describe("adminStoreSettingsSchema", () => {
+  const settings = {
+    name: "Virtual Space",
+    description: "Мебель для спокойных и продуманных интерьеров.",
+    phone: "+375 29 000-00-00",
+    email: "hello@virtualspace.example",
+    workingHours: "Пн–Пт: 10:00–19:00",
+    address: "Минск, улица Примерная, 1",
+    instagram: "https://instagram.com/virtualspace",
+    pinterest: "",
+    telegram: "https://t.me/virtualspace",
+  };
+
+  it("accepts complete settings with optional empty social links", () => {
+    expect(adminStoreSettingsSchema.safeParse(settings).success).toBe(true);
+  });
+
+  it("rejects malformed contact and social data", () => {
+    expect(
+      adminStoreSettingsSchema.safeParse({ ...settings, email: "wrong", telegram: "t.me/shop" })
+        .success,
+    ).toBe(false);
   });
 });
 

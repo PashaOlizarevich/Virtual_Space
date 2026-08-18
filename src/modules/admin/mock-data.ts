@@ -1,4 +1,9 @@
-import type { AdminDashboardData, AdminOrder, AdminProduct } from "@/modules/admin/types";
+import type {
+  AdminDashboardData,
+  AdminOrder,
+  AdminProduct,
+  AdminStoreSettings,
+} from "@/modules/admin/types";
 import { products } from "@/modules/catalog/mock-data";
 
 export const adminDashboardPreview: AdminDashboardData = {
@@ -123,3 +128,16 @@ export const adminOrdersPreview: AdminOrder[] = [
     total: 1520,
   },
 ];
+
+export const adminStoreSettingsPreview: AdminStoreSettings = {
+  name: "Virtual Space",
+  description:
+    "Мы собираем мебель для спокойных, продуманных интерьеров — с честными материалами, ясными формами и вниманием к повседневной жизни.",
+  phone: "+375 (29) 000-00-00",
+  email: "hello@virtualspace.example",
+  workingHours: "Пн–Пт: 10:00–19:00 · Сб–Вс: 11:00–17:00",
+  address: "Минск, посещение по предварительной записи",
+  instagram: "https://www.instagram.com/virtualspace",
+  pinterest: "https://www.pinterest.com/virtualspace",
+  telegram: "https://t.me/virtualspace",
+};

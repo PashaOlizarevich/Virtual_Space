@@ -78,3 +78,15 @@ export type AdminOrder = {
   items: AdminOrderItem[];
   total: number;
 };
+
+export type AdminStoreSettings = {
+  name: string;
+  description: string;
+  phone: string;
+  email: string;
+  workingHours: string;
+  address: string;
+  instagram: string;
+  pinterest: string;
+  telegram: string;
+};
