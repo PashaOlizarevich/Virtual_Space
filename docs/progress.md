@@ -586,3 +586,18 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 - Архитектура: без изменений; документ описывает существующие App Router routes и модульные границы.
 - Ограничения: карта отражает фактическое состояние проекта на момент создания и требует обновления
   при добавлении маршрутов или переносе компонентов.
+
+## Task 42 — Исправление Vercel-сборки до появления Prisma schema
+
+- Результат: удалён преждевременный `postinstall` с `prisma generate`, из-за которого установка
+  зависимостей на Vercel завершалась ошибкой при отсутствии ещё не реализованной Prisma schema.
+  Ручные Prisma-команды и зависимости сохранены для будущего database-этапа.
+- Файлы: `package.json`, `docs/progress.md`.
+- Проверки: `npm install --ignore-scripts=false --package-lock=false --prefer-offline` — успешно;
+  `npx eslint . --ignore-pattern ".worktrees/**"` — без ошибок, с одним существующим предупреждением
+  PostCSS; `npm run typecheck` — успешно; `npm test -- --runInBand` — 34 suites и 100 тестов
+  успешно; `npm run build` — успешно; `git diff --check` — успешно.
+- Переменные окружения: нет.
+- Архитектура: без изменений; Prisma остаётся запланированным server-only data-access слоем.
+- Ограничения: `prisma:generate`, `prisma:validate`, `prisma:migrate` и `prisma:studio` станут
+  рабочими после добавления schema в отдельной database-задаче.
