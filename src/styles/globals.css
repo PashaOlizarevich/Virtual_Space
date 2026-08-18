@@ -1849,6 +1849,215 @@ body:has(dialog[open]) {
   height: 18px;
   animation: checkout-spinner 0.8s linear infinite;
 }
+
+.profile-page {
+  padding-block: clamp(3.5rem, 8vw, 7rem);
+  background: var(--color-surface);
+}
+
+.profile-page__intro {
+  max-width: 46rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.profile-page__intro h1,
+.profile-page__intro p,
+.profile-card__header h2,
+.profile-card__header p,
+.profile-order__number,
+.profile-empty p,
+.profile-card__note,
+.profile-message {
+  margin: 0;
+}
+
+.profile-page__intro h1 {
+  font-size: clamp(2.4rem, 6vw, 5.5rem);
+  line-height: 0.98;
+  letter-spacing: -0.055em;
+}
+
+.profile-page__intro > p:last-child,
+.profile-card__header > p:last-child,
+.profile-card__note {
+  color: var(--color-text-secondary);
+  line-height: 1.65;
+}
+
+.profile-preview-notice {
+  margin-top: 2rem;
+  padding: 1rem 1.25rem;
+  border-left: 3px solid var(--color-primary);
+  background: var(--color-background);
+  line-height: 1.55;
+}
+
+.profile-dashboard {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(18rem, 0.8fr);
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.profile-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: clamp(1.25rem, 3vw, 2rem);
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.profile-card--details {
+  grid-row: span 2;
+}
+
+.profile-card--orders {
+  grid-column: 1 / -1;
+}
+
+.profile-card__header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.profile-card__header h2 {
+  font-size: clamp(1.6rem, 3vw, 2.25rem);
+  letter-spacing: -0.035em;
+}
+
+.profile-card form {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.25rem;
+}
+
+.profile-card form .field-group {
+  width: 100%;
+}
+
+.profile-message {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  border-left: 3px solid var(--color-success);
+  background: var(--color-surface);
+}
+
+.profile-message--error {
+  border-left-color: var(--color-error);
+}
+
+.profile-cart-summary,
+.profile-order__summary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin: 0;
+}
+
+.profile-cart-summary div,
+.profile-order__summary div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.profile-cart-summary dt,
+.profile-order__summary dt,
+.profile-order__heading time {
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+}
+
+.profile-cart-summary dd,
+.profile-order__summary dd {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.profile-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.profile-empty svg {
+  width: 2rem;
+  height: 2rem;
+  color: var(--color-text-secondary);
+}
+
+.profile-orders {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.profile-orders > li {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 1.25rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+}
+
+.profile-order__heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.profile-order__heading > div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.profile-order__number {
+  font-weight: 600;
+}
+
+.profile-order__status {
+  flex: none;
+  padding: 0.4rem 0.65rem;
+  border-radius: 999px;
+  background: var(--color-surface);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+@media (max-width: 760px) {
+  .profile-page {
+    padding-block: 2.5rem 4rem;
+  }
+
+  .profile-dashboard,
+  .profile-orders {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-card--details,
+  .profile-card--orders {
+    grid-row: auto;
+    grid-column: auto;
+  }
+
+  .profile-order__heading {
+    flex-direction: column;
+  }
+}
 @media (min-width: 900px) {
   .auth-page {
     grid-template-columns: minmax(0, 46fr) minmax(540px, 54fr);
