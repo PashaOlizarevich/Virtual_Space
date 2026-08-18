@@ -617,3 +617,14 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
   границ из `docs/architecture.md`.
 - Ограничения: глубокие межмодульные импорты и циклы пока не проверяются автоматически, поскольку
   для этого сначала нужны публичные entry points модулей либо отдельный ESLint-плагин.
+
+## Task 44 — Устранение предупреждения PostCSS lint
+
+- Результат: анонимный default export PostCSS-конфигурации заменён именованной константой;
+  полный запуск ESLint теперь завершается без ошибок и предупреждений.
+- Файлы: `postcss.config.mjs`, `docs/progress.md`.
+- Проверки: `npm run lint` — успешно без предупреждений; `npm run typecheck` — успешно;
+  `npm test -- --runInBand` — 34 suites и 100 тестов успешно; `npm run build` — успешно.
+- Переменные окружения: нет.
+- Архитектура: без изменений.
+- Ограничения: нет.
