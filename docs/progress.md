@@ -362,3 +362,227 @@ refactor или bugfix агент читает записи, связанные 
 - Архитектура: без изменений.
 - Ограничения: Browser plugin недоступен, поэтому rendered QA выполнен проектным Playwright;
   изображение создано встроенным Image Gen из сохранённого референса.
+
+## Task 31 — Страница личного кабинета
+
+- Результат: создана адаптивная страница `/profile` с редактированием личных данных, актуальной
+  гостевой корзиной из Zustand и демонстрационной историей заказов со статусами; preview-режим и
+  отсутствие серверного хранения явно обозначены в интерфейсе.
+- Файлы: `src/app/(store)/profile`, `src/modules/users`, `src/styles/globals.css`,
+  `tests/e2e/profile.spec.ts`, `docs/progress.md`.
+- Проверки: `npm run lint` — успешно с двумя существующими предупреждениями PostCSS;
+  `npm run typecheck` — успешно; `npm test -- --runInBand` — 20 suites и 55 тестов успешно;
+  `npm run build` — успешно; `PLAYWRIGHT_BASE_URL=http://127.0.0.1:3195 npm run test:e2e -- tests/e2e/profile.spec.ts` —
+  2 Chromium-сценария успешно, console errors отсутствуют; desktop 1440×1000 и mobile 390×844
+  визуально проверены.
+- Переменные окружения: `PLAYWRIGHT_BASE_URL` использовалась только для локальной E2E-проверки.
+- Архитектура: добавлен предусмотренный архитектурой frontend-модуль `users`; server/client-граница
+  сохранена, данные профиля и заказов передаются в интерактивный остров как безопасные DTO.
+- Ограничения: до backend-пунктов 25 и 32 Auth.js, серверное сохранение профиля и настоящая история
+  заказов отсутствуют; синхронизация гостевой и серверной корзин относится к пункту 15. Browser
+  plugin недоступен, поэтому rendered QA выполнен проектным Playwright.
+
+## Task 32 — Синхронизация корзины при авторизации
+
+- Результат: реализован frontend-контракт синхронизации гостевой и пользовательской корзин при
+  демонстрационном входе, выходе и повторном входе; одинаковые конфигурации объединяются с лимитом
+  количества, Zustand получает каноническое состояние transport, изменения авторизованной корзины
+  сохраняются, а при выходе пользовательская корзина остаётся в серверном mock-хранилище и локальная
+  копия очищается.
+- Файлы: `src/modules/auth/session-provider.tsx`, `src/modules/auth/components/auth-forms.tsx`,
+  `src/modules/cart/mock-transport.ts`, `src/modules/cart/sync.ts`, `src/modules/cart/store.ts`,
+  `src/modules/users/components/profile-dashboard.tsx`, `src/app/providers.tsx`,
+  `src/app/(store)/profile/page.tsx`, `src/modules/cart/sync.test.ts`, `tests/e2e/auth.spec.ts`,
+  `docs/progress.md`.
+- Проверки: `npm run lint` — успешно с двумя существующими предупреждениями PostCSS;
+  `npm run typecheck` — успешно; `npm test -- --runInBand` — 21 suite и 57 тестов успешно;
+  `npm run build` — успешно. Новый Playwright-сценарий добавлен, но финальный запуск заблокирован
+  уже работающим в основном каталоге `next dev`: выполненный поверх него production build сделал
+  текущую dev-сессию негидратируемой до перезапуска.
+- Переменные окружения: `PLAYWRIGHT_BASE_URL` использовалась только для попытки локальной
+  E2E-проверки.
+- Архитектура: UI зависит от узкого типизированного transport-контракта; mock явно хранит только
+  корзину и маркер демонстрационной сессии, не содержит токенов или персональных данных и будет
+  заменён настоящими Auth.js/API/Prisma на backend-пунктах 25 и 29.
+- Ограничения: это frontend-прототип серверной корзины на versioned localStorage, а не настоящая
+  серверная безопасность или межустройственная синхронизация. Security review не выявил
+  подтверждённых findings; недоверенные localStorage-данные повторно валидируются Zod, цены и права
+  не считаются доверенными.
+
+## Task 33 — Административный вход и Dashboard
+
+- Результат: создан маршрут `/admin` с отдельной формой административного входа, восстановлением и
+  завершением демонстрационной сессии, responsive Dashboard с типизированными mock-показателями и
+  активностью, а также навигацией, которая не ведёт на ещё не реализованные разделы.
+- Файлы: `src/app/admin/page.tsx`, `src/modules/admin/`, `src/styles/globals.css`,
+  `tests/e2e/admin.spec.ts`, `docs/progress.md`.
+- Проверки: `npm run lint` — успешно с двумя существующими предупреждениями PostCSS;
+  `npm run typecheck` — успешно; `npm test -- --runInBand` — 22 suite и 59 тестов успешно;
+  `npm run build` — успешно; `PLAYWRIGHT_BASE_URL=http://localhost:3194 npx playwright test
+tests/e2e/admin.spec.ts` — 2 сценария успешно; desktop 1440×900 и mobile 390×844 проверены
+  Chromium-скриншотами вне репозитория.
+- Переменные окружения: `PLAYWRIGHT_BASE_URL` использовалась только для локальной E2E-проверки.
+- Архитектура: без изменений; route-композиция находится в `app`, логика формы, preview-сессия,
+  mock transport и безопасные DTO изолированы в frontend-модуле `admin`.
+- Ограничения: до backend-пунктов 25–26 preview-маркер в `sessionStorage` является только UI-gate,
+  не серверной аутентификацией или авторизацией. Реальные admin-данные и мутации не подключены.
+  Browser plugin недоступен, поэтому rendered QA выполнен проектным Playwright; WebKit-бинарник
+  локально отсутствует, responsive-проверка выполнена в Chromium.
+
+## Task 34 — Логин для демонстрационной админ-панели
+
+- Результат: административная preview-форма переведена с email на логин и проверяет фиксированную
+  демонстрационную пару логина и пароля; неверные значения показывают связанные с полями ошибки и
+  не открывают Dashboard.
+- Файлы: `src/modules/admin/components/admin-login-form.tsx`, `src/modules/admin/schemas.ts`,
+  `src/modules/admin/schemas.test.ts`, `tests/e2e/admin.spec.ts`, `docs/progress.md`.
+- Проверки: `npm run lint` — успешно с двумя существующими предупреждениями PostCSS;
+  `npm run typecheck` — успешно; `npm test -- --runInBand` — 22 suite и 60 тестов успешно;
+  `PLAYWRIGHT_BASE_URL=http://localhost:3194 npx playwright test tests/e2e/admin.spec.ts` —
+  2 сценария успешно; `npm run build` — успешно.
+- Переменные окружения: `PLAYWRIGHT_BASE_URL` использовалась только для локальной E2E-проверки.
+- Архитектура: без изменений.
+- Ограничения: фиксированная пара находится в клиентском bundle и предназначена только для preview;
+  это не серверная аутентификация или защита реальных административных данных.
+
+## Task 35 — Управление товарами в админ-панели
+
+- Результат: реализован защищённый preview-маршрут `/admin/products` со списком и поиском товаров,
+  созданием и редактированием карточек, загрузкой и удалением изображений галереи, статусами
+  публикации и наличия, а также отдельным подтверждением удаления товара.
+- Файлы: `src/app/admin/products/page.tsx`, `src/modules/admin/`, `src/styles/globals.css`,
+  `tests/e2e/admin.spec.ts`, `docs/progress.md`.
+- Проверки: `npm run lint` — успешно с двумя существующими предупреждениями PostCSS;
+  `npm run typecheck` — успешно; `npm test -- --runInBand` — 22 suites и 63 теста успешно;
+  `npm run build` — успешно; `PLAYWRIGHT_BASE_URL=http://127.0.0.1:3196 npm run test:e2e --
+tests/e2e/admin.spec.ts` — 3 Chromium-сценария успешно. Desktop 1440×900 и mobile 390×844
+  визуально проверены, console errors отсутствуют.
+- Архитектура: общий admin shell переиспользуется Dashboard и каталогом; CRUD изолирован в
+  типизированном mock-transport, а загруженные изображения остаются только в памяти preview.
+- Ограничения: до backend-пунктов 25–28 sessionStorage остаётся только UI-gate, изменения не
+  сохраняются между перезапусками, а изображения не отправляются в Cloudinary. Серверные role-check,
+  повторная Zod-валидация, проверка сигнатуры файлов и постоянное хранение обязательны перед
+  production. Security review не выявил подтверждённых findings в реализованной frontend-границе.
+  Browser plugin недоступен, поэтому rendered QA выполнен проектным Playwright.
+
+## Task 36 — Просмотр заказов в админ-панели
+
+- Результат: реализован защищённый preview-маршрут `/admin/orders` со списком и поиском заказов,
+  выбором заявки и адаптивной панелью деталей; отображаются состав, количество, итоговая сумма,
+  контактные данные покупателя, комментарий и текущий статус.
+- Файлы: `src/app/admin/orders/page.tsx`, `src/modules/admin/components/admin-order-details.tsx`,
+  `src/modules/admin/components/admin-orders-gate.tsx`,
+  `src/modules/admin/components/admin-orders-manager.tsx`, `src/modules/admin/mock-data.ts`,
+  `src/modules/admin/mock-transport.ts`, `src/modules/admin/types.ts`, `src/styles/globals.css`,
+  `tests/e2e/admin.spec.ts`, `docs/progress.md`.
+- Проверки: `npm test -- --runInBand src/modules/admin` — 2 suites и 7 тестов успешно;
+  `npm run typecheck` — успешно; `npm run lint` — без ошибок, с двумя существующими
+  предупреждениями PostCSS; `npm run build` — успешно;
+  `PLAYWRIGHT_BASE_URL=http://localhost:3194 npx playwright test tests/e2e/admin.spec.ts
+--project=chromium` — 4 Chromium-сценария успешно; `git diff --check` — успешно.
+- Переменные окружения: `PLAYWRIGHT_BASE_URL` использовалась только для локальной E2E-проверки.
+- Архитектура: UI использует типизированный read-only mock-transport и общий admin shell; реальные
+  серверные заказы, role-check и DTO остаются за backend-пунктами 25–26 и 32.
+- Ограничения: preview-session в `sessionStorage` является только UI-gate; данные демонстрационные,
+  смена статуса относится к пункту 19. Security review не выявил подтверждённых findings в новой
+  read-only frontend-границе. Browser plugin недоступен, поэтому rendered QA выполнен Playwright.
+
+## Task 37 — Управление статусами заказов
+
+- Результат: в деталях заказа добавлены только допустимые действия смены статуса, состояние
+  сохранения и доступная ошибка; после успешной preview-мутации badge и набор следующих действий
+  обновляются без повторной загрузки списка. Переходы и строгий DTO централизованы и повторно
+  проверяются transport-слоем.
+- Файлы: `src/modules/admin/types.ts`, `src/modules/admin/schemas.ts`,
+  `src/modules/admin/mock-transport.ts`, `src/modules/admin/components/admin-order-details.tsx`,
+  `src/modules/admin/components/admin-orders-manager.tsx`, `src/styles/globals.css`,
+  `src/modules/admin/*.test.ts*`, `tests/e2e/admin.spec.ts`, `docs/progress.md`.
+- Проверки: `npm run lint` — без ошибок, с двумя существующими предупреждениями PostCSS;
+  `npm run typecheck` — успешно; `npm test -- --runInBand` — 23 suite и 68 тестов успешно;
+  transport regression — 2 теста успешно; `npm run build` — успешно;
+  `PLAYWRIGHT_BASE_URL=http://localhost:3194 npx playwright test tests/e2e/admin.spec.ts
+--project=chromium` — 5 Chromium-сценариев успешно. Desktop 1440×900 и mobile 390×844
+  визуально проверены, console errors отсутствуют; `git diff --check` — успешно.
+- Переменные окружения: `PLAYWRIGHT_BASE_URL` использовалась только для локальной E2E-проверки.
+- Архитектура: без изменений; доменный инвариант переходов размещён в admin-модуле, transport
+  остаётся preview-адаптером до реализации серверного контракта.
+- Ограничения: preview-session и данные остаются клиентскими и хранятся только в памяти; реальная
+  серверная авторизация администратора, конкурентная проверка текущего статуса и атомарное сохранение
+  относятся к backend-пунктам 25–26 и 33. Security review не выявил подтверждённых findings в
+  реализованной frontend-границе. Browser plugin недоступен, поэтому rendered QA выполнен Playwright.
+
+## Task 38 — Настройки магазина в админ-панели
+
+- Результат: реализован защищённый preview-маршрут `/admin/settings` с адаптивной формой названия,
+  описания, телефона, почты, часов работы, адреса и ссылок Instagram, Pinterest и Telegram;
+  добавлены состояния загрузки, ошибки и сохранения, строгая Zod-валидация и обновление интерфейса
+  без перезагрузки страницы.
+- Файлы: `src/app/admin/settings/page.tsx`, `src/modules/admin/components/admin-settings-gate.tsx`,
+  `src/modules/admin/components/admin-settings-manager.tsx`, `src/modules/admin/components/admin-shell.tsx`,
+  `src/modules/admin/mock-data.ts`, `src/modules/admin/mock-transport.ts`,
+  `src/modules/admin/schemas.ts`, `src/modules/admin/types.ts`, `src/styles/globals.css`,
+  `src/modules/admin/schemas.test.ts`, `tests/e2e/admin.spec.ts`, `docs/progress.md`.
+- Проверки: `npm run lint` — без ошибок, с двумя существующими предупреждениями PostCSS;
+  `npm run typecheck` — успешно; `npm test -- --runInBand` — 24 suites и 72 теста успешно;
+  `npm run build` — успешно; `PLAYWRIGHT_BASE_URL=http://localhost:3194 npx playwright test
+tests/e2e/admin.spec.ts --project=chromium` — 6 Chromium-сценариев успешно; `git diff --check` —
+  успешно.
+- Переменные окружения: `PLAYWRIGHT_BASE_URL` использовалась только для локальной E2E-проверки.
+- Архитектура: без изменений; настройки проходят через типизированный mock-transport и строгий DTO,
+  интерактивность изолирована в client-компоненте внутри статического App Router route.
+- Ограничения: до backend-пунктов 25–26, 34 и database-пункта 43 preview-session остаётся только
+  UI-gate, а настройки хранятся в памяти процесса и не изменяют публичные страницы. Реальные
+  server-side role-check, повторная валидация и постоянное хранение обязательны перед production.
+  Security review не выявил подтверждённых findings в реализованной frontend-границе. Browser
+  plugin недоступен, поэтому interaction QA выполнен проектным Playwright.
+
+## Task 39 — Доступность, адаптивность и анимации frontend
+
+- Результат: добавлены доступный skip-link и перенос фокуса к основному содержимому, единый
+  умеренный Framer Motion-переход экранов с поддержкой `prefers-reduced-motion`; устранены
+  горизонтальные переполнения мобильного header и hero страницы `/about` на ширине 320 px.
+  Клавиатурное открытие, закрытие по Escape и возврат фокуса для мобильного меню закреплены E2E.
+- Файлы: `src/app/layout.tsx`, `src/components/layout/route-transition.tsx`,
+  `src/styles/globals.css`, `tests/e2e/accessibility.spec.ts`, `docs/progress.md`.
+- Проверки: `npm run lint` — без ошибок, с двумя существующими предупреждениями PostCSS;
+  `npm run typecheck` — успешно; `npm test -- --runInBand` — 24 suites и 72 теста успешно;
+  `npm run build` — успешно; `PLAYWRIGHT_BASE_URL=http://localhost:3194 npm run test:e2e --
+tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` — 9 сценариев
+  успешно; desktop 1440×900 и mobile 390×844 проверены Chromium-скриншотами вне репозитория.
+- Переменные окружения: `PLAYWRIGHT_BASE_URL` использовалась только для локальной E2E-проверки.
+- Архитектура: без изменений; клиентская motion-обёртка расположена в layout-слое и использует
+  `LazyMotion`, не меняя границы feature-модулей.
+- Ограничения: Browser plugin недоступен, поэтому rendered QA выполнен проектным Playwright;
+  установлен только Chromium, межбраузерная проверка не выполнялась.
+
+## Task 40 — Тесты ключевых frontend-сценариев
+
+- Результат: добавлены Jest component-тесты конфигуратора товара и корзины, а также сквозной
+  Playwright-сценарий от каталога и выбора конфигурации до успешного оформления заказа и очистки
+  корзины. Стабилизированы существующие геометрические E2E-проверки после route-анимации и
+  одноразовая подготовка preview-корзины между навигациями.
+- Файлы: `src/modules/catalog/components/product-configurator.test.tsx`,
+  `src/modules/cart/components/cart-widget.test.tsx`, `tests/e2e/shopping-journey.spec.ts`,
+  `tests/e2e/about-page.spec.ts`, `tests/e2e/auth.spec.ts`, `docs/progress.md`.
+- Проверки: `npm run lint` — без ошибок, с двумя существующими предупреждениями PostCSS;
+  `npm run typecheck` — успешно; `npm test -- --runInBand` — 26 suites и 76 тестов успешно;
+  `npm run build` — успешно; `PLAYWRIGHT_BASE_URL=http://localhost:3194 npx playwright test
+--project=chromium` — 43 сценария успешно; `git diff --check` — успешно.
+- Переменные окружения: `PLAYWRIGHT_BASE_URL` использовалась только для локальной E2E-проверки.
+- Архитектура: без изменений; добавлены только тесты наблюдаемого поведения.
+- Ограничения: Browser plugin недоступен, поэтому rendered QA выполнен проектным Playwright;
+  установлен только Chromium, межбраузерная проверка не выполнялась.
+
+## Task 41 — Карта страниц и функций сайта
+
+- Результат: создан Product Tour с фактическими публичными и административными URL, обзором
+  разделов, общей навигации и основных функций, а также прямой картой файлов для корректировки
+  контента, компонентов, данных и стилей. Отдельно отмечены preview-сценарии и ещё не реализованные
+  возможности.
+- Файлы: `docs/ProductTour.md`, `docs/progress.md`.
+- Проверки: `npx prettier --check docs/ProductTour.md docs/progress.md` — успешно;
+  `git diff --check` — успешно.
+- Переменные окружения: нет.
+- Архитектура: без изменений; документ описывает существующие App Router routes и модульные границы.
+- Ограничения: карта отражает фактическое состояние проекта на момент создания и требует обновления
+  при добавлении маршрутов или переносе компонентов.
