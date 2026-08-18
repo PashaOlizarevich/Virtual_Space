@@ -31,20 +31,21 @@
 Перед изменениями определи все затронутые области и прочитай каждый указанный файл. Если задача
 затрагивает несколько строк таблицы, правила объединяются.
 
-| Задача или условие | Обязательные правила и материалы |
-| --- | --- |
-| Любое изменение кода или конфигурации | `.codex/rules/general.md`, `.codex/rules/testing.md` |
-| Начало feature, refactor или bugfix | `docs/progress.md` и применимый workflow skill |
-| Архитектура, новый модуль или изменение границ слоёв | `.codex/rules/architecture.md`, `docs/architecture.md` |
-| React, страницы, компоненты, UI или клиентское состояние | `.codex/rules/frontend.md` |
-| Стили, визуальная композиция, адаптивность или UI-состояния | `.codex/rules/frontend.md`, `docs/DESIGN.md` |
-| Route Handler, Server Action, серверная логика или внешняя интеграция | `.codex/rules/backend.md`, `.codex/rules/security.md` |
-| Prisma, PostgreSQL, схема, запрос или миграция | `.codex/rules/database.md`, `.codex/rules/security.md` |
-| Authentication, authorization, ввод, заказы, загрузки или секреты | `.codex/rules/security.md`, skill `security-review` |
-| Feature, refactor, bugfix или любые Git-операции | `.codex/rules/git.md`, `docs/git-flow.md` |
-| Исправление ошибки с изменением кода | skill `bug-fix` и правила затронутой области |
-| Проверка изменений без исправления | skill `code-review` и правила затронутой области |
-| Завершение изменения кода, конфигурации или проектной документации | `.codex/rules/completion.md`, `docs/progress.md` |
+| Задача или условие                                                                | Обязательные правила и материалы                       |
+| --------------------------------------------------------------------------------- | ------------------------------------------------------ |
+| Любое изменение кода или конфигурации                                             | `.codex/rules/general.md`, `.codex/rules/testing.md`   |
+| Начало feature, refactor или bugfix                                               | `docs/progress.md` и применимый workflow skill         |
+| Архитектура, новый модуль или изменение границ слоёв                              | `.codex/rules/architecture.md`, `docs/architecture.md` |
+| React, страницы, компоненты, UI или клиентское состояние                          | `.codex/rules/frontend.md`                             |
+| Стили, визуальная композиция, адаптивность или UI-состояния                       | `.codex/rules/frontend.md`, `docs/DESIGN.md`           |
+| Маршруты, навигация, пользовательские функции, сценарии или карта ключевых файлов | `docs/ProductTour.md`, `.codex/rules/completion.md`    |
+| Route Handler, Server Action, серверная логика или внешняя интеграция             | `.codex/rules/backend.md`, `.codex/rules/security.md`  |
+| Prisma, PostgreSQL, схема, запрос или миграция                                    | `.codex/rules/database.md`, `.codex/rules/security.md` |
+| Authentication, authorization, ввод, заказы, загрузки или секреты                 | `.codex/rules/security.md`, skill `security-review`    |
+| Feature, refactor, bugfix или любые Git-операции                                  | `.codex/rules/git.md`, `docs/git-flow.md`              |
+| Исправление ошибки с изменением кода                                              | skill `bug-fix` и правила затронутой области           |
+| Проверка изменений без исправления                                                | skill `code-review` и правила затронутой области       |
+| Завершение изменения кода, конфигурации или проектной документации                | `.codex/rules/completion.md`, `docs/progress.md`       |
 
 Таблица определяет минимальный обязательный набор, но не запрещает читать другие связанные правила.
 
