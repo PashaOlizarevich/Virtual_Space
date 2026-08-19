@@ -19,20 +19,21 @@
 
 ## Быстрая карта маршрутов
 
-| URL                   | Экран                | Файл маршрута                           | Главный компонент или источник                       |
-| --------------------- | -------------------- | --------------------------------------- | ---------------------------------------------------- |
-| `/`                   | Главная              | `src/app/(store)/page.tsx`              | `ProductPreview`, `featuredProducts`, `storeProfile` |
-| `/catalog`            | Каталог              | `src/app/(store)/catalog/page.tsx`      | `CatalogQueryGrid`                                   |
-| `/product/<slug>`     | Карточка товара      | `src/app/(store)/product/[id]/page.tsx` | `ProductGallery`, `ProductConfigurator`              |
-| `/about`              | О магазине           | `src/app/(store)/about/page.tsx`        | `storeProfile`                                       |
-| `/login`              | Вход и регистрация   | `src/app/(store)/login/page.tsx`        | `AuthForms`                                          |
-| `/profile`            | Личный кабинет       | `src/app/(store)/profile/page.tsx`      | `ProfileDashboard`                                   |
-| `/checkout`           | Оформление заявки    | `src/app/(store)/checkout/page.tsx`     | `CheckoutForm`                                       |
-| `/admin`              | Обзор администратора | `src/app/admin/page.tsx`                | `AdminGate`, `AdminDashboard`                        |
-| `/admin/products`     | Управление товарами  | `src/app/admin/products/page.tsx`       | `AdminProductsGate`, `AdminProductsManager`          |
-| `/admin/orders`       | Управление заказами  | `src/app/admin/orders/page.tsx`         | `AdminOrdersGate`, `AdminOrdersManager`              |
-| `/admin/settings`     | Настройки магазина   | `src/app/admin/settings/page.tsx`       | `AdminSettingsGate`, `AdminSettingsManager`          |
-| Любой неизвестный URL | Страница 404         | `src/app/not-found.tsx`                 | `FeedbackState`                                      |
+| URL                   | Экран                | Файл маршрута                                | Главный компонент или источник                       |
+| --------------------- | -------------------- | -------------------------------------------- | ---------------------------------------------------- |
+| `/`                   | Главная              | `src/app/(store)/page.tsx`                   | `ProductPreview`, `featuredProducts`, `storeProfile` |
+| `/catalog`            | Каталог              | `src/app/(store)/catalog/page.tsx`           | `CatalogQueryGrid`                                   |
+| `/catalog/tableware`  | Посуда               | `src/app/(store)/catalog/tableware/page.tsx` | `ProductPreview`, `lumoTablewareProduct`             |
+| `/product/<slug>`     | Карточка товара      | `src/app/(store)/product/[id]/page.tsx`      | `ProductGallery`, `ProductConfigurator`              |
+| `/about`              | О магазине           | `src/app/(store)/about/page.tsx`             | `storeProfile`                                       |
+| `/login`              | Вход и регистрация   | `src/app/(store)/login/page.tsx`             | `AuthForms`                                          |
+| `/profile`            | Личный кабинет       | `src/app/(store)/profile/page.tsx`           | `ProfileDashboard`                                   |
+| `/checkout`           | Оформление заявки    | `src/app/(store)/checkout/page.tsx`          | `CheckoutForm`                                       |
+| `/admin`              | Обзор администратора | `src/app/admin/page.tsx`                     | `AdminGate`, `AdminDashboard`                        |
+| `/admin/products`     | Управление товарами  | `src/app/admin/products/page.tsx`            | `AdminProductsGate`, `AdminProductsManager`          |
+| `/admin/orders`       | Управление заказами  | `src/app/admin/orders/page.tsx`              | `AdminOrdersGate`, `AdminOrdersManager`              |
+| `/admin/settings`     | Настройки магазина   | `src/app/admin/settings/page.tsx`            | `AdminSettingsGate`, `AdminSettingsManager`          |
+| Любой неизвестный URL | Страница 404         | `src/app/not-found.tsx`                      | `FeedbackState`                                      |
 
 ## Общая оболочка публичного сайта
 
@@ -58,7 +59,8 @@
 - Desktop-шапка двухуровневая: логотип расположен по центру верхнего уровня, а нижний уровень
   объединяет навигацию «Каталог», «Магазины», «Новинки», «Акции», «О нас» и действия поиска,
   личного кабинета и корзины. «Каталог» открывает доступную mega-menu панель с десятью категориями
-  и ссылкой «Весь каталог»; категории ведут в `/catalog`, поскольку фильтрация пока не реализована.
+  и ссылкой «Весь каталог»; «Посуда» ведёт на отдельную страницу `/catalog/tableware`, остальные
+  категории — в `/catalog`, поскольку их фильтрация пока не реализована.
   «Новинки» и «Акции» ведут в существующий каталог,
   «Магазины» — к контактам шоурума на странице «О нас»; переход на главную доступен через логотип.
   Массив ссылок `navigationItems` находится в `header.tsx`.
@@ -132,6 +134,21 @@
 - Настройку клиентского запроса: `src/modules/catalog/queries.ts`.
 - Структуру товара: `src/modules/catalog/types.ts`.
 - Стили: `.catalog-page*` и `.product-preview*` в `src/styles/globals.css`.
+
+### Посуда — `/catalog/tableware`
+
+Файл: `src/app/(store)/catalog/tableware/page.tsx`.
+
+Страница открывается по ссылке «Посуда» в общей панели каталога. На ней находятся описание
+категории и одна широкая карточка набора тарелок Lumo с переходом на страницу товара и добавлением
+в корзину.
+
+Где править:
+
+- Заголовок, описание и композицию: `src/app/(store)/catalog/tableware/page.tsx`.
+- Данные товара: `lumoTablewareProduct` в `src/modules/catalog/mock-data.ts`.
+- Изображение: `public/images/tableware/lumo-plates.png`.
+- Стили: `.tableware-page*` в `src/styles/globals.css`.
 
 ### Страница товара — `/product/<slug>`
 

@@ -717,3 +717,22 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 - Архитектура: без изменений.
 - Product Tour: без изменений; пользовательские маршруты и сценарии не изменились.
 - Ограничения: системный индикатор положения прокрутки намеренно больше не отображается.
+
+## Task 51 — Страница категории «Посуда»
+
+- Результат: пункт «Посуда» в существующей панели каталога ведёт на новую адаптивную страницу
+  `/catalog/tableware` с описанием категории и одной карточкой набора тарелок Lumo; товар можно
+  добавить в корзину или открыть на отдельной странице.
+- Файлы: `src/app/(store)/catalog/tableware/page.tsx`,
+  `src/components/layout/catalog-menu.tsx`, `src/modules/catalog/mock-data.ts`,
+  `src/styles/globals.css`, `public/images/tableware/lumo-plates.png`, тесты и документация.
+- Проверки: `npm run lint`, `npm run typecheck`, 50 Jest-тестов, `npm run build` и 10 профильных
+  Chromium E2E-сценариев — успешно; desktop 1440×1000 и mobile проверены через Chrome DevTools,
+  ошибок Console нет.
+- Переменные окружения: `PLAYWRIGHT_BASE_URL` использована только для локального E2E-запуска.
+- Архитектура: новый маршрут использует существующие `ProductPreview`, mock-слой каталога и cart
+  store; новых зависимостей и клиентских границ не добавлено.
+- Product Tour: добавлены маршрут `/catalog/tableware`, переход из mega-menu и карта ключевых
+  файлов категории.
+- Ограничения: остальные категории по-прежнему ведут в общий каталог; товар Lumo хранится в
+  демонстрационном mock-слое.

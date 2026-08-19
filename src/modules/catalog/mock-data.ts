@@ -1,5 +1,28 @@
 import type { Product } from "@/modules/catalog/types";
 
+export const lumoTablewareProduct = {
+  id: "lumo-plates",
+  slug: "lumo-plates",
+  name: "Набор тарелок Lumo",
+  description: "Четыре керамические тарелки ручной работы с мягкой матовой глазурью.",
+  price: 180,
+  currency: "BYN",
+  image: "/images/tableware/lumo-plates.png",
+  imageAlt: "Четыре светлые керамические тарелки Lumo на каменной столешнице",
+  gallery: [
+    {
+      src: "/images/tableware/lumo-plates.png",
+      alt: "Набор из четырёх керамических тарелок Lumo",
+    },
+  ],
+  specifications: [
+    { label: "Комплектация", value: "4 тарелки" },
+    { label: "Материал", value: "Керамика" },
+    { label: "Покрытие", value: "Матовая глазурь" },
+  ],
+  optionGroups: [],
+} as const satisfies Product;
+
 export const products = [
   {
     id: "forma-chair",
@@ -126,5 +149,5 @@ export const products = [
 export const featuredProducts = products;
 
 export function getProductBySlug(slug: string): Product | undefined {
-  return products.find((product) => product.slug === slug);
+  return [...products, lumoTablewareProduct].find((product) => product.slug === slug);
 }

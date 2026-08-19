@@ -10,10 +10,24 @@ import { createPortal } from "react-dom";
 import { Button } from "@/components/ui/button";
 
 const categoryGroups = [
-  ["Диваны", "Кресла", "Пуфики"],
-  ["Стулья", "Столы обеденные", "Столы для гостиной"],
-  ["Кровати", "Матрасы"],
-  ["Текстиль и декор", "Посуда"],
+  [
+    { label: "Диваны", href: "/catalog" },
+    { label: "Кресла", href: "/catalog" },
+    { label: "Пуфики", href: "/catalog" },
+  ],
+  [
+    { label: "Стулья", href: "/catalog" },
+    { label: "Столы обеденные", href: "/catalog" },
+    { label: "Столы для гостиной", href: "/catalog" },
+  ],
+  [
+    { label: "Кровати", href: "/catalog" },
+    { label: "Матрасы", href: "/catalog" },
+  ],
+  [
+    { label: "Текстиль и декор", href: "/catalog" },
+    { label: "Посуда", href: "/catalog/tableware" },
+  ],
 ] as const;
 
 const subscribeToMount = () => () => undefined;
@@ -112,9 +126,9 @@ export function CatalogMenu() {
           {categoryGroups.map((group, index) => (
             <ul key={index}>
               {group.map((category) => (
-                <li key={category}>
-                  <Link href="/catalog" prefetch={false} onClick={closeMenu}>
-                    {category}
+                <li key={category.label}>
+                  <Link href={category.href} prefetch={false} onClick={closeMenu}>
+                    {category.label}
                   </Link>
                 </li>
               ))}

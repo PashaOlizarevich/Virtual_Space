@@ -1,6 +1,21 @@
 import { expect, test } from "@playwright/test";
 
 test.describe("catalog and product", () => {
+  test("opens the tableware category from the catalog menu", async ({ page }) => {
+    await page.goto("/catalog");
+    await page.getByRole("button", { name: "Каталог", exact: true }).click();
+    await page
+      .getByRole("dialog", { name: "Категории" })
+      .getByRole("link", { name: "Посуда" })
+      .click();
+
+    await expect(page).toHaveURL(/\/catalog\/tableware$/);
+    await expect(page).toHaveTitle(/Посуда/);
+    await expect(page.getByRole("heading", { name: "Посуда", level: 1 })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Набор тарелок Lumo", level: 3 })).toBeVisible();
+    await expect(page.locator(".tableware-page .product-preview")).toHaveCount(1);
+  });
+
   test("loads and refreshes the cached catalog", async ({ page }) => {
     await page.goto("/catalog");
 
