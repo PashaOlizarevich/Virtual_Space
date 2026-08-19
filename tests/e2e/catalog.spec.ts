@@ -14,6 +14,12 @@ test.describe("catalog and product", () => {
     await expect(page.getByRole("heading", { name: "Посуда", level: 1 })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Набор тарелок Lumo", level: 3 })).toBeVisible();
     await expect(page.locator(".tableware-page .product-preview")).toHaveCount(1);
+    const productImage = page.locator(".tableware-page .product-preview__media img");
+    await expect(productImage).toHaveCSS("object-fit", "cover");
+    await expect(productImage).toHaveAttribute("sizes", "(max-width: 899px) 100vw, 60vw");
+    await expect
+      .poll(() => productImage.evaluate((image: HTMLImageElement) => image.currentSrc))
+      .toContain("q=100");
   });
 
   test("loads and refreshes the cached catalog", async ({ page }) => {

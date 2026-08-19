@@ -2355,6 +2355,10 @@ a {
   aspect-ratio: 3 / 2;
 }
 
+.tableware-page__collection .product-preview__media img {
+  object-fit: cover;
+}
+
 .tableware-page__collection .product-preview__content {
   align-self: stretch;
   padding: 32px;

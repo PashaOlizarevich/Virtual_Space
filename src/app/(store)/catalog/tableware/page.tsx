@@ -24,7 +24,11 @@ export default function TablewarePage() {
 
         <section className="tableware-page__collection" aria-labelledby="tableware-title">
           <h2 id="tableware-title">В коллекции</h2>
-          <ProductPreview product={lumoTablewareProduct} />
+          <ProductPreview
+            product={lumoTablewareProduct}
+            imageSizes="(max-width: 899px) 100vw, 60vw"
+            imageQuality={100}
+          />
         </section>
       </Container>
     </main>

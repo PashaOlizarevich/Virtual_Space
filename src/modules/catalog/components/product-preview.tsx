@@ -14,7 +14,17 @@ const priceFormatter = new Intl.NumberFormat("ru-BY", {
   maximumFractionDigits: 0,
 });
 
-export function ProductPreview({ product }: Readonly<{ product: Product }>) {
+type ProductPreviewProps = Readonly<{
+  product: Product;
+  imageSizes?: string;
+  imageQuality?: 75 | 100;
+}>;
+
+export function ProductPreview({
+  product,
+  imageSizes = "(max-width: 599px) 100vw, (max-width: 899px) 50vw, 25vw",
+  imageQuality = 75,
+}: ProductPreviewProps) {
   const addItem = useCartStore((state) => state.addItem);
   const productHref = `/product/${product.slug}`;
   const dimensions = product.specifications.find(({ label }) => label === "Размер")?.value;
@@ -26,7 +36,8 @@ export function ProductPreview({ product }: Readonly<{ product: Product }>) {
           src={product.image}
           alt={product.imageAlt}
           fill
-          sizes="(max-width: 599px) 100vw, (max-width: 899px) 50vw, 25vw"
+          sizes={imageSizes}
+          quality={imageQuality}
         />
       </div>
       <div className="product-preview__content">
