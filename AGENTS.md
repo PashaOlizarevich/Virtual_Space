@@ -34,6 +34,7 @@
 | Задача или условие                                                                | Обязательные правила и материалы                       |
 | --------------------------------------------------------------------------------- | ------------------------------------------------------ |
 | Любое изменение кода или конфигурации                                             | `.codex/rules/general.md`, `.codex/rules/testing.md`   |
+| Любая работа с тестами или Playwright                                             | `.codex/rules/testing.md`                              |
 | Начало feature, refactor или bugfix                                               | `docs/progress.md` и применимый workflow skill         |
 | Архитектура, новый модуль или изменение границ слоёв                              | `.codex/rules/architecture.md`, `docs/architecture.md` |
 | React, страницы, компоненты, UI или клиентское состояние                          | `.codex/rules/frontend.md`                             |
@@ -84,3 +85,15 @@ This version has breaking changes — APIs, conventions, and file structure may 
 This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
 
 <!-- END:nextjs-agent-rules -->
+
+## Тестирование
+
+Перед созданием, изменением, запуском или диагностикой любых тестов и Playwright обязательно прочитай
+и соблюдай `.codex/rules/testing.md`.
+
+- Самостоятельно разрешено изменять только `playwright.config.ts`.
+- Любые изменения существующих тестов и файлов `tests/e2e/**` требуют предварительного явного
+  разрешения пользователя.
+- Для новой функциональности без отдельного разрешения добавляй только самые важные unit- и
+  component/integration-тесты.
+- Падение теста не является разрешением изменять сам тест.
