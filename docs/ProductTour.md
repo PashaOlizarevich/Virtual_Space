@@ -133,6 +133,8 @@
 - Получение и состояния списка: `src/modules/catalog/components/catalog-query-grid.tsx`.
 - Вид карточки, кнопки «Подробнее», «В корзину» и быстрый просмотр:
   `src/modules/catalog/components/product-preview.tsx`.
+- На desktop быстрый просмотр открывается при наведении мыши с короткой задержкой или сразу при
+  фокусе с клавиатуры на карточках общего каталога и отдельных категорий.
 - Список товаров, цены, изображения и slug: `src/modules/catalog/mock-data.ts`.
 - Настройку клиентского запроса: `src/modules/catalog/queries.ts`.
 - Структуру товара: `src/modules/catalog/types.ts`.

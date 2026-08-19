@@ -1154,6 +1154,17 @@ a {
   }
 
   @media (hover: hover) and (pointer: fine) {
+    .tableware-page__collection .product-preview__quick-view {
+      right: 28px;
+      left: auto;
+    }
+
+    .chairs-page__grid .product-preview:nth-child(3n) .product-preview__quick-view,
+    .sofas-page__grid .product-preview:nth-child(3n) .product-preview__quick-view {
+      right: calc(100% - 20px);
+      left: auto;
+    }
+
     .product-preview:hover,
     .product-preview:focus-within {
       z-index: 4;
@@ -2376,10 +2387,6 @@ a {
   padding: 32px;
 }
 
-.tableware-page__collection .product-preview__quick-view {
-  display: none;
-}
-
 .chairs-page__grid,
 .sofas-page__grid {
   display: grid;
@@ -2409,11 +2416,6 @@ a {
 .chairs-page__grid .product-preview__content,
 .sofas-page__grid .product-preview__content {
   padding: 20px;
-}
-
-.chairs-page__grid .product-preview__quick-view,
-.sofas-page__grid .product-preview__quick-view {
-  display: none;
 }
 
 .cart-widget {
@@ -2963,6 +2965,13 @@ body:has(dialog[open]) {
   .chairs-page__grid .product-preview,
   .sofas-page__grid .product-preview {
     grid-column: span 4;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .tableware-page__collection .product-preview,
+    .chairs-page__grid .product-preview,
+    .sofas-page__grid .product-preview {
+      overflow: visible;
+    }
   }
   .product-detail__layout {
     grid-template-columns: minmax(0, 7fr) minmax(320px, 5fr);
