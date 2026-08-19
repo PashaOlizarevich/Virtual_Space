@@ -9,10 +9,10 @@
 - Drawer/dialog управляет focus, закрывается кнопкой, overlay и Escape и возвращает focus.
 - Не показывай вымышленные рейтинги, отзывы или данные товаров.
 
-# This is NOT the Next.js you know
+# Это НЕ тот Next.js, который вы знаете
 
-This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+В этой версии внесены существенные изменения — API, соглашения и структура файлов могут отличаться от ваших обучающих данных. Перед написанием кода ознакомьтесь с соответствующим руководством в `node_modules/next/dist/docs/` (доступ к которому осуществляется из каталога этого файла; в монорепозиториях пакет `next` может быть не виден из корневого каталога репозитория). Обращайте внимание на предупреждения об устаревании.
 
-This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+Этот блок написан и добавлен заново разработчиками `next` — проверьте его в `node_modules/next/dist/server/lib/generate-agent-files.js`. Удаление его из diff-файла лишь воссоздает незафиксированное изменение; фиксация его вместе с вашей работой поддерживает чистоту дерева изменений.
 
 <!-- END:nextjs-agent-rules -->
