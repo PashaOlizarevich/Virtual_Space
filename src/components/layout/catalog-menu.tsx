@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 
 const categoryGroups = [
   [
-    { label: "Диваны", href: "/catalog" },
+    { label: "Диваны", href: "/catalog/sofas" },
     { label: "Кресла", href: "/catalog" },
     { label: "Пуфики", href: "/catalog" },
   ],

@@ -86,6 +86,78 @@ export const teraChairProduct = {
   optionGroups: [],
 } as const satisfies Product;
 
+export const lentoSofaProduct = {
+  id: "lento-sofa",
+  slug: "lento-sofa",
+  name: "Диван Lento",
+  description: "Компактный двухместный диван с мягкими линиями и уютной глубокой посадкой.",
+  price: 2590,
+  currency: "BYN",
+  image: "/images/sofas/lento.png",
+  imageAlt: "Светлый двухместный диван Lento с округлыми подлокотниками",
+  gallery: [{ src: "/images/sofas/lento.png", alt: "Двухместный диван Lento" }],
+  specifications: [
+    { label: "Размер", value: "184 × 94 × 76 см" },
+    { label: "Каркас", value: "Берёзовая фанера, массив" },
+    { label: "Обивка", value: "Фактурная рогожка" },
+  ],
+  optionGroups: [],
+} as const satisfies Product;
+
+export const velaSofaProduct = {
+  id: "vela-sofa",
+  slug: "vela-sofa",
+  name: "Диван Vela",
+  description: "Трёхместный диван с плавной спинкой и спокойной фактурой для современной гостиной.",
+  price: 3490,
+  currency: "BYN",
+  image: "/images/sofas/vela.png",
+  imageAlt: "Серо-зелёный трёхместный диван Vela с плавной спинкой",
+  gallery: [{ src: "/images/sofas/vela.png", alt: "Трёхместный диван Vela" }],
+  specifications: [
+    { label: "Размер", value: "228 × 96 × 78 см" },
+    { label: "Основание", value: "Массив бука" },
+    { label: "Обивка", value: "Шенилл" },
+  ],
+  optionGroups: [],
+} as const satisfies Product;
+
+export const nordSofaProduct = {
+  id: "nord-sofa",
+  slug: "nord-sofa",
+  name: "Диван Nord",
+  description: "Просторная модульная композиция с шезлонгом и глубокими мягкими подушками.",
+  price: 4690,
+  currency: "BYN",
+  image: "/images/sofas/nord.png",
+  imageAlt: "Светло-серый модульный диван Nord с шезлонгом справа",
+  gallery: [{ src: "/images/sofas/nord.png", alt: "Модульный диван Nord с шезлонгом" }],
+  specifications: [
+    { label: "Размер", value: "284 × 164 × 74 см" },
+    { label: "Модули", value: "3 секции" },
+    { label: "Обивка", value: "Льняная ткань" },
+  ],
+  optionGroups: [],
+} as const satisfies Product;
+
+export const auraSofaProduct = {
+  id: "aura-sofa",
+  slug: "aura-sofa",
+  name: "Диван Aura",
+  description: "Скульптурный диван с обволакивающей спинкой и тёплой тактильной обивкой.",
+  price: 4290,
+  currency: "BYN",
+  image: "/images/sofas/aura.png",
+  imageAlt: "Коричневый трёхместный диван Aura с округлой спинкой",
+  gallery: [{ src: "/images/sofas/aura.png", alt: "Скульптурный диван Aura" }],
+  specifications: [
+    { label: "Размер", value: "246 × 102 × 73 см" },
+    { label: "Основание", value: "Массив ореха" },
+    { label: "Обивка", value: "Фактурный шенилл" },
+  ],
+  optionGroups: [],
+} as const satisfies Product;
+
 export const products = [
   {
     id: "forma-chair",
@@ -192,11 +264,23 @@ export const chairCategoryProducts = [
   teraChairProduct,
 ] as const satisfies readonly Product[];
 
+export const sofaCategoryProducts = [
+  products[1],
+  lentoSofaProduct,
+  velaSofaProduct,
+  nordSofaProduct,
+  auraSofaProduct,
+] as const satisfies readonly Product[];
+
 export const allProducts = [
   ...products,
   lumoTablewareProduct,
   nomaChairProduct,
   teraChairProduct,
+  lentoSofaProduct,
+  velaSofaProduct,
+  nordSofaProduct,
+  auraSofaProduct,
 ] as const satisfies readonly Product[];
 
 export function getProductBySlug(slug: string): Product | undefined {

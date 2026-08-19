@@ -771,3 +771,27 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 - Product Tour: добавлены маршрут `/catalog/chairs`, переход из mega-menu и карта ключевых файлов.
 - Ограничения: Chrome DevTools был недоступен из-за лимита инструмента; rendered QA выполнен через
   проектный Playwright.
+
+## Task 54 — Страница категории «Диваны»
+
+- Результат: пункт «Диваны» в существующей панели каталога ведёт на новую адаптивную страницу
+  `/catalog/sofas` с описанием и пятью товарами: существующим Modul и новыми Lento, Vela, Nord и
+  Aura. Карточки поддерживают добавление в корзину и переход на статически генерируемые страницы
+  товаров.
+- Файлы: `src/app/(store)/catalog/sofas/page.tsx`, `src/components/layout/catalog-menu.tsx`,
+  `src/modules/catalog/mock-data.ts`, `src/styles/globals.css`, `public/images/sofas/`, тесты и
+  документация.
+- Проверки: Prettier, ESLint, TypeScript, 7 затронутых Jest-тестов, production build и 6 Chromium
+  E2E-сценариев каталога — успешно; desktop 1440×1000 и mobile 390×844 визуально сверены через
+  Playwright и `view_image`. Полный Jest-запуск обнаруживает дубли тестов в существующем
+  `.worktrees/catalog-drawer` и падает из-за двух копий React; тесты основной рабочей ветки проходят.
+- Переменные окружения: `PLAYWRIGHT_BASE_URL`, `PORT` и `QA_SCREENSHOT_DIR` использованы только для
+  локальной E2E/визуальной проверки.
+- Архитектура: новые category-only товары собраны в `sofaCategoryProducts`, а `allProducts`
+  обеспечивает страницы товара и проверку корзины без расширения главной страницы и общего
+  каталога.
+- Product Tour: добавлены маршрут `/catalog/sofas`, переход из mega-menu и карта ключевых файлов
+  категории.
+- Ограничения: Browser plugin недоступен, поэтому rendered QA выполнен через проектный Playwright.
+  Четыре новых изображения товаров созданы встроенным Image Gen в визуальном стиле существующего
+  изображения Modul.

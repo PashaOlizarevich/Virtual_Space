@@ -1,6 +1,53 @@
 import { expect, test } from "@playwright/test";
 
 test.describe("catalog and product", () => {
+  test("opens the sofas category with five products", async ({ page }) => {
+    await page.goto("/catalog");
+    await page.getByRole("button", { name: "Каталог", exact: true }).click();
+    await page
+      .getByRole("dialog", { name: "Категории" })
+      .getByRole("link", { name: "Диваны" })
+      .click();
+
+    await expect(page).toHaveURL(/\/catalog\/sofas$/);
+    await expect(page).toHaveTitle(/Диваны/);
+    await expect(page.getByRole("heading", { name: "Диваны", level: 1 })).toBeVisible();
+    await expect(page.locator(".sofas-page .product-preview")).toHaveCount(5);
+    for (const productName of [
+      "Диван Modul",
+      "Диван Lento",
+      "Диван Vela",
+      "Диван Nord",
+      "Диван Aura",
+    ]) {
+      await expect(page.getByRole("heading", { name: productName, level: 3 })).toBeVisible();
+    }
+
+    if (process.env.QA_SCREENSHOT_DIR) {
+      const sofaImages = page.locator(".sofas-page .product-preview__media img");
+      await expect
+        .poll(() =>
+          sofaImages.evaluateAll((images: HTMLImageElement[]) =>
+            images.every((image) => image.complete && image.naturalWidth > 0),
+          ),
+        )
+        .toBe(true);
+      await page.screenshot({
+        path: `${process.env.QA_SCREENSHOT_DIR}/sofas-desktop.png`,
+        fullPage: true,
+      });
+      await page.setViewportSize({ width: 390, height: 844 });
+      await page.screenshot({
+        path: `${process.env.QA_SCREENSHOT_DIR}/sofas-mobile.png`,
+        fullPage: true,
+      });
+    }
+
+    await page.getByRole("link", { name: "Подробнее" }).first().click();
+    await expect(page).toHaveURL(/\/product\/modul-sofa$/);
+    await expect(page.getByRole("heading", { name: "Диван Modul", level: 1 })).toBeVisible();
+  });
+
   test("opens the chairs category with three products", async ({ page }) => {
     await page.goto("/catalog");
     await page.getByRole("button", { name: "Каталог", exact: true }).click();

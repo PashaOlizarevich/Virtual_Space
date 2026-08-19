@@ -13,6 +13,7 @@ describe("Header", () => {
     expect(markup).toContain("Столы для гостиной");
     expect(markup).toContain("Текстиль и декор");
     expect(markup).toContain('href="/catalog/chairs"');
+    expect(markup).toContain('href="/catalog/sofas"');
     expect(markup).toContain('href="/catalog/tableware"');
     expect(markup).toContain("Весь каталог");
     expect(markup).toContain('href="/about#about-contact-title"');

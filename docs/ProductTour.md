@@ -23,6 +23,7 @@
 | --------------------- | -------------------- | -------------------------------------------- | ---------------------------------------------------- |
 | `/`                   | Главная              | `src/app/(store)/page.tsx`                   | `ProductPreview`, `featuredProducts`, `storeProfile` |
 | `/catalog`            | Каталог              | `src/app/(store)/catalog/page.tsx`           | `CatalogQueryGrid`                                   |
+| `/catalog/sofas`      | Диваны               | `src/app/(store)/catalog/sofas/page.tsx`     | `ProductPreview`, `sofaCategoryProducts`             |
 | `/catalog/chairs`     | Стулья               | `src/app/(store)/catalog/chairs/page.tsx`    | `ProductPreview`, `chairCategoryProducts`            |
 | `/catalog/tableware`  | Посуда               | `src/app/(store)/catalog/tableware/page.tsx` | `ProductPreview`, `lumoTablewareProduct`             |
 | `/product/<slug>`     | Карточка товара      | `src/app/(store)/product/[id]/page.tsx`      | `ProductGallery`, `ProductConfigurator`              |
@@ -60,8 +61,8 @@
 - Desktop-шапка двухуровневая: логотип расположен по центру верхнего уровня, а нижний уровень
   объединяет навигацию «Каталог», «Магазины», «Новинки», «Акции», «О нас» и действия поиска,
   личного кабинета и корзины. «Каталог» открывает доступную mega-menu панель с десятью категориями
-  и ссылкой «Весь каталог»; «Стулья» и «Посуда» ведут на отдельные страницы `/catalog/chairs` и
-  `/catalog/tableware`, остальные категории — в `/catalog`, поскольку их фильтрация пока не
+  и ссылкой «Весь каталог»; «Диваны», «Стулья» и «Посуда» ведут на отдельные страницы
+  `/catalog/sofas`, `/catalog/chairs` и `/catalog/tableware`, остальные категории — в `/catalog`, поскольку их фильтрация пока не
   реализована.
   «Новинки» и «Акции» ведут в существующий каталог,
   «Магазины» — к контактам шоурума на странице «О нас»; переход на главную доступен через логотип.
@@ -136,6 +137,19 @@
 - Настройку клиентского запроса: `src/modules/catalog/queries.ts`.
 - Структуру товара: `src/modules/catalog/types.ts`.
 - Стили: `.catalog-page*` и `.product-preview*` в `src/styles/globals.css`.
+
+### Диваны — `/catalog/sofas`
+
+Страница открывается по ссылке «Диваны» в общей панели каталога. На ней находятся описание
+категории и пять карточек: существующий диван Modul и модели Lento, Vela, Nord и Aura. Каждый товар
+можно добавить в корзину или открыть на отдельной странице.
+
+Где править:
+
+- Заголовок, описание и композицию: `src/app/(store)/catalog/sofas/page.tsx`.
+- Состав категории и данные товаров: `sofaCategoryProducts` в `src/modules/catalog/mock-data.ts`.
+- Изображения новых товаров: `public/images/sofas/`; изображение Modul: `public/images/home/modul.png`.
+- Стили: `.sofas-page*` в `src/styles/globals.css`.
 
 ### Посуда — `/catalog/tableware`
 
