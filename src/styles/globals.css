@@ -2402,15 +2402,19 @@ a {
   border-radius: var(--radius-sm);
 }
 
-.chairs-page__grid .product-preview__media,
-.sofas-page__grid .product-preview__media {
+.chairs-page__grid .product-preview__media {
   aspect-ratio: 4 / 5;
+  border-radius: 0;
+}
+
+.sofas-page__grid .product-preview__media {
+  aspect-ratio: 1;
   border-radius: 0;
 }
 
 .chairs-page__grid .product-preview__media img,
 .sofas-page__grid .product-preview__media img {
-  object-fit: cover;
+  object-fit: contain;
 }
 
 .chairs-page__grid .product-preview__content,
