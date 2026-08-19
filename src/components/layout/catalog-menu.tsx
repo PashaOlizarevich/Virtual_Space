@@ -16,7 +16,7 @@ const categoryGroups = [
     { label: "Пуфики", href: "/catalog" },
   ],
   [
-    { label: "Стулья", href: "/catalog" },
+    { label: "Стулья", href: "/catalog/chairs" },
     { label: "Столы обеденные", href: "/catalog" },
     { label: "Столы для гостиной", href: "/catalog" },
   ],

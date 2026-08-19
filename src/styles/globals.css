@@ -2308,11 +2308,13 @@ a {
   gap: 48px 16px;
 }
 
-.tableware-page {
+.tableware-page,
+.chairs-page {
   padding-block: 64px 96px;
 }
 
-.tableware-page__header {
+.tableware-page__header,
+.chairs-page__header {
   display: flex;
   max-width: 560px;
   flex-direction: column;
@@ -2321,7 +2323,8 @@ a {
   border-bottom: 1px solid var(--color-border);
 }
 
-.tableware-page__header h1 {
+.tableware-page__header h1,
+.chairs-page__header h1 {
   margin: 0;
   font-size: clamp(3rem, 6vw, 5rem);
   font-weight: 400;
@@ -2329,15 +2332,18 @@ a {
   letter-spacing: -0.05em;
 }
 
-.tableware-page__description {
+.tableware-page__description,
+.chairs-page__description {
   max-width: 500px;
 }
 
-.tableware-page__collection {
+.tableware-page__collection,
+.chairs-page__collection {
   padding-top: 48px;
 }
 
-.tableware-page__collection > h2 {
+.tableware-page__collection > h2,
+.chairs-page__collection > h2 {
   margin: 0 0 32px;
   font-size: clamp(1.75rem, 3vw, 2.25rem);
   font-weight: 400;
@@ -2365,6 +2371,36 @@ a {
 }
 
 .tableware-page__collection .product-preview__quick-view {
+  display: none;
+}
+
+.chairs-page__grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 24px 16px;
+}
+
+.chairs-page__grid .product-preview {
+  grid-column: 1 / -1;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+}
+
+.chairs-page__grid .product-preview__media {
+  aspect-ratio: 4 / 5;
+  border-radius: 0;
+}
+
+.chairs-page__grid .product-preview__media img {
+  object-fit: cover;
+}
+
+.chairs-page__grid .product-preview__content {
+  padding: 20px;
+}
+
+.chairs-page__grid .product-preview__quick-view {
   display: none;
 }
 
@@ -2875,6 +2911,9 @@ body:has(dialog[open]) {
   .catalog-page__grid .product-preview {
     grid-column: span 6;
   }
+  .chairs-page__grid .product-preview {
+    grid-column: span 6;
+  }
 }
 
 @media (min-width: 900px) {
@@ -2882,13 +2921,16 @@ body:has(dialog[open]) {
   .product-detail {
     padding-block: 88px 128px;
   }
-  .tableware-page {
+  .tableware-page,
+  .chairs-page {
     padding-block: 88px 128px;
   }
-  .tableware-page__header {
+  .tableware-page__header,
+  .chairs-page__header {
     padding-block: 24px 56px;
   }
-  .tableware-page__collection {
+  .tableware-page__collection,
+  .chairs-page__collection {
     padding-top: 56px;
   }
   .tableware-page__collection .product-preview {
@@ -2901,6 +2943,9 @@ body:has(dialog[open]) {
   .tableware-page__collection .product-preview__content {
     justify-content: center;
     padding: 56px;
+  }
+  .chairs-page__grid .product-preview {
+    grid-column: span 4;
   }
   .product-detail__layout {
     grid-template-columns: minmax(0, 7fr) minmax(320px, 5fr);

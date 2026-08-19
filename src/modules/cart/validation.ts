@@ -1,5 +1,5 @@
 import type { CartItem } from "@/modules/cart/types";
-import { products } from "@/modules/catalog/mock-data";
+import { allProducts } from "@/modules/catalog/mock-data";
 import type { Product } from "@/modules/catalog/types";
 
 export type ValidatedCartItem =
@@ -15,7 +15,7 @@ function hasCurrentOptions(item: CartItem, product: Product) {
 }
 
 export function validateCartItem(item: CartItem): ValidatedCartItem {
-  const product = products.find(({ id }) => id === item.productId);
+  const product = allProducts.find(({ id }) => id === item.productId);
 
   if (!product || !hasCurrentOptions(item, product)) {
     return { status: "unavailable", item, product };

@@ -21,6 +21,17 @@ describe("cart item validation", () => {
     if (result.status === "price-changed") expect(result.currentPrice).toBe(1390);
   });
 
+  it("keeps a category-only chair available in the cart", () => {
+    expect(
+      validateCartItem({
+        productId: "noma-chair",
+        quantity: 1,
+        selectedOptions: [],
+        observedPrice: 720,
+      }).status,
+    ).toBe("available");
+  });
+
   it("marks missing products and obsolete options unavailable", () => {
     expect(validateCartItem({ ...currentItem, productId: "removed-product" }).status).toBe(
       "unavailable",

@@ -4,10 +4,10 @@ import { notFound } from "next/navigation";
 import { Container } from "@/components/layout/container";
 import { ProductConfigurator } from "@/modules/catalog/components/product-configurator";
 import { ProductGallery } from "@/modules/catalog/components/product-gallery";
-import { getProductBySlug, products } from "@/modules/catalog/mock-data";
+import { allProducts, getProductBySlug } from "@/modules/catalog/mock-data";
 
 export function generateStaticParams() {
-  return products.map((product) => ({ id: product.slug }));
+  return allProducts.map((product) => ({ id: product.slug }));
 }
 
 type ProductPageProps = { params: Promise<{ id: string }> };

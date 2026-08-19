@@ -23,6 +23,7 @@
 | --------------------- | -------------------- | -------------------------------------------- | ---------------------------------------------------- |
 | `/`                   | Главная              | `src/app/(store)/page.tsx`                   | `ProductPreview`, `featuredProducts`, `storeProfile` |
 | `/catalog`            | Каталог              | `src/app/(store)/catalog/page.tsx`           | `CatalogQueryGrid`                                   |
+| `/catalog/chairs`     | Стулья               | `src/app/(store)/catalog/chairs/page.tsx`    | `ProductPreview`, `chairCategoryProducts`            |
 | `/catalog/tableware`  | Посуда               | `src/app/(store)/catalog/tableware/page.tsx` | `ProductPreview`, `lumoTablewareProduct`             |
 | `/product/<slug>`     | Карточка товара      | `src/app/(store)/product/[id]/page.tsx`      | `ProductGallery`, `ProductConfigurator`              |
 | `/about`              | О магазине           | `src/app/(store)/about/page.tsx`             | `storeProfile`                                       |
@@ -59,8 +60,9 @@
 - Desktop-шапка двухуровневая: логотип расположен по центру верхнего уровня, а нижний уровень
   объединяет навигацию «Каталог», «Магазины», «Новинки», «Акции», «О нас» и действия поиска,
   личного кабинета и корзины. «Каталог» открывает доступную mega-menu панель с десятью категориями
-  и ссылкой «Весь каталог»; «Посуда» ведёт на отдельную страницу `/catalog/tableware`, остальные
-  категории — в `/catalog`, поскольку их фильтрация пока не реализована.
+  и ссылкой «Весь каталог»; «Стулья» и «Посуда» ведут на отдельные страницы `/catalog/chairs` и
+  `/catalog/tableware`, остальные категории — в `/catalog`, поскольку их фильтрация пока не
+  реализована.
   «Новинки» и «Акции» ведут в существующий каталог,
   «Магазины» — к контактам шоурума на странице «О нас»; переход на главную доступен через логотип.
   Массив ссылок `navigationItems` находится в `header.tsx`.
@@ -149,6 +151,22 @@
 - Данные товара: `lumoTablewareProduct` в `src/modules/catalog/mock-data.ts`.
 - Изображение: `public/images/tableware/lumo-plates.png`.
 - Стили: `.tableware-page*` в `src/styles/globals.css`.
+
+### Стулья — `/catalog/chairs`
+
+Файл: `src/app/(store)/catalog/chairs/page.tsx`.
+
+Страница открывается по ссылке «Стулья» в общей панели каталога. На ней находятся описание
+категории и три карточки: существующий Arco, а также Noma и Tera. Каждый товар можно добавить в
+корзину или открыть на отдельной странице.
+
+Где править:
+
+- Заголовок, описание и композицию: `src/app/(store)/catalog/chairs/page.tsx`.
+- Состав категории и данные товаров: `chairCategoryProducts` в
+  `src/modules/catalog/mock-data.ts`.
+- Изображения новых товаров: `public/images/chairs/`.
+- Стили: `.chairs-page*` в `src/styles/globals.css`.
 
 ### Страница товара — `/product/<slug>`
 

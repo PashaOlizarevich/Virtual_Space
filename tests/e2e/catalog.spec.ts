@@ -1,6 +1,59 @@
 import { expect, test } from "@playwright/test";
 
 test.describe("catalog and product", () => {
+  test("opens the chairs category with three products", async ({ page }) => {
+    await page.goto("/catalog");
+    await page.getByRole("button", { name: "Каталог", exact: true }).click();
+    await page
+      .getByRole("dialog", { name: "Категории" })
+      .getByRole("link", { name: "Стулья" })
+      .click();
+
+    await expect(page).toHaveURL(/\/catalog\/chairs$/);
+    await expect(page).toHaveTitle(/Стулья/);
+    await expect(page.getByRole("heading", { name: "Стулья", level: 1 })).toBeVisible();
+    await expect(page.locator(".chairs-page .product-preview")).toHaveCount(3);
+    await expect(page.getByRole("heading", { name: "Стул Arco", level: 3 })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Стул Noma", level: 3 })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Стул Tera", level: 3 })).toBeVisible();
+
+    if (process.env.QA_SCREENSHOT_DIR) {
+      await page.waitForTimeout(500);
+      await page.screenshot({
+        path: `${process.env.QA_SCREENSHOT_DIR}/chairs-desktop.png`,
+        fullPage: true,
+      });
+      await page.setViewportSize({ width: 390, height: 844 });
+      const chairImages = page.locator(".chairs-page .product-preview__media img");
+      for (let index = 0; index < (await chairImages.count()); index += 1) {
+        const image = chairImages.nth(index);
+        await image.scrollIntoViewIfNeeded();
+        await image.evaluate((element: HTMLImageElement) => element.decode());
+      }
+      await expect
+        .poll(() =>
+          chairImages.evaluateAll((images: HTMLImageElement[]) =>
+            images.every((image) => image.complete && image.naturalWidth > 0),
+          ),
+        )
+        .toBe(true);
+      await page.evaluate(() => {
+        document.documentElement.style.scrollBehavior = "auto";
+        window.scrollTo(0, 0);
+      });
+      await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
+      await page.screenshot({
+        path: `${process.env.QA_SCREENSHOT_DIR}/chairs-mobile.png`,
+        fullPage: true,
+      });
+    }
+
+    await page.getByRole("button", { name: "Добавить «Стул Noma» в корзину" }).click();
+    await page.getByRole("link", { name: "Подробнее" }).nth(1).click();
+    await expect(page).toHaveURL(/\/product\/noma-chair$/);
+    await expect(page.getByRole("heading", { name: "Стул Noma", level: 1 })).toBeVisible();
+  });
+
   test("opens the tableware category from the catalog menu", async ({ page }) => {
     await page.goto("/catalog");
     await page.getByRole("button", { name: "Каталог", exact: true }).click();

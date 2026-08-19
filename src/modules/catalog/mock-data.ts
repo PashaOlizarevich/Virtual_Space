@@ -23,6 +23,69 @@ export const lumoTablewareProduct = {
   optionGroups: [],
 } as const satisfies Product;
 
+export const arcoChairProduct = {
+  id: "arco-chair",
+  slug: "arco-chair",
+  name: "Стул Arco",
+  description: "Лёгкий стул из ясеня с выразительной изогнутой спинкой.",
+  price: 590,
+  currency: "BYN",
+  image: "/images/home/arco.png",
+  imageAlt: "Чёрный деревянный стул Arco",
+  gallery: [{ src: "/images/home/arco.png", alt: "Деревянный стул Arco" }],
+  specifications: [
+    { label: "Размер", value: "48 × 52 × 79 см" },
+    { label: "Материал", value: "Массив ясеня" },
+    { label: "Высота сиденья", value: "46 см" },
+  ],
+  optionGroups: [
+    {
+      id: "finish",
+      label: "Отделка",
+      options: [
+        { id: "black", label: "Чёрная эмаль" },
+        { id: "natural", label: "Натуральное масло" },
+      ],
+    },
+  ],
+} as const satisfies Product;
+
+export const nomaChairProduct = {
+  id: "noma-chair",
+  slug: "noma-chair",
+  name: "Стул Noma",
+  description: "Обеденный стул из светлого дуба с плетёным сиденьем.",
+  price: 720,
+  currency: "BYN",
+  image: "/images/chairs/noma.png",
+  imageAlt: "Стул Noma из светлого дуба с плетёным сиденьем",
+  gallery: [{ src: "/images/chairs/noma.png", alt: "Дубовый стул Noma" }],
+  specifications: [
+    { label: "Размер", value: "49 × 54 × 80 см" },
+    { label: "Материал", value: "Массив дуба, бумажный шнур" },
+    { label: "Высота сиденья", value: "46 см" },
+  ],
+  optionGroups: [],
+} as const satisfies Product;
+
+export const teraChairProduct = {
+  id: "tera-chair",
+  slug: "tera-chair",
+  name: "Стул Tera",
+  description: "Мягкий стул с тонким металлическим каркасом и шерстяной обивкой.",
+  price: 840,
+  currency: "BYN",
+  image: "/images/chairs/tera.png",
+  imageAlt: "Мягкий серый стул Tera на тонком металлическом каркасе",
+  gallery: [{ src: "/images/chairs/tera.png", alt: "Стул Tera с шерстяной обивкой" }],
+  specifications: [
+    { label: "Размер", value: "54 × 58 × 78 см" },
+    { label: "Каркас", value: "Сталь с порошковым покрытием" },
+    { label: "Обивка", value: "Шерстяная ткань" },
+  ],
+  optionGroups: [],
+} as const satisfies Product;
+
 export const products = [
   {
     id: "forma-chair",
@@ -118,36 +181,24 @@ export const products = [
       },
     ],
   },
-  {
-    id: "arco-chair",
-    slug: "arco-chair",
-    name: "Стул Arco",
-    description: "Лёгкий стул из ясеня с выразительной изогнутой спинкой.",
-    price: 590,
-    currency: "BYN",
-    image: "/images/home/arco.png",
-    imageAlt: "Чёрный деревянный стул Arco",
-    gallery: [{ src: "/images/home/arco.png", alt: "Деревянный стул Arco" }],
-    specifications: [
-      { label: "Размер", value: "48 × 52 × 79 см" },
-      { label: "Материал", value: "Массив ясеня" },
-      { label: "Высота сиденья", value: "46 см" },
-    ],
-    optionGroups: [
-      {
-        id: "finish",
-        label: "Отделка",
-        options: [
-          { id: "black", label: "Чёрная эмаль" },
-          { id: "natural", label: "Натуральное масло" },
-        ],
-      },
-    ],
-  },
+  arcoChairProduct,
 ] as const satisfies readonly Product[];
 
 export const featuredProducts = products;
 
+export const chairCategoryProducts = [
+  arcoChairProduct,
+  nomaChairProduct,
+  teraChairProduct,
+] as const satisfies readonly Product[];
+
+export const allProducts = [
+  ...products,
+  lumoTablewareProduct,
+  nomaChairProduct,
+  teraChairProduct,
+] as const satisfies readonly Product[];
+
 export function getProductBySlug(slug: string): Product | undefined {
-  return [...products, lumoTablewareProduct].find((product) => product.slug === slug);
+  return allProducts.find((product) => product.slug === slug);
 }

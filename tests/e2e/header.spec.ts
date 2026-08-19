@@ -74,6 +74,10 @@ test.describe("store header", () => {
       "href",
       "/catalog/tableware",
     );
+    await expect(catalog.getByRole("link", { name: "Стулья" })).toHaveAttribute(
+      "href",
+      "/catalog/chairs",
+    );
     if (process.env.QA_SCREENSHOT_DIR) {
       await page.waitForTimeout(500);
       await page.screenshot({ path: `${process.env.QA_SCREENSHOT_DIR}/catalog-desktop.png` });

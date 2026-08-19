@@ -752,3 +752,22 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
   изображения с сохранением прежних значений по умолчанию.
 - Product Tour: без изменений; маршрут, навигация и пользовательский сценарий не изменились.
 - Ограничения: нет.
+
+## Task 53 — Страница категории «Стулья»
+
+- Результат: пункт «Стулья» в существующей панели каталога ведёт на новую адаптивную страницу
+  `/catalog/chairs` с описанием и тремя товарами: существующим Arco и новыми Noma и Tera; карточки
+  поддерживают добавление в корзину и переход на статически генерируемые страницы товара.
+- Файлы: `src/app/(store)/catalog/chairs/page.tsx`, `src/components/layout/catalog-menu.tsx`,
+  `src/modules/catalog/mock-data.ts`, `src/modules/cart/validation.ts`,
+  `public/images/chairs/`, тесты и документация.
+- Проверки: `npm run lint`, `npm run typecheck`, 51 Jest-тест, `npm run build` и 11 профильных
+  Chromium E2E-сценариев — успешно; desktop 1440×1000 и mobile 390×844 визуально сверены через
+  Playwright и `view_image`.
+- Переменные окружения: `PLAYWRIGHT_BASE_URL` и `QA_SCREENSHOT_DIR` использованы только для
+  локальной E2E/визуальной проверки.
+- Архитектура: category-only товары собраны в `chairCategoryProducts`, а единый `allProducts`
+  используется страницами товара и валидацией корзины без расширения главной и общего каталога.
+- Product Tour: добавлены маршрут `/catalog/chairs`, переход из mega-menu и карта ключевых файлов.
+- Ограничения: Chrome DevTools был недоступен из-за лимита инструмента; rendered QA выполнен через
+  проектный Playwright.
