@@ -968,3 +968,24 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
   изображений с HTTP 200, отсутствие горизонтального переполнения и переход на страницу пледа Lino
   без ошибок консоли. Browser plugin в сессии недоступен, поэтому использован Playwright.
 - Product Tour: добавлена карта маршрута `/catalog/textiles-decor` и связанных файлов.
+
+## Task 66 — Страница категории «Столы обеденные»
+
+- Результат: пункт «Столы обеденные» в существующей динамической панели каталога направлен на
+  `/catalog/dining-tables`; добавлена отдельная страница с содержательным описанием категории и ровно
+  тремя карточками товаров: Tavola, Orbis и Elara.
+- Файлы: `src/app/(store)/catalog/dining-tables/`, `src/components/layout/catalog-menu.tsx`,
+  `src/modules/catalog/mock-data.ts`, `src/styles/globals.css`, `public/images/dining-tables/`,
+  `docs/ProductTour.md`, `docs/progress.md`.
+- UI: переиспользованы существующие `ProductPreview` и адаптивный паттерн страниц категорий; три
+  согласованных квадратных изображения созданы генеративно без пустых полос.
+- Каталог: новые товары включены в `allProducts`, поэтому detail-переходы работают через общий
+  динамический маршрут `/product/[id]`.
+- Тестирование: добавлен отдельный component/integration-тест страницы на описание, ровно три карточки
+  и названия товаров; существующие E2E-файлы не изменялись.
+- Проверки: Prettier для затронутых файлов, ESLint, TypeScript и production build через webpack
+  пройдены; Playwright на 1440×1100 и 390×844 подтвердил HTTP 200, ровно три карточки, загрузку всех
+  изображений (`naturalWidth > 0`), отсутствие горизонтального переполнения и ошибок консоли, а также
+  переход на `/product/tavola-dining-table`. Browser plugin в сессии недоступен, поэтому использован
+  Playwright.
+- Product Tour: добавлена карта маршрута `/catalog/dining-tables` и связанных файлов.

@@ -399,3 +399,15 @@
 - Изображения: `public/images/textiles-decor/`.
 - Ссылка в панели каталога: `src/components/layout/catalog-menu.tsx`.
 - Стили: `.textiles-decor-page*` в `src/styles/globals.css`.
+
+## Категория «Столы обеденные» — `/catalog/dining-tables`
+
+Ссылка «Столы обеденные» в динамической панели каталога ведёт на отдельную страницу категории. На
+странице размещены описание коллекции и три карточки: Tavola, Orbis и Elara. Кнопка «Подробнее» в
+каждой карточке открывает общий динамический маршрут товара.
+
+- Маршрут: `src/app/(store)/catalog/dining-tables/page.tsx`.
+- Состав категории и данные товаров: `diningTableCategoryProducts` в `src/modules/catalog/mock-data.ts`.
+- Изображения: `public/images/dining-tables/`.
+- Переход из меню: `src/components/layout/catalog-menu.tsx`.
+- Стили: `.dining-tables-page*` в `src/styles/globals.css`.

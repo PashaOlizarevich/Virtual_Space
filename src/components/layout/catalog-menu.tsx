@@ -17,7 +17,7 @@ const categoryGroups = [
   ],
   [
     { label: "Стулья", href: "/catalog/chairs" },
-    { label: "Столы обеденные", href: "/catalog" },
+    { label: "Столы обеденные", href: "/catalog/dining-tables" },
     { label: "Столы для гостиной", href: "/catalog" },
   ],
   [

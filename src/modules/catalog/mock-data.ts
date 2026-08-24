@@ -331,6 +331,75 @@ export const soraVaseProduct = {
   optionGroups: [],
 } as const satisfies Product;
 
+export const tavolaDiningTableProduct = {
+  id: "tavola-dining-table",
+  slug: "tavola-dining-table",
+  name: "Стол Tavola",
+  description: "Прямоугольный обеденный стол из массива дуба с выразительной природной текстурой.",
+  price: 2490,
+  currency: "BYN",
+  image: "/images/dining-tables/tavola.png",
+  imageAlt: "Прямоугольный обеденный стол Tavola из натурального дуба",
+  gallery: [
+    {
+      src: "/images/dining-tables/tavola.png",
+      alt: "Дубовый обеденный стол Tavola в светлом интерьере",
+    },
+  ],
+  specifications: [
+    { label: "Размер", value: "200 × 95 × 75 см" },
+    { label: "Материал", value: "Массив дуба" },
+    { label: "Количество мест", value: "6–8" },
+  ],
+  optionGroups: [],
+} as const satisfies Product;
+
+export const orbisDiningTableProduct = {
+  id: "orbis-dining-table",
+  slug: "orbis-dining-table",
+  name: "Стол Orbis",
+  description: "Круглый стол из тёмного ореха со скульптурным основанием для камерных встреч.",
+  price: 2890,
+  currency: "BYN",
+  image: "/images/dining-tables/orbis.png",
+  imageAlt: "Круглый обеденный стол Orbis из тёмного ореха на центральном основании",
+  gallery: [
+    {
+      src: "/images/dining-tables/orbis.png",
+      alt: "Ореховый обеденный стол Orbis в нейтральном интерьере",
+    },
+  ],
+  specifications: [
+    { label: "Размер", value: "Ø 130 × 75 см" },
+    { label: "Материал", value: "Шпон американского ореха" },
+    { label: "Количество мест", value: "4–6" },
+  ],
+  optionGroups: [],
+} as const satisfies Product;
+
+export const elaraDiningTableProduct = {
+  id: "elara-dining-table",
+  slug: "elara-dining-table",
+  name: "Стол Elara",
+  description: "Овальный стол из светлого ясеня с мягким силуэтом и тонкими наклонными опорами.",
+  price: 2690,
+  currency: "BYN",
+  image: "/images/dining-tables/elara.png",
+  imageAlt: "Овальный обеденный стол Elara из светлого ясеня",
+  gallery: [
+    {
+      src: "/images/dining-tables/elara.png",
+      alt: "Светлый обеденный стол Elara в современном интерьере",
+    },
+  ],
+  specifications: [
+    { label: "Размер", value: "190 × 100 × 75 см" },
+    { label: "Материал", value: "Массив и шпон ясеня" },
+    { label: "Количество мест", value: "6" },
+  ],
+  optionGroups: [],
+} as const satisfies Product;
+
 export const products = [
   {
     id: "forma-chair",
@@ -463,6 +532,12 @@ export const textilesDecorCategoryProducts = [
   soraVaseProduct,
 ] as const satisfies readonly Product[];
 
+export const diningTableCategoryProducts = [
+  tavolaDiningTableProduct,
+  orbisDiningTableProduct,
+  elaraDiningTableProduct,
+] as const satisfies readonly Product[];
+
 export const allProducts = [
   ...products,
   lumoTablewareProduct,
@@ -475,6 +550,7 @@ export const allProducts = [
   ...bedCategoryProducts,
   ...mattressCategoryProducts,
   ...textilesDecorCategoryProducts,
+  ...diningTableCategoryProducts,
 ] as const satisfies readonly Product[];
 
 export function getProductBySlug(slug: string): Product | undefined {

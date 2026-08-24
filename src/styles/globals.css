@@ -2413,7 +2413,8 @@ a {
 .sofas-page,
 .beds-page,
 .mattresses-page,
-.textiles-decor-page {
+.textiles-decor-page,
+.dining-tables-page {
   padding-block: 64px 96px;
 }
 
@@ -2422,7 +2423,8 @@ a {
 .sofas-page__header,
 .beds-page__header,
 .mattresses-page__header,
-.textiles-decor-page__header {
+.textiles-decor-page__header,
+.dining-tables-page__header {
   display: flex;
   max-width: 560px;
   flex-direction: column;
@@ -2436,7 +2438,8 @@ a {
 .sofas-page__header h1,
 .beds-page__header h1,
 .mattresses-page__header h1,
-.textiles-decor-page__header h1 {
+.textiles-decor-page__header h1,
+.dining-tables-page__header h1 {
   margin: 0;
   font-size: clamp(3rem, 6vw, 5rem);
   font-weight: 400;
@@ -2449,7 +2452,8 @@ a {
 .sofas-page__description,
 .beds-page__description,
 .mattresses-page__description,
-.textiles-decor-page__description {
+.textiles-decor-page__description,
+.dining-tables-page__description {
   max-width: 500px;
 }
 
@@ -2458,7 +2462,8 @@ a {
 .sofas-page__collection,
 .beds-page__collection,
 .mattresses-page__collection,
-.textiles-decor-page__collection {
+.textiles-decor-page__collection,
+.dining-tables-page__collection {
   padding-top: 48px;
 }
 
@@ -2467,7 +2472,8 @@ a {
 .sofas-page__collection > h2,
 .beds-page__collection > h2,
 .mattresses-page__collection > h2,
-.textiles-decor-page__collection > h2 {
+.textiles-decor-page__collection > h2,
+.dining-tables-page__collection > h2 {
   margin: 0 0 32px;
   font-size: clamp(1.75rem, 3vw, 2.25rem);
   font-weight: 400;
@@ -2490,7 +2496,8 @@ a {
 .sofas-page__grid,
 .beds-page__grid,
 .mattresses-page__grid,
-.textiles-decor-page__grid {
+.textiles-decor-page__grid,
+.dining-tables-page__grid {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
   gap: 24px 16px;
@@ -2500,7 +2507,8 @@ a {
 .sofas-page__grid .product-preview,
 .beds-page__grid .product-preview,
 .mattresses-page__grid .product-preview,
-.textiles-decor-page__grid .product-preview {
+.textiles-decor-page__grid .product-preview,
+.dining-tables-page__grid .product-preview {
   grid-column: 1 / -1;
   overflow: hidden;
   border: 1px solid var(--color-border);
@@ -2512,7 +2520,8 @@ a {
 .sofas-page__grid .product-preview__media,
 .beds-page__grid .product-preview__media,
 .mattresses-page__grid .product-preview__media,
-.textiles-decor-page__grid .product-preview__media {
+.textiles-decor-page__grid .product-preview__media,
+.dining-tables-page__grid .product-preview__media {
   aspect-ratio: 1;
   border-radius: 0;
 }
@@ -2521,7 +2530,8 @@ a {
 .sofas-page__grid .product-preview__content,
 .beds-page__grid .product-preview__content,
 .mattresses-page__grid .product-preview__content,
-.textiles-decor-page__grid .product-preview__content {
+.textiles-decor-page__grid .product-preview__content,
+.dining-tables-page__grid .product-preview__content {
   padding: 20px;
 }
 
@@ -3036,7 +3046,8 @@ body:has(dialog[open]) {
   .sofas-page__grid .product-preview,
   .beds-page__grid .product-preview,
   .mattresses-page__grid .product-preview,
-  .textiles-decor-page__grid .product-preview {
+  .textiles-decor-page__grid .product-preview,
+  .dining-tables-page__grid .product-preview {
     grid-column: span 6;
   }
 }
@@ -3051,7 +3062,8 @@ body:has(dialog[open]) {
   .sofas-page,
   .beds-page,
   .mattresses-page,
-  .textiles-decor-page {
+  .textiles-decor-page,
+  .dining-tables-page {
     padding-block: 88px 128px;
   }
   .tableware-page__header,
@@ -3059,7 +3071,8 @@ body:has(dialog[open]) {
   .sofas-page__header,
   .beds-page__header,
   .mattresses-page__header,
-  .textiles-decor-page__header {
+  .textiles-decor-page__header,
+  .dining-tables-page__header {
     padding-block: 24px 56px;
   }
   .tableware-page__collection,
@@ -3067,7 +3080,8 @@ body:has(dialog[open]) {
   .sofas-page__collection,
   .beds-page__collection,
   .mattresses-page__collection,
-  .textiles-decor-page__collection {
+  .textiles-decor-page__collection,
+  .dining-tables-page__collection {
     padding-top: 56px;
   }
   .tableware-page__collection .product-preview {
@@ -3081,7 +3095,8 @@ body:has(dialog[open]) {
   .sofas-page__grid .product-preview,
   .beds-page__grid .product-preview,
   .mattresses-page__grid .product-preview,
-  .textiles-decor-page__grid .product-preview {
+  .textiles-decor-page__grid .product-preview,
+  .dining-tables-page__grid .product-preview {
     grid-column: span 4;
   }
   @media (hover: hover) and (pointer: fine) {
@@ -3090,7 +3105,8 @@ body:has(dialog[open]) {
     .sofas-page__grid .product-preview,
     .beds-page__grid .product-preview,
     .mattresses-page__grid .product-preview,
-    .textiles-decor-page__grid .product-preview {
+    .textiles-decor-page__grid .product-preview,
+    .dining-tables-page__grid .product-preview {
       overflow: visible;
     }
   }
