@@ -917,6 +917,8 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 
 - Результат: пункт «Кровати» в существующей динамической панели каталога направлен на `/catalog/beds`;
   добавлена отдельная страница с описанием категории и ровно тремя карточками Nubi, Ardea и Linea.
+- Исправление: изображения всех трёх карточек категории загружаются eagerly с проектным качеством
+  Next.js по умолчанию; устранена долгая параллельная оптимизация трёх PNG с `quality={100}`.
 - Файлы: `src/app/(store)/catalog/beds/`, `src/components/layout/catalog-menu.tsx`,
   `src/modules/catalog/mock-data.ts`, `src/styles/globals.css`, `public/images/beds/`,
   `docs/ProductTour.md`, `docs/progress.md`.

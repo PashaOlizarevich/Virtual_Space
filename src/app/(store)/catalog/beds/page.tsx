@@ -26,7 +26,7 @@ export default function BedsPage() {
           <h2 id="beds-title">В коллекции</h2>
           <div className="beds-page__grid">
             {bedCategoryProducts.map((product) => (
-              <ProductPreview key={product.id} product={product} imageQuality={100} />
+              <ProductPreview key={product.id} product={product} imageLoading="eager" />
             ))}
           </div>
         </section>

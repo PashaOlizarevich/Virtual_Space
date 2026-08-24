@@ -18,12 +18,14 @@ type ProductPreviewProps = Readonly<{
   product: Product;
   imageSizes?: string;
   imageQuality?: 75 | 100;
+  imageLoading?: "eager" | "lazy";
 }>;
 
 export function ProductPreview({
   product,
   imageSizes = "(max-width: 599px) 100vw, (max-width: 899px) 50vw, 25vw",
   imageQuality = 75,
+  imageLoading = "lazy",
 }: ProductPreviewProps) {
   const addItem = useCartStore((state) => state.addItem);
   const productHref = `/product/${product.slug}`;
@@ -38,6 +40,7 @@ export function ProductPreview({
           fill
           sizes={imageSizes}
           quality={imageQuality}
+          loading={imageLoading}
         />
       </div>
       <div className="product-preview__content">
