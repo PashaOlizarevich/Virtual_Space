@@ -21,7 +21,7 @@ const categoryGroups = [
     { label: "Столы для гостиной", href: "/catalog" },
   ],
   [
-    { label: "Кровати", href: "/catalog" },
+    { label: "Кровати", href: "/catalog/beds" },
     { label: "Матрасы", href: "/catalog" },
   ],
   [

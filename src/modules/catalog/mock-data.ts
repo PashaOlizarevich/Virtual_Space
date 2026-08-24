@@ -158,6 +158,64 @@ export const auraSofaProduct = {
   optionGroups: [],
 } as const satisfies Product;
 
+export const nubiBedProduct = {
+  id: "nubi-bed",
+  slug: "nubi-bed",
+  name: "Кровать Nubi",
+  description: "Мягкая кровать с округлым изголовьем и просторным спальным местом.",
+  price: 1690,
+  currency: "BYN",
+  image: "/images/beds/nubi.png",
+  imageAlt: "Светлая кровать Nubi с округлым мягким изголовьем",
+  gallery: [{ src: "/images/beds/nubi.png", alt: "Кровать Nubi в светлой спальне" }],
+  specifications: [
+    { label: "Размер", value: "168 × 218 × 112 см" },
+    { label: "Спальное место", value: "160 × 200 см" },
+    { label: "Обивка", value: "Фактурное букле" },
+  ],
+  optionGroups: [],
+} as const satisfies Product;
+
+export const ardeaBedProduct = {
+  id: "ardea-bed",
+  slug: "ardea-bed",
+  name: "Кровать Ardea",
+  description: "Кровать с мягким изголовьем и основанием из натурального дуба.",
+  price: 1790,
+  currency: "BYN",
+  image: "/images/beds/ardea.png",
+  imageAlt: "Дубовая кровать Ardea с мягким серым изголовьем",
+  gallery: [
+    { src: "/images/beds/ardea.png", alt: "Кровать Ardea в спальне с естественным светом" },
+  ],
+  specifications: [
+    { label: "Размер", value: "188 × 218 × 118 см" },
+    { label: "Спальное место", value: "180 × 200 см" },
+    { label: "Материал", value: "Массив дуба, ткань" },
+  ],
+  optionGroups: [],
+} as const satisfies Product;
+
+export const lineaBedProduct = {
+  id: "linea-bed",
+  slug: "linea-bed",
+  name: "Кровать Linea",
+  description: "Лаконичная кровать с чистыми линиями и низким профилем.",
+  price: 1590,
+  currency: "BYN",
+  image: "/images/beds/linea.png",
+  imageAlt: "Низкая кровать Linea с бежевой обивкой и тонкими тёмными ножками",
+  gallery: [
+    { src: "/images/beds/linea.png", alt: "Минималистичная кровать Linea в современной спальне" },
+  ],
+  specifications: [
+    { label: "Размер", value: "168 × 216 × 94 см" },
+    { label: "Спальное место", value: "160 × 200 см" },
+    { label: "Основание", value: "Металл, берёзовые ламели" },
+  ],
+  optionGroups: [],
+} as const satisfies Product;
+
 export const products = [
   {
     id: "forma-chair",
@@ -272,6 +330,12 @@ export const sofaCategoryProducts = [
   auraSofaProduct,
 ] as const satisfies readonly Product[];
 
+export const bedCategoryProducts = [
+  nubiBedProduct,
+  ardeaBedProduct,
+  lineaBedProduct,
+] as const satisfies readonly Product[];
+
 export const allProducts = [
   ...products,
   lumoTablewareProduct,
@@ -281,6 +345,7 @@ export const allProducts = [
   velaSofaProduct,
   nordSofaProduct,
   auraSofaProduct,
+  ...bedCategoryProducts,
 ] as const satisfies readonly Product[];
 
 export function getProductBySlug(slug: string): Product | undefined {

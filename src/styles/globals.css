@@ -1246,7 +1246,8 @@ a {
     }
 
     .chairs-page__grid .product-preview:nth-child(3n) .product-preview__quick-view,
-    .sofas-page__grid .product-preview:nth-child(3n) .product-preview__quick-view {
+    .sofas-page__grid .product-preview:nth-child(3n) .product-preview__quick-view,
+    .beds-page__grid .product-preview:nth-child(3n) .product-preview__quick-view {
       right: calc(100% - 20px);
       left: auto;
     }
@@ -2407,13 +2408,15 @@ a {
 
 .tableware-page,
 .chairs-page,
-.sofas-page {
+.sofas-page,
+.beds-page {
   padding-block: 64px 96px;
 }
 
 .tableware-page__header,
 .chairs-page__header,
-.sofas-page__header {
+.sofas-page__header,
+.beds-page__header {
   display: flex;
   max-width: 560px;
   flex-direction: column;
@@ -2424,7 +2427,8 @@ a {
 
 .tableware-page__header h1,
 .chairs-page__header h1,
-.sofas-page__header h1 {
+.sofas-page__header h1,
+.beds-page__header h1 {
   margin: 0;
   font-size: clamp(3rem, 6vw, 5rem);
   font-weight: 400;
@@ -2434,19 +2438,22 @@ a {
 
 .tableware-page__description,
 .chairs-page__description,
-.sofas-page__description {
+.sofas-page__description,
+.beds-page__description {
   max-width: 500px;
 }
 
 .tableware-page__collection,
 .chairs-page__collection,
-.sofas-page__collection {
+.sofas-page__collection,
+.beds-page__collection {
   padding-top: 48px;
 }
 
 .tableware-page__collection > h2,
 .chairs-page__collection > h2,
-.sofas-page__collection > h2 {
+.sofas-page__collection > h2,
+.beds-page__collection > h2 {
   margin: 0 0 32px;
   font-size: clamp(1.75rem, 3vw, 2.25rem);
   font-weight: 400;
@@ -2466,14 +2473,16 @@ a {
 }
 
 .chairs-page__grid,
-.sofas-page__grid {
+.sofas-page__grid,
+.beds-page__grid {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
   gap: 24px 16px;
 }
 
 .chairs-page__grid .product-preview,
-.sofas-page__grid .product-preview {
+.sofas-page__grid .product-preview,
+.beds-page__grid .product-preview {
   grid-column: 1 / -1;
   overflow: hidden;
   border: 1px solid var(--color-border);
@@ -2482,13 +2491,15 @@ a {
 
 .tableware-page__collection .product-preview__media,
 .chairs-page__grid .product-preview__media,
-.sofas-page__grid .product-preview__media {
+.sofas-page__grid .product-preview__media,
+.beds-page__grid .product-preview__media {
   aspect-ratio: 1;
   border-radius: 0;
 }
 
 .chairs-page__grid .product-preview__content,
-.sofas-page__grid .product-preview__content {
+.sofas-page__grid .product-preview__content,
+.beds-page__grid .product-preview__content {
   padding: 20px;
 }
 
@@ -3000,7 +3011,8 @@ body:has(dialog[open]) {
     grid-column: span 6;
   }
   .chairs-page__grid .product-preview,
-  .sofas-page__grid .product-preview {
+  .sofas-page__grid .product-preview,
+  .beds-page__grid .product-preview {
     grid-column: span 6;
   }
 }
@@ -3012,17 +3024,20 @@ body:has(dialog[open]) {
   }
   .tableware-page,
   .chairs-page,
-  .sofas-page {
+  .sofas-page,
+  .beds-page {
     padding-block: 88px 128px;
   }
   .tableware-page__header,
   .chairs-page__header,
-  .sofas-page__header {
+  .sofas-page__header,
+  .beds-page__header {
     padding-block: 24px 56px;
   }
   .tableware-page__collection,
   .chairs-page__collection,
-  .sofas-page__collection {
+  .sofas-page__collection,
+  .beds-page__collection {
     padding-top: 56px;
   }
   .tableware-page__collection .product-preview {
@@ -3033,13 +3048,15 @@ body:has(dialog[open]) {
     padding: 56px;
   }
   .chairs-page__grid .product-preview,
-  .sofas-page__grid .product-preview {
+  .sofas-page__grid .product-preview,
+  .beds-page__grid .product-preview {
     grid-column: span 4;
   }
   @media (hover: hover) and (pointer: fine) {
     .tableware-page__collection .product-preview,
     .chairs-page__grid .product-preview,
-    .sofas-page__grid .product-preview {
+    .sofas-page__grid .product-preview,
+    .beds-page__grid .product-preview {
       overflow: visible;
     }
   }

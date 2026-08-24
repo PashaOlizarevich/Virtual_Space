@@ -912,3 +912,18 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 - Ограничения: каталог пока не фильтрует товары по параметру `search`; полный Jest без исключения
   `.worktrees` захватывает тесты соседних рабочих деревьев с отдельными копиями React, поэтому итоговая
   проверка выполнена для текущего рабочего дерева.
+
+## Task 63 — Страница категории «Кровати»
+
+- Результат: пункт «Кровати» в существующей динамической панели каталога направлен на `/catalog/beds`;
+  добавлена отдельная страница с описанием категории и ровно тремя карточками Nubi, Ardea и Linea.
+- Файлы: `src/app/(store)/catalog/beds/`, `src/components/layout/catalog-menu.tsx`,
+  `src/modules/catalog/mock-data.ts`, `src/styles/globals.css`, `public/images/beds/`,
+  `docs/ProductTour.md`, `docs/progress.md`.
+- Проверки: Prettier, ESLint, TypeScript, Jest, production build и визуальная проверка Playwright на
+  desktop и mobile — успешно.
+- Переменные окружения: `PORT` и `QA_SCREENSHOT_DIR` использованы только для локальной визуальной проверки.
+- Архитектура: без изменений; переиспользованы существующие `ProductPreview` и mock-слой каталога.
+- Product Tour: добавлена карта маршрута `/catalog/beds` и связанных файлов.
+- Ограничения: изображения созданы генеративно для демонстрационного каталога; существующие E2E-тесты
+  не изменялись согласно правилам проекта.
