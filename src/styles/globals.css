@@ -296,6 +296,10 @@ a {
   flex: none;
 }
 
+.header-search__trigger:focus-visible {
+  outline: none;
+}
+
 .header-search[data-state="open"] .header-search__trigger:hover {
   background: transparent;
 }
