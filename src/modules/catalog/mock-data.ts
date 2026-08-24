@@ -487,7 +487,15 @@ export const products = [
     currency: "BYN",
     image: "/images/sofas/modul-sofa/01-main.png",
     imageAlt: "Светлый трёхместный диван Modul",
-    gallery: [{ src: "/images/sofas/modul-sofa/01-main.png", alt: "Трёхместный диван Modul" }],
+    gallery: [
+      { src: "/images/sofas/modul-sofa/01-main.png", alt: "Трёхместный диван Modul" },
+      { src: "/images/sofas/modul-sofa/02-side.png", alt: "Трёхместный диван Modul" },
+      { src: "/images/sofas/modul-sofa/03-armrest.png", alt: "Трёхместный диван Modul" },
+      { src: "/images/sofas/modul-sofa/04-leg.png", alt: "Трёхместный диван Modul" },
+      { src: "/images/sofas/modul-sofa/05-top.png", alt: "Трёхместный диван Modul" },
+      { src: "/images/sofas/modul-sofa/06-unfolded.png", alt: "Трёхместный диван Modul" },
+      { src: "/images/sofas/modul-sofa/07-main.png", alt: "Трёхместный диван Modul" },
+    ],
     specifications: [
       { label: "Размер", value: "240 × 98 × 72 см" },
       { label: "Модули", value: "3 секции" },
