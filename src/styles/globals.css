@@ -271,13 +271,14 @@ a {
   visibility: hidden;
   transition:
     opacity var(--motion-fast) var(--motion-standard),
-    visibility var(--motion-fast);
+    visibility 0s linear var(--motion-fast);
 }
 
 .header-search[data-state="open"] .header-search__input {
   opacity: 1;
   pointer-events: auto;
   visibility: visible;
+  transition-delay: 0s;
 }
 
 .header-search__input:focus-visible {
