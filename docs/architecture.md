@@ -79,96 +79,138 @@
 
 ## 4. Структура проекта
 
-Текущая и целевая структура. Папки и файлы с пометкой `[цель]` не создаются заранее без реальной ответственности:
+Раздел отделяет фактически используемую структуру от целевой server-side структуры. Пустые каталоги
+с `.gitkeep` не считаются реализованными слоями и не включаются в фактическое дерево до появления
+рабочего файла с реальной ответственностью. Полная карта маршрутов и ключевых файлов поддерживается
+в `docs/ProductTour.md`.
+
+### 4.1. Фактическая структура
 
 ```text
 virtual-space/
-├── prisma/                                              [цель]
-│   ├── schema.prisma              # модели, связи, индексы, enum
-│   ├── migrations/                # версионируемые миграции
-│   └── seed.ts                    # стартовые категории и демонстрационные товары
-├── public/images/                                       [есть, временно для товарных изображений]
+├── public/
+│   └── images/                    # версионируемые изображения mock-этапа
+│       ├── about/
+│       ├── auth/
+│       ├── home/
+│       ├── beds/<product-slug>/
+│       ├── chairs/<product-slug>/
+│       ├── dining-tables/<product-slug>/
+│       ├── mattresses/<product-slug>/
+│       ├── sofas/<product-slug>/
+│       ├── tableware/<product-slug>/
+│       └── textiles-decor/<product-slug>/
 ├── src/
-│   ├── app/                       # маршруты и композиция; минимум логики [есть]
-│   │   ├── (store)/               # публичная витрина [есть]
+│   ├── app/                       # маршруты и композиция; минимум логики
+│   │   ├── (store)/               # публичная витрина
 │   │   │   ├── page.tsx           # главная
+│   │   │   ├── about/page.tsx
 │   │   │   ├── catalog/
 │   │   │   │   ├── page.tsx
-│   │   │   │   ├── sofas/page.tsx
+│   │   │   │   ├── beds/page.tsx
 │   │   │   │   ├── chairs/page.tsx
-│   │   │   │   └── tableware/page.tsx
-│   │   │   ├── product/[slug]/page.tsx
+│   │   │   │   ├── dining-tables/page.tsx
+│   │   │   │   ├── mattresses/page.tsx
+│   │   │   │   ├── sofas/page.tsx
+│   │   │   │   ├── tableware/page.tsx
+│   │   │   │   └── textiles-decor/page.tsx
 │   │   │   ├── checkout/page.tsx
-│   │   │   ├── login/page.tsx     # preview-auth [временно]
-│   │   │   ├── profile/page.tsx   # preview-profile [временно]
-│   │   │   └── about/page.tsx
-│   │   ├── admin/                 # preview-админка [есть, временно]
-│   │   │   ├── layout.tsx         # серверная проверка роли ADMIN [цель]
+│   │   │   ├── login/page.tsx     # preview-auth
+│   │   │   ├── product/[id]/page.tsx
+│   │   │   └── profile/page.tsx   # preview-profile
+│   │   ├── admin/                 # preview-админка
 │   │   │   ├── page.tsx
-│   │   │   ├── products/
-│   │   │   ├── orders/
-│   │   │   └── settings/
-│   │   ├── api/                   # HTTP endpoints и callbacks [цель]
-│   │   │   ├── auth/[...nextauth]/route.ts
-│   │   │   ├── products/route.ts
-│   │   │   ├── cart/validate/route.ts
-│   │   │   ├── orders/route.ts
-│   │   │   └── uploads/signature/route.ts
-│   │   ├── error.tsx, loading.tsx, not-found.tsx        [есть]
-│   │   ├── global-error.tsx                             [цель при отдельном сценарии]
-│   │   ├── layout.tsx                                  [есть]
-│   │   └── providers.tsx           # только нужные Client Providers [есть]
-│   ├── modules/                    # вертикальные бизнес-модули [есть]
-│   │   ├── catalog/                # карточки, галерея, конфигуратор, mock/query
-│   │   │   ├── components/         # ProductPreview, ProductGallery, ProductConfigurator
-│   │   │   ├── mock-data.ts        [временно]
-│   │   │   ├── queries.ts          [есть, временный источник данных]
-│   │   │   ├── types.ts            [есть]
-│   │   │   ├── service.ts          [цель]
-│   │   │   ├── mappers.ts          [цель]
-│   │   │   └── server.ts           [цель при первом серверном потребителе]
-│   │   ├── cart/                   # Zustand, schemas, validation, sync [есть]
-│   │   ├── checkout/               # форма, schemas, mock submit [есть, частично временно]
-│   │   ├── settings/               # информация и контакты [есть, mock]
-│   │   ├── auth/                   # preview-сессия и формы [есть, временно]
-│   │   ├── users/                  # preview-профиль и история [есть, временно]
-│   │   ├── admin/                  # preview CRUD и gates [есть, временно]
-│   │   ├── orders/                 # production order service [цель]
-│   │   ├── favorites/             # этап 2/3
-│   │   ├── reviews/               # этап 3
-│   │   └── assistant/             # этап 3: AI; изолирован от UI и провайдера
-│   ├── components/                [есть]
-│   │   ├── ui/                    # нейтральные UI-примитивы
-│   │   └── layout/                # Header, CatalogMenu, MobileNavigation, каркас
-│   ├── server/                    # server-only инфраструктура [цель]
-│   │   ├── db.ts                  # singleton PrismaClient; server-only
-│   │   ├── auth.ts                # конфигурация Auth.js; server-only
-│   │   ├── env.ts                 # серверная Zod-проверка env
-│   │   └── integrations/
-│   │       ├── cloudinary.ts      # адаптер Cloudinary
-│   │       └── telegram.ts        # адаптер Telegram
-│   ├── shared/                    # универсальные нижние слои [есть, расширяется по потребности]
-│   │   ├── api/                   # общий формат результата/ошибки HTTP
-│   │   ├── config/                # несекретная конфигурация
-│   │   ├── constants/             # общие стабильные константы
-│   │   ├── schemas/               # только действительно общие схемы
-│   │   ├── types/                 # только межмодульные безопасные типы
-│   │   └── utils/                 # чистые универсальные функции
+│   │   │   ├── orders/page.tsx
+│   │   │   ├── products/page.tsx
+│   │   │   └── settings/page.tsx
+│   │   ├── error.tsx
+│   │   ├── layout.tsx
+│   │   ├── loading.tsx
+│   │   ├── not-found.tsx
+│   │   └── providers.tsx
+│   ├── modules/                   # вертикальные бизнес-модули
+│   │   ├── admin/                 # preview CRUD, dashboard и gates
+│   │   ├── auth/                  # preview-сессия и формы
+│   │   ├── cart/                  # Zustand, schemas, validation и sync
+│   │   ├── catalog/               # карточки, слайдер, configurator, mock/query
+│   │   ├── checkout/              # форма, schemas и mock submit
+│   │   ├── settings/              # mock-информация и контакты
+│   │   └── users/                 # preview-профиль и история
+│   ├── components/
+│   │   ├── layout/                # Header, CatalogMenu, навигация и каркас
+│   │   └── ui/                    # нейтральные UI-примитивы
+│   ├── shared/                    # универсальные нижние слои и utils.ts
 │   └── styles/
 │       └── globals.css            # Tailwind и глобальные tokens
-├── tests/e2e/                     # Playwright: критические пользовательские потоки [есть]
-├── tests/integration/             # БД/API/сервисы [цель]
+├── tests/
+│   └── e2e/                       # Playwright-сценарии
+├── docs/                          # требования, архитектура и память проекта
+│   ├── architecture.md
+│   ├── DESIGN.md
+│   ├── ProductTour.md
+│   └── progress.md
+├── plugins/                       # локальные plugin-ресурсы Codex
 ├── .env.example                   # только имена и безопасные примеры
-├── middleware.ts                  # грубая маршрутизация, не единственная защита [цель при необходимости]
-├── next.config.ts
 ├── components.json
+├── eslint.config.mjs
+├── jest.config.ts
+├── next.config.ts
 ├── package.json
-├── package-lock.json              # либо другой один lock-файл
-├── tsconfig.json
-└── architecture.md
+├── package-lock.json
+├── playwright.config.ts
+└── tsconfig.json
 ```
 
-Папка модуля создаётся постепенно. Не нужны пустые `repository`, `controller`, `domain` и `infrastructure` для каждого модуля. Файл появляется, когда у него есть реальная ответственность; крупный файл затем разделяется внутри модуля.
+`[id]` в текущем маршруте страницы товара фактически получает `slug` товара. Имя сегмента отражает
+существующий каталог файлов и может быть переименовано отдельно только вместе с проверкой маршрута,
+тестов и документации.
+
+### 4.2. Целевая server-side структура
+
+Ниже перечислены планируемые рабочие файлы. Наличие одноимённого пустого каталога с `.gitkeep` не
+означает, что соответствующий API, сервис или интеграция уже реализованы.
+
+```text
+virtual-space/
+├── prisma/
+│   ├── schema.prisma              # модели, связи, индексы и enum
+│   ├── migrations/                # версионируемые миграции
+│   └── seed.ts                    # стартовые категории и демонстрационные товары
+├── src/
+│   ├── app/
+│   │   ├── admin/
+│   │   │   └── layout.tsx         # серверная проверка роли ADMIN
+│   │   ├── api/
+│   │   │   ├── auth/[...nextauth]/route.ts
+│   │   │   ├── cart/validate/route.ts
+│   │   │   ├── orders/route.ts
+│   │   │   ├── products/route.ts
+│   │   │   └── uploads/signature/route.ts
+│   │   └── global-error.tsx       # при появлении отдельного global error-сценария
+│   ├── modules/
+│   │   ├── catalog/
+│   │   │   ├── mappers.ts
+│   │   │   ├── server.ts          # server-only публичный контракт модуля
+│   │   │   └── service.ts
+│   │   ├── orders/                # production order service
+│   │   ├── favorites/             # этап 2/3
+│   │   ├── reviews/               # этап 3
+│   │   └── assistant/             # этап 3: AI, изолированный от UI и провайдера
+│   └── server/
+│       ├── auth.ts                # конфигурация Auth.js; server-only
+│       ├── db.ts                  # singleton PrismaClient; server-only
+│       ├── env.ts                 # серверная Zod-проверка env
+│       └── integrations/
+│           ├── cloudinary.ts      # адаптер Cloudinary
+│           └── telegram.ts        # адаптер Telegram
+├── tests/
+│   └── integration/               # БД, API и server services
+└── middleware.ts                  # только при подтверждённой необходимости
+```
+
+Папка модуля создаётся постепенно. Не нужны пустые `repository`, `controller`, `domain` и
+`infrastructure` для каждого модуля. Файл появляется, когда у него есть реальная ответственность;
+крупный файл затем разделяется внутри модуля.
 
 ## 5. Слои и направление зависимостей
 
