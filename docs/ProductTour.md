@@ -372,3 +372,18 @@
 - Данные категории: `bedCategoryProducts` в `src/modules/catalog/mock-data.ts`.
 - Изображения: `public/images/beds/`.
 - Стили: `.beds-page*` в `src/styles/globals.css`.
+
+## Категория «Матрасы» — `/catalog/mattresses`
+
+Ссылка «Матрасы» в динамической панели каталога ведёт на отдельную страницу категории. На странице
+находятся описание подбора матраса и ровно три карточки: Alba, Forma и Noma. Из каждой карточки можно
+перейти на общую страницу товара или добавить позицию в корзину.
+
+Где править:
+
+- Маршрут: `src/app/(store)/catalog/mattresses/page.tsx`.
+- Состав категории и данные карточек: `mattressCategoryProducts` в
+  `src/modules/catalog/mock-data.ts`.
+- Изображения: `public/images/mattresses/`.
+- Ссылка в панели каталога: `src/components/layout/catalog-menu.tsx`.
+- Стили: `.mattresses-page*` в `src/styles/globals.css`.

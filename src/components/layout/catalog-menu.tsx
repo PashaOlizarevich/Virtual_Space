@@ -22,7 +22,7 @@ const categoryGroups = [
   ],
   [
     { label: "Кровати", href: "/catalog/beds" },
-    { label: "Матрасы", href: "/catalog" },
+    { label: "Матрасы", href: "/catalog/mattresses" },
   ],
   [
     { label: "Текстиль и декор", href: "/catalog" },

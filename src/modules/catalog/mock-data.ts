@@ -216,6 +216,60 @@ export const lineaBedProduct = {
   optionGroups: [],
 } as const satisfies Product;
 
+export const albaMattressProduct = {
+  id: "alba-mattress",
+  slug: "alba-mattress",
+  name: "Матрас Alba",
+  description: "Высокий матрас с упругой поддержкой и мягким стёганым верхним слоем.",
+  price: 1890,
+  currency: "BYN",
+  image: "/images/mattresses/alba.png",
+  imageAlt: "Белый матрас Alba с вертикальной стёжкой в светлой спальне",
+  gallery: [{ src: "/images/mattresses/alba.png", alt: "Матрас Alba в интерьере спальни" }],
+  specifications: [
+    { label: "Размер", value: "160 × 200 см" },
+    { label: "Высота", value: "28 см" },
+    { label: "Жёсткость", value: "Средняя" },
+  ],
+  optionGroups: [],
+} as const satisfies Product;
+
+export const formaMattressProduct = {
+  id: "forma-mattress",
+  slug: "forma-mattress",
+  name: "Матрас Forma",
+  description: "Сбалансированный матрас с адаптивной поверхностью для комфортного сна вдвоём.",
+  price: 1690,
+  currency: "BYN",
+  image: "/images/mattresses/forma.png",
+  imageAlt: "Белый матрас Forma с мягко скруглёнными углами в нейтральной спальне",
+  gallery: [{ src: "/images/mattresses/forma.png", alt: "Матрас Forma в интерьере спальни" }],
+  specifications: [
+    { label: "Размер", value: "160 × 200 см" },
+    { label: "Высота", value: "24 см" },
+    { label: "Жёсткость", value: "Средняя" },
+  ],
+  optionGroups: [],
+} as const satisfies Product;
+
+export const nomaMattressProduct = {
+  id: "noma-mattress",
+  slug: "noma-mattress",
+  name: "Матрас Noma",
+  description: "Анатомический матрас с усиленным контуром и выразительной геометричной стёжкой.",
+  price: 1490,
+  currency: "BYN",
+  image: "/images/mattresses/noma.png",
+  imageAlt: "Белый матрас Noma с контрастным кантом в современной спальне",
+  gallery: [{ src: "/images/mattresses/noma.png", alt: "Матрас Noma в интерьере спальни" }],
+  specifications: [
+    { label: "Размер", value: "160 × 200 см" },
+    { label: "Высота", value: "26 см" },
+    { label: "Жёсткость", value: "Выше средней" },
+  ],
+  optionGroups: [],
+} as const satisfies Product;
+
 export const products = [
   {
     id: "forma-chair",
@@ -336,6 +390,12 @@ export const bedCategoryProducts = [
   lineaBedProduct,
 ] as const satisfies readonly Product[];
 
+export const mattressCategoryProducts = [
+  albaMattressProduct,
+  formaMattressProduct,
+  nomaMattressProduct,
+] as const satisfies readonly Product[];
+
 export const allProducts = [
   ...products,
   lumoTablewareProduct,
@@ -346,6 +406,7 @@ export const allProducts = [
   nordSofaProduct,
   auraSofaProduct,
   ...bedCategoryProducts,
+  ...mattressCategoryProducts,
 ] as const satisfies readonly Product[];
 
 export function getProductBySlug(slug: string): Product | undefined {
