@@ -1,10 +1,10 @@
-import { Search, UserRound } from "lucide-react";
+import { UserRound } from "lucide-react";
 import Link from "next/link";
 
 import { CatalogMenu } from "@/components/layout/catalog-menu";
 import { Container } from "@/components/layout/container";
+import { HeaderSearch } from "@/components/layout/header-search";
 import { MobileNavigation } from "@/components/layout/mobile-navigation";
-import { Button } from "@/components/ui/button";
 import { CartWidget } from "@/modules/cart/components/cart-widget";
 
 const navigationItems = [
@@ -53,14 +53,7 @@ export function Header() {
         </Link>
 
         <div className="header__actions">
-          <Button
-            className="header__icon-button"
-            variant="ghost"
-            size="icon"
-            aria-label="Открыть поиск по сайту"
-          >
-            <Search aria-hidden="true" />
-          </Button>
+          <HeaderSearch />
           <Link
             className="header__icon-link"
             href="/login"

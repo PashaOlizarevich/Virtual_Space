@@ -892,3 +892,19 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 - Product Tour: без изменений; маршруты и пользовательские сценарии не менялись.
 - Ограничения: расхождение имени динамического сегмента товара и используемого slug намеренно не
   изменялось по запросу пользователя; автоматические ESLint-ограничения импортов не добавлялись.
+
+## Task 62 — Раскрывающийся поиск в Header
+
+- Результат: добавлен адаптивный раскрывающийся поиск с автофокусом, закрытием по повторному нажатию,
+  Escape и клику снаружи, возвратом фокуса и безопасной GET-отправкой непустого запроса.
+- Файлы: `src/components/layout/header-search.tsx`, `src/components/layout/header.tsx`,
+  `src/styles/globals.css`, `src/components/layout/header.test.tsx`, `tests/e2e/header.spec.ts`,
+  `docs/ProductTour.md`, `docs/progress.md`.
+- Проверки: Prettier, ESLint, TypeScript, целевой Jest-тест и production build — успешно; Playwright
+  частично выполнен, но итоговый прогон ограничен параллельно работающим `next dev`, который делит
+  каталог `.next` с production-проверкой.
+- Переменные окружения: нет.
+- Архитектура: Header сохранён Server Component, клиентское состояние изолировано в `HeaderSearch`.
+- Product Tour: обновлены раздел Header и ограничение поиска.
+- Ограничения: каталог пока не фильтрует товары по параметру `search`; E2E требует повторного запуска
+  после остановки внешнего dev-сервера на порту 3000.

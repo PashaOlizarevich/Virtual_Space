@@ -35,10 +35,60 @@ test.describe("store header", () => {
       "animation-delay",
       "0.2s",
     );
-    await expect(page.getByRole("button", { name: "Открыть поиск по сайту" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Открыть поиск" })).toBeVisible();
     await expect(page.getByRole("link", { name: "Личный кабинет" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Открыть корзину" })).toBeVisible();
     expect(consoleErrors).toEqual([]);
+  });
+
+  test("opens, closes and submits the header search", async ({ page }) => {
+    await page.goto("/");
+
+    const openSearch = page.getByRole("button", { name: "Открыть поиск" });
+    const searchInput = page.getByRole("searchbox", { name: "Поиск товаров" });
+    await expect(searchInput).not.toBeVisible();
+
+    await openSearch.click();
+    await expect(searchInput).toBeVisible();
+    await expect(searchInput).toBeFocused();
+    await searchInput.fill("  кресло  ");
+
+    await page.keyboard.press("Escape");
+    await expect(searchInput).not.toBeVisible();
+    await expect(openSearch).toBeFocused();
+
+    await openSearch.click();
+    await page.locator("main").click({ position: { x: 10, y: 10 } });
+    await expect(searchInput).not.toBeVisible();
+
+    await openSearch.click();
+    await searchInput.fill("   ");
+    await searchInput.press("Enter");
+    await expect(page).toHaveURL(/\/$/);
+
+    await searchInput.fill("  кресло  ");
+    await searchInput.press("Enter");
+    await expect(page).toHaveURL(/\/catalog\?search=%D0%BA%D1%80%D0%B5%D1%81%D0%BB%D0%BE$/);
+  });
+
+  test("keeps mobile header controls available while search is open", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/");
+
+    await page.getByRole("button", { name: "Открыть поиск" }).click();
+
+    const searchInput = page.getByRole("searchbox", { name: "Поиск товаров" });
+    const menuButton = page.getByRole("button", { name: "Открыть меню" });
+    await expect(searchInput).toBeVisible();
+    await expect(menuButton).toBeVisible();
+
+    const [searchBox, menuBox] = await Promise.all([
+      searchInput.boundingBox(),
+      menuButton.boundingBox(),
+    ]);
+    expect(searchBox).not.toBeNull();
+    expect(menuBox).not.toBeNull();
+    expect(searchBox!.x).toBeGreaterThanOrEqual(menuBox!.x + menuBox!.width);
   });
 
   test("opens the desktop catalog mega menu and restores trigger focus", async ({ page }) => {

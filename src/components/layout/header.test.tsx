@@ -19,7 +19,9 @@ describe("Header", () => {
     expect(markup).toContain('href="/about#about-contact-title"');
     expect(markup).toContain('href="/about"');
     expect(markup).toMatch(/Каталог[\s\S]*Магазины[\s\S]*Новинки[\s\S]*Акции[\s\S]*О нас/);
-    expect(markup).toContain('aria-label="Открыть поиск по сайту"');
+    expect(markup).toContain('role="search"');
+    expect(markup).toContain('aria-label="Открыть поиск"');
+    expect(markup).toContain('aria-label="Поиск товаров"');
     expect(markup).toContain('aria-label="Личный кабинет"');
     expect(markup).toContain('aria-label="Открыть корзину"');
     expect(markup).toContain('aria-label="Открыть меню"');
