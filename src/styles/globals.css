@@ -280,6 +280,10 @@ a {
   visibility: visible;
 }
 
+.header-search__input:focus-visible {
+  outline: none;
+}
+
 .header-search__input::placeholder {
   color: rgb(255 255 255 / 62%);
 }
