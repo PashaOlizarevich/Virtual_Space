@@ -255,8 +255,7 @@ a {
 
 .header-search[data-state="open"] {
   width: clamp(200px, 24vw, 320px);
-  border-color: rgb(255 255 255 / 32%);
-  background: rgb(16 16 16 / 72%);
+  background: rgb(255 255 255 / 12%);
 }
 
 .header-search__input.input {
@@ -291,6 +290,10 @@ a {
 
 .header-search .header-search__trigger {
   flex: none;
+}
+
+.header-search[data-state="open"] .header-search__trigger:hover {
+  background: transparent;
 }
 
 .header__icon-link,
