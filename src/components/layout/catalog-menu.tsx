@@ -25,7 +25,7 @@ const categoryGroups = [
     { label: "Матрасы", href: "/catalog/mattresses" },
   ],
   [
-    { label: "Текстиль и декор", href: "/catalog" },
+    { label: "Текстиль и декор", href: "/catalog/textiles-decor" },
     { label: "Посуда", href: "/catalog/tableware" },
   ],
 ] as const;

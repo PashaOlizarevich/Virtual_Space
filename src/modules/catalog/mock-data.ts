@@ -270,6 +270,67 @@ export const nomaMattressProduct = {
   optionGroups: [],
 } as const satisfies Product;
 
+export const linoThrowProduct = {
+  id: "lino-throw",
+  slug: "lino-throw",
+  name: "Плед Lino",
+  description:
+    "Льняной плед с выразительным плетением и мягкой бахромой для спокойных интерьерных акцентов.",
+  price: 289,
+  currency: "BYN",
+  image: "/images/textiles-decor/lino.png",
+  imageAlt: "Натуральный льняной плед Lino на светлом диване",
+  gallery: [{ src: "/images/textiles-decor/lino.png", alt: "Плед Lino в интерьере гостиной" }],
+  specifications: [
+    { label: "Размер", value: "140 × 200 см" },
+    { label: "Материал", value: "100% лён" },
+    { label: "Уход", value: "Деликатная стирка при 30 °C" },
+  ],
+  optionGroups: [],
+} as const satisfies Product;
+
+export const miroCushionProduct = {
+  id: "miro-cushion",
+  slug: "miro-cushion",
+  name: "Подушка Miro",
+  description: "Декоративная подушка из хлопкового букле с рельефным узором и упругим наполнением.",
+  price: 189,
+  currency: "BYN",
+  image: "/images/textiles-decor/miro.png",
+  imageAlt: "Светлая декоративная подушка Miro с рельефным узором",
+  gallery: [{ src: "/images/textiles-decor/miro.png", alt: "Подушка Miro на светлом диване" }],
+  specifications: [
+    { label: "Размер", value: "50 × 50 см" },
+    { label: "Чехол", value: "Хлопковое букле" },
+    { label: "Наполнитель", value: "Полиэфирное волокно" },
+  ],
+  optionGroups: [],
+} as const satisfies Product;
+
+export const soraVaseProduct = {
+  id: "sora-vase",
+  slug: "sora-vase",
+  name: "Ваза Sora",
+  description:
+    "Скульптурная керамическая ваза ручной работы с матовой фактурой и плавным силуэтом.",
+  price: 159,
+  currency: "BYN",
+  image: "/images/textiles-decor/sora.png",
+  imageAlt: "Скульптурная белая керамическая ваза Sora",
+  gallery: [
+    {
+      src: "/images/textiles-decor/sora.png",
+      alt: "Ваза Sora с сухими ветвями на дубовой консоли",
+    },
+  ],
+  specifications: [
+    { label: "Размер", value: "24 × 14 × 32 см" },
+    { label: "Материал", value: "Керамика" },
+    { label: "Отделка", value: "Матовая глазурь" },
+  ],
+  optionGroups: [],
+} as const satisfies Product;
+
 export const products = [
   {
     id: "forma-chair",
@@ -396,6 +457,12 @@ export const mattressCategoryProducts = [
   nomaMattressProduct,
 ] as const satisfies readonly Product[];
 
+export const textilesDecorCategoryProducts = [
+  linoThrowProduct,
+  miroCushionProduct,
+  soraVaseProduct,
+] as const satisfies readonly Product[];
+
 export const allProducts = [
   ...products,
   lumoTablewareProduct,
@@ -407,6 +474,7 @@ export const allProducts = [
   auraSofaProduct,
   ...bedCategoryProducts,
   ...mattressCategoryProducts,
+  ...textilesDecorCategoryProducts,
 ] as const satisfies readonly Product[];
 
 export function getProductBySlug(slug: string): Product | undefined {

@@ -387,3 +387,15 @@
 - Изображения: `public/images/mattresses/`.
 - Ссылка в панели каталога: `src/components/layout/catalog-menu.tsx`.
 - Стили: `.mattresses-page*` в `src/styles/globals.css`.
+
+## Категория «Текстиль и декор» — `/catalog/textiles-decor`
+
+Ссылка «Текстиль и декор» в динамической панели каталога ведёт на отдельную страницу категории. На
+странице размещены описание направления и ровно три карточки коллекции: плед Lino, подушка Miro и
+ваза Sora. Из каждой карточки можно перейти на общую страницу товара или добавить позицию в корзину.
+
+- Маршрут: `src/app/(store)/catalog/textiles-decor/page.tsx`.
+- Данные: `textilesDecorCategoryProducts` в `src/modules/catalog/mock-data.ts`.
+- Изображения: `public/images/textiles-decor/`.
+- Ссылка в панели каталога: `src/components/layout/catalog-menu.tsx`.
+- Стили: `.textiles-decor-page*` в `src/styles/globals.css`.
