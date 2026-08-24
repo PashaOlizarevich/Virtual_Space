@@ -989,3 +989,26 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
   переход на `/product/tavola-dining-table`. Browser plugin в сессии недоступен, поэтому использован
   Playwright.
 - Product Tour: добавлена карта маршрута `/catalog/dining-tables` и связанных файлов.
+
+## Task 67 — Папки изображений товаров и слайдер галереи
+
+- Результат: существующие фотографии 23 товаров перенесены в подпапки категорий по полному slug и
+  переименованы в `01-main.png`; страница товара получила доступный адаптивный слайдер со стрелками,
+  счётчиком, миниатюрами, клавиатурным управлением и свайпом. При одном изображении лишние элементы
+  управления не выводятся.
+- Файлы: `public/images/{beds,chairs,dining-tables,mattresses,sofas,tableware,textiles-decor}`,
+  `src/modules/catalog/mock-data.ts`, `src/modules/catalog/components/product-gallery.tsx`,
+  `src/modules/catalog/components/product-gallery.test.tsx`, `src/styles/globals.css`,
+  `docs/architecture.md`, `docs/ProductTour.md`, `docs/progress.md`.
+- Проверки: Prettier, ESLint, TypeScript, 22 Jest suites и 58 тестов, production build — успешно;
+  два целевых Chromium E2E-сценария перехода/добавления товара и мобильной страницы — успешно.
+  Полный `catalog.spec.ts` выявил существующее несоответствие ожидания `object-fit: cover` для посуды
+  фактическому стилю `contain`; E2E-файл по правилам проекта не изменялся.
+- Переменные окружения: `PORT` и `PLAYWRIGHT_BASE_URL` использованы только для изолированного
+  E2E-запуска.
+- Архитектура: в `docs/architecture.md` закреплено локальное правило
+  `public/images/<category-slug>/<product-slug>/<position>-<role>.<extension>`; production-хранилище
+  Cloudinary не изменялось.
+- Product Tour: обновлены описание галереи страницы товара и расположение локальных изображений.
+- Ограничения: дополнительные фотографии `02–06` пользователь добавляет самостоятельно; до их
+  добавления товары показывают единственное основное изображение без элементов переключения.

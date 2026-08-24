@@ -7,11 +7,11 @@ export const lumoTablewareProduct = {
   description: "Четыре керамические тарелки ручной работы с мягкой матовой глазурью.",
   price: 180,
   currency: "BYN",
-  image: "/images/tableware/lumo-plates.png",
+  image: "/images/tableware/lumo-plates/01-main.png",
   imageAlt: "Четыре светлые керамические тарелки Lumo на каменной столешнице",
   gallery: [
     {
-      src: "/images/tableware/lumo-plates.png",
+      src: "/images/tableware/lumo-plates/01-main.png",
       alt: "Набор из четырёх керамических тарелок Lumo",
     },
   ],
@@ -30,9 +30,9 @@ export const arcoChairProduct = {
   description: "Лёгкий стул из ясеня с выразительной изогнутой спинкой.",
   price: 590,
   currency: "BYN",
-  image: "/images/home/arco.png",
+  image: "/images/chairs/arco-chair/01-main.png",
   imageAlt: "Чёрный деревянный стул Arco",
-  gallery: [{ src: "/images/home/arco.png", alt: "Деревянный стул Arco" }],
+  gallery: [{ src: "/images/chairs/arco-chair/01-main.png", alt: "Деревянный стул Arco" }],
   specifications: [
     { label: "Размер", value: "48 × 52 × 79 см" },
     { label: "Материал", value: "Массив ясеня" },
@@ -57,9 +57,9 @@ export const nomaChairProduct = {
   description: "Обеденный стул из светлого дуба с плетёным сиденьем.",
   price: 720,
   currency: "BYN",
-  image: "/images/chairs/noma.png",
+  image: "/images/chairs/noma-chair/01-main.png",
   imageAlt: "Стул Noma из светлого дуба с плетёным сиденьем",
-  gallery: [{ src: "/images/chairs/noma.png", alt: "Дубовый стул Noma" }],
+  gallery: [{ src: "/images/chairs/noma-chair/01-main.png", alt: "Дубовый стул Noma" }],
   specifications: [
     { label: "Размер", value: "49 × 54 × 80 см" },
     { label: "Материал", value: "Массив дуба, бумажный шнур" },
@@ -75,9 +75,9 @@ export const teraChairProduct = {
   description: "Мягкий стул с тонким металлическим каркасом и шерстяной обивкой.",
   price: 840,
   currency: "BYN",
-  image: "/images/chairs/tera.png",
+  image: "/images/chairs/tera-chair/01-main.png",
   imageAlt: "Мягкий серый стул Tera на тонком металлическом каркасе",
-  gallery: [{ src: "/images/chairs/tera.png", alt: "Стул Tera с шерстяной обивкой" }],
+  gallery: [{ src: "/images/chairs/tera-chair/01-main.png", alt: "Стул Tera с шерстяной обивкой" }],
   specifications: [
     { label: "Размер", value: "54 × 58 × 78 см" },
     { label: "Каркас", value: "Сталь с порошковым покрытием" },
@@ -93,9 +93,9 @@ export const lentoSofaProduct = {
   description: "Компактный двухместный диван с мягкими линиями и уютной глубокой посадкой.",
   price: 2590,
   currency: "BYN",
-  image: "/images/sofas/lento.png",
+  image: "/images/sofas/lento-sofa/01-main.png",
   imageAlt: "Светлый двухместный диван Lento с округлыми подлокотниками",
-  gallery: [{ src: "/images/sofas/lento.png", alt: "Двухместный диван Lento" }],
+  gallery: [{ src: "/images/sofas/lento-sofa/01-main.png", alt: "Двухместный диван Lento" }],
   specifications: [
     { label: "Размер", value: "184 × 94 × 76 см" },
     { label: "Каркас", value: "Берёзовая фанера, массив" },
@@ -111,9 +111,9 @@ export const velaSofaProduct = {
   description: "Трёхместный диван с плавной спинкой и спокойной фактурой для современной гостиной.",
   price: 3490,
   currency: "BYN",
-  image: "/images/sofas/vela.png",
+  image: "/images/sofas/vela-sofa/01-main.png",
   imageAlt: "Серо-зелёный трёхместный диван Vela с плавной спинкой",
-  gallery: [{ src: "/images/sofas/vela.png", alt: "Трёхместный диван Vela" }],
+  gallery: [{ src: "/images/sofas/vela-sofa/01-main.png", alt: "Трёхместный диван Vela" }],
   specifications: [
     { label: "Размер", value: "228 × 96 × 78 см" },
     { label: "Основание", value: "Массив бука" },
@@ -129,9 +129,11 @@ export const nordSofaProduct = {
   description: "Просторная модульная композиция с шезлонгом и глубокими мягкими подушками.",
   price: 4690,
   currency: "BYN",
-  image: "/images/sofas/nord.png",
+  image: "/images/sofas/nord-sofa/01-main.png",
   imageAlt: "Светло-серый модульный диван Nord с шезлонгом справа",
-  gallery: [{ src: "/images/sofas/nord.png", alt: "Модульный диван Nord с шезлонгом" }],
+  gallery: [
+    { src: "/images/sofas/nord-sofa/01-main.png", alt: "Модульный диван Nord с шезлонгом" },
+  ],
   specifications: [
     { label: "Размер", value: "284 × 164 × 74 см" },
     { label: "Модули", value: "3 секции" },
@@ -147,9 +149,9 @@ export const auraSofaProduct = {
   description: "Скульптурный диван с обволакивающей спинкой и тёплой тактильной обивкой.",
   price: 4290,
   currency: "BYN",
-  image: "/images/sofas/aura.png",
+  image: "/images/sofas/aura-sofa/01-main.png",
   imageAlt: "Коричневый трёхместный диван Aura с округлой спинкой",
-  gallery: [{ src: "/images/sofas/aura.png", alt: "Скульптурный диван Aura" }],
+  gallery: [{ src: "/images/sofas/aura-sofa/01-main.png", alt: "Скульптурный диван Aura" }],
   specifications: [
     { label: "Размер", value: "246 × 102 × 73 см" },
     { label: "Основание", value: "Массив ореха" },
@@ -165,9 +167,9 @@ export const nubiBedProduct = {
   description: "Мягкая кровать с округлым изголовьем и просторным спальным местом.",
   price: 1690,
   currency: "BYN",
-  image: "/images/beds/nubi.png",
+  image: "/images/beds/nubi-bed/01-main.png",
   imageAlt: "Светлая кровать Nubi с округлым мягким изголовьем",
-  gallery: [{ src: "/images/beds/nubi.png", alt: "Кровать Nubi в светлой спальне" }],
+  gallery: [{ src: "/images/beds/nubi-bed/01-main.png", alt: "Кровать Nubi в светлой спальне" }],
   specifications: [
     { label: "Размер", value: "168 × 218 × 112 см" },
     { label: "Спальное место", value: "160 × 200 см" },
@@ -183,10 +185,13 @@ export const ardeaBedProduct = {
   description: "Кровать с мягким изголовьем и основанием из натурального дуба.",
   price: 1790,
   currency: "BYN",
-  image: "/images/beds/ardea.png",
+  image: "/images/beds/ardea-bed/01-main.png",
   imageAlt: "Дубовая кровать Ardea с мягким серым изголовьем",
   gallery: [
-    { src: "/images/beds/ardea.png", alt: "Кровать Ardea в спальне с естественным светом" },
+    {
+      src: "/images/beds/ardea-bed/01-main.png",
+      alt: "Кровать Ardea в спальне с естественным светом",
+    },
   ],
   specifications: [
     { label: "Размер", value: "188 × 218 × 118 см" },
@@ -203,10 +208,13 @@ export const lineaBedProduct = {
   description: "Лаконичная кровать с чистыми линиями и низким профилем.",
   price: 1590,
   currency: "BYN",
-  image: "/images/beds/linea.png",
+  image: "/images/beds/linea-bed/01-main.png",
   imageAlt: "Низкая кровать Linea с бежевой обивкой и тонкими тёмными ножками",
   gallery: [
-    { src: "/images/beds/linea.png", alt: "Минималистичная кровать Linea в современной спальне" },
+    {
+      src: "/images/beds/linea-bed/01-main.png",
+      alt: "Минималистичная кровать Linea в современной спальне",
+    },
   ],
   specifications: [
     { label: "Размер", value: "168 × 216 × 94 см" },
@@ -223,9 +231,11 @@ export const albaMattressProduct = {
   description: "Высокий матрас с упругой поддержкой и мягким стёганым верхним слоем.",
   price: 1890,
   currency: "BYN",
-  image: "/images/mattresses/alba.png",
+  image: "/images/mattresses/alba-mattress/01-main.png",
   imageAlt: "Белый матрас Alba с вертикальной стёжкой в светлой спальне",
-  gallery: [{ src: "/images/mattresses/alba.png", alt: "Матрас Alba в интерьере спальни" }],
+  gallery: [
+    { src: "/images/mattresses/alba-mattress/01-main.png", alt: "Матрас Alba в интерьере спальни" },
+  ],
   specifications: [
     { label: "Размер", value: "160 × 200 см" },
     { label: "Высота", value: "28 см" },
@@ -241,9 +251,14 @@ export const formaMattressProduct = {
   description: "Сбалансированный матрас с адаптивной поверхностью для комфортного сна вдвоём.",
   price: 1690,
   currency: "BYN",
-  image: "/images/mattresses/forma.png",
+  image: "/images/mattresses/forma-mattress/01-main.png",
   imageAlt: "Белый матрас Forma с мягко скруглёнными углами в нейтральной спальне",
-  gallery: [{ src: "/images/mattresses/forma.png", alt: "Матрас Forma в интерьере спальни" }],
+  gallery: [
+    {
+      src: "/images/mattresses/forma-mattress/01-main.png",
+      alt: "Матрас Forma в интерьере спальни",
+    },
+  ],
   specifications: [
     { label: "Размер", value: "160 × 200 см" },
     { label: "Высота", value: "24 см" },
@@ -259,9 +274,11 @@ export const nomaMattressProduct = {
   description: "Анатомический матрас с усиленным контуром и выразительной геометричной стёжкой.",
   price: 1490,
   currency: "BYN",
-  image: "/images/mattresses/noma.png",
+  image: "/images/mattresses/noma-mattress/01-main.png",
   imageAlt: "Белый матрас Noma с контрастным кантом в современной спальне",
-  gallery: [{ src: "/images/mattresses/noma.png", alt: "Матрас Noma в интерьере спальни" }],
+  gallery: [
+    { src: "/images/mattresses/noma-mattress/01-main.png", alt: "Матрас Noma в интерьере спальни" },
+  ],
   specifications: [
     { label: "Размер", value: "160 × 200 см" },
     { label: "Высота", value: "26 см" },
@@ -278,9 +295,14 @@ export const linoThrowProduct = {
     "Льняной плед с выразительным плетением и мягкой бахромой для спокойных интерьерных акцентов.",
   price: 289,
   currency: "BYN",
-  image: "/images/textiles-decor/lino.png",
+  image: "/images/textiles-decor/lino-throw/01-main.png",
   imageAlt: "Натуральный льняной плед Lino на светлом диване",
-  gallery: [{ src: "/images/textiles-decor/lino.png", alt: "Плед Lino в интерьере гостиной" }],
+  gallery: [
+    {
+      src: "/images/textiles-decor/lino-throw/01-main.png",
+      alt: "Плед Lino в интерьере гостиной",
+    },
+  ],
   specifications: [
     { label: "Размер", value: "140 × 200 см" },
     { label: "Материал", value: "100% лён" },
@@ -296,9 +318,14 @@ export const miroCushionProduct = {
   description: "Декоративная подушка из хлопкового букле с рельефным узором и упругим наполнением.",
   price: 189,
   currency: "BYN",
-  image: "/images/textiles-decor/miro.png",
+  image: "/images/textiles-decor/miro-cushion/01-main.png",
   imageAlt: "Светлая декоративная подушка Miro с рельефным узором",
-  gallery: [{ src: "/images/textiles-decor/miro.png", alt: "Подушка Miro на светлом диване" }],
+  gallery: [
+    {
+      src: "/images/textiles-decor/miro-cushion/01-main.png",
+      alt: "Подушка Miro на светлом диване",
+    },
+  ],
   specifications: [
     { label: "Размер", value: "50 × 50 см" },
     { label: "Чехол", value: "Хлопковое букле" },
@@ -315,11 +342,11 @@ export const soraVaseProduct = {
     "Скульптурная керамическая ваза ручной работы с матовой фактурой и плавным силуэтом.",
   price: 159,
   currency: "BYN",
-  image: "/images/textiles-decor/sora.png",
+  image: "/images/textiles-decor/sora-vase/01-main.png",
   imageAlt: "Скульптурная белая керамическая ваза Sora",
   gallery: [
     {
-      src: "/images/textiles-decor/sora.png",
+      src: "/images/textiles-decor/sora-vase/01-main.png",
       alt: "Ваза Sora с сухими ветвями на дубовой консоли",
     },
   ],
@@ -338,11 +365,11 @@ export const tavolaDiningTableProduct = {
   description: "Прямоугольный обеденный стол из массива дуба с выразительной природной текстурой.",
   price: 2490,
   currency: "BYN",
-  image: "/images/dining-tables/tavola.png",
+  image: "/images/dining-tables/tavola-dining-table/01-main.png",
   imageAlt: "Прямоугольный обеденный стол Tavola из натурального дуба",
   gallery: [
     {
-      src: "/images/dining-tables/tavola.png",
+      src: "/images/dining-tables/tavola-dining-table/01-main.png",
       alt: "Дубовый обеденный стол Tavola в светлом интерьере",
     },
   ],
@@ -361,11 +388,11 @@ export const orbisDiningTableProduct = {
   description: "Круглый стол из тёмного ореха со скульптурным основанием для камерных встреч.",
   price: 2890,
   currency: "BYN",
-  image: "/images/dining-tables/orbis.png",
+  image: "/images/dining-tables/orbis-dining-table/01-main.png",
   imageAlt: "Круглый обеденный стол Orbis из тёмного ореха на центральном основании",
   gallery: [
     {
-      src: "/images/dining-tables/orbis.png",
+      src: "/images/dining-tables/orbis-dining-table/01-main.png",
       alt: "Ореховый обеденный стол Orbis в нейтральном интерьере",
     },
   ],
@@ -384,11 +411,11 @@ export const elaraDiningTableProduct = {
   description: "Овальный стол из светлого ясеня с мягким силуэтом и тонкими наклонными опорами.",
   price: 2690,
   currency: "BYN",
-  image: "/images/dining-tables/elara.png",
+  image: "/images/dining-tables/elara-dining-table/01-main.png",
   imageAlt: "Овальный обеденный стол Elara из светлого ясеня",
   gallery: [
     {
-      src: "/images/dining-tables/elara.png",
+      src: "/images/dining-tables/elara-dining-table/01-main.png",
       alt: "Светлый обеденный стол Elara в современном интерьере",
     },
   ],
@@ -408,9 +435,9 @@ export const products = [
     description: "Объёмное кресло с мягкими линиями и уютной посадкой.",
     price: 1390,
     currency: "BYN",
-    image: "/images/home/forma.png",
+    image: "/images/chairs/forma-chair/01-main.png",
     imageAlt: "Светлое кресло Forma из фактурной ткани",
-    gallery: [{ src: "/images/home/forma.png", alt: "Кресло Forma, вид спереди" }],
+    gallery: [{ src: "/images/chairs/forma-chair/01-main.png", alt: "Кресло Forma, вид спереди" }],
     specifications: [
       { label: "Размер", value: "86 × 92 × 74 см" },
       { label: "Каркас", value: "Берёзовая фанера, массив" },
@@ -442,9 +469,9 @@ export const products = [
     description: "Модульный диван для гибких композиций и ежедневного комфорта.",
     price: 3990,
     currency: "BYN",
-    image: "/images/home/modul.png",
+    image: "/images/sofas/modul-sofa/01-main.png",
     imageAlt: "Светлый трёхместный диван Modul",
-    gallery: [{ src: "/images/home/modul.png", alt: "Трёхместный диван Modul" }],
+    gallery: [{ src: "/images/sofas/modul-sofa/01-main.png", alt: "Трёхместный диван Modul" }],
     specifications: [
       { label: "Размер", value: "240 × 98 × 72 см" },
       { label: "Модули", value: "3 секции" },
@@ -476,9 +503,11 @@ export const products = [
     description: "Лаконичный обеденный стол из натурального дуба.",
     price: 1890,
     currency: "BYN",
-    image: "/images/home/linea.png",
+    image: "/images/dining-tables/linea-table/01-main.png",
     imageAlt: "Прямоугольный дубовый стол Linea",
-    gallery: [{ src: "/images/home/linea.png", alt: "Обеденный стол Linea" }],
+    gallery: [
+      { src: "/images/dining-tables/linea-table/01-main.png", alt: "Обеденный стол Linea" },
+    ],
     specifications: [
       { label: "Размер", value: "180 × 90 × 75 см" },
       { label: "Материал", value: "Массив дуба" },

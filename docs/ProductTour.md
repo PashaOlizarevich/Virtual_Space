@@ -192,8 +192,10 @@
 Файл: `src/app/(store)/product/[id]/page.tsx`. Пример адреса: `/product/forma-chair`. Значение
 `<slug>` берётся из поля `slug` товара в `src/modules/catalog/mock-data.ts`.
 
-На странице находятся хлебные крошки, галерея, название и описание, выбор конфигурации, добавление
-в корзину и характеристики. Неизвестный slug открывает страницу 404.
+На странице находятся хлебные крошки, слайдер галереи, название и описание, выбор конфигурации,
+добавление в корзину и характеристики. При нескольких изображениях слайдер показывает стрелки,
+счётчик и миниатюры, поддерживает клавиши со стрелками и горизонтальный свайп. Для единственного
+изображения неактивные элементы управления скрыты. Неизвестный slug открывает страницу 404.
 
 Где править:
 
@@ -202,7 +204,8 @@
 - Цена, варианты, количество и добавление в корзину:
   `src/modules/catalog/components/product-configurator.tsx`.
 - Контент конкретного товара: `src/modules/catalog/mock-data.ts`.
-- Изображения товаров: пути, указанные в `mock-data.ts` (сейчас используются внешние URL).
+- Изображения товаров: `public/images/<category-slug>/<product-slug>/`; порядок и alt-тексты
+  задаются в `gallery` соответствующего товара в `mock-data.ts`.
 - Стили: `.product-detail*`, `.product-gallery*`, `.product-configurator*` в
   `src/styles/globals.css`.
 
@@ -370,7 +373,7 @@
 
 - Маршрут: `src/app/(store)/catalog/beds/page.tsx`.
 - Данные категории: `bedCategoryProducts` в `src/modules/catalog/mock-data.ts`.
-- Изображения: `public/images/beds/`.
+- Изображения: товарные подпапки в `public/images/beds/`.
 - Стили: `.beds-page*` в `src/styles/globals.css`.
 
 ## Категория «Матрасы» — `/catalog/mattresses`
@@ -384,7 +387,7 @@
 - Маршрут: `src/app/(store)/catalog/mattresses/page.tsx`.
 - Состав категории и данные карточек: `mattressCategoryProducts` в
   `src/modules/catalog/mock-data.ts`.
-- Изображения: `public/images/mattresses/`.
+- Изображения: товарные подпапки в `public/images/mattresses/`.
 - Ссылка в панели каталога: `src/components/layout/catalog-menu.tsx`.
 - Стили: `.mattresses-page*` в `src/styles/globals.css`.
 
@@ -396,7 +399,7 @@
 
 - Маршрут: `src/app/(store)/catalog/textiles-decor/page.tsx`.
 - Данные: `textilesDecorCategoryProducts` в `src/modules/catalog/mock-data.ts`.
-- Изображения: `public/images/textiles-decor/`.
+- Изображения: товарные подпапки в `public/images/textiles-decor/`.
 - Ссылка в панели каталога: `src/components/layout/catalog-menu.tsx`.
 - Стили: `.textiles-decor-page*` в `src/styles/globals.css`.
 
@@ -408,6 +411,6 @@
 
 - Маршрут: `src/app/(store)/catalog/dining-tables/page.tsx`.
 - Состав категории и данные товаров: `diningTableCategoryProducts` в `src/modules/catalog/mock-data.ts`.
-- Изображения: `public/images/dining-tables/`.
+- Изображения: товарные подпапки в `public/images/dining-tables/`.
 - Переход из меню: `src/components/layout/catalog-menu.tsx`.
 - Стили: `.dining-tables-page*` в `src/styles/globals.css`.
