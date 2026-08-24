@@ -95,7 +95,15 @@ export const lentoSofaProduct = {
   currency: "BYN",
   image: "/images/sofas/lento-sofa/01-main.png",
   imageAlt: "Светлый двухместный диван Lento с округлыми подлокотниками",
-  gallery: [{ src: "/images/sofas/lento-sofa/01-main.png", alt: "Двухместный диван Lento" }],
+  gallery: [
+    { src: "/images/sofas/lento-sofa/01-main.png", alt: "Двухместный диван Lento" },
+    { src: "/images/sofas/lento-sofa/02-side.png", alt: "Диван Lento, вид сбоку" },
+    { src: "/images/sofas/lento-sofa/03-armrest.png", alt: "Подлокотник дивана Lento" },
+    { src: "/images/sofas/lento-sofa/04-leg.png", alt: "Опора дивана Lento крупным планом" },
+    { src: "/images/sofas/lento-sofa/05-top.png", alt: "Диван Lento, вид сверху" },
+    { src: "/images/sofas/lento-sofa/06-unfolded.png", alt: "Диван Lento в разложенном виде" },
+    { src: "/images/sofas/lento-sofa/07-main.png", alt: "Диван Lento, дополнительный общий вид" },
+  ],
   specifications: [
     { label: "Размер", value: "184 × 94 × 76 см" },
     { label: "Каркас", value: "Берёзовая фанера, массив" },
@@ -151,7 +159,15 @@ export const auraSofaProduct = {
   currency: "BYN",
   image: "/images/sofas/aura-sofa/01-main.png",
   imageAlt: "Коричневый трёхместный диван Aura с округлой спинкой",
-  gallery: [{ src: "/images/sofas/aura-sofa/01-main.png", alt: "Скульптурный диван Aura" }],
+  gallery: [
+    { src: "/images/sofas/aura-sofa/01-main.png", alt: "Скульптурный диван Aura" },
+    { src: "/images/sofas/aura-sofa/02-side.png", alt: "Диван Aura, вид сбоку" },
+    { src: "/images/sofas/aura-sofa/03-armrest.png", alt: "Подлокотник дивана Aura" },
+    { src: "/images/sofas/aura-sofa/04-leg.png", alt: "Опора дивана Aura крупным планом" },
+    { src: "/images/sofas/aura-sofa/05-top.png", alt: "Диван Aura, вид сверху" },
+    { src: "/images/sofas/aura-sofa/06-unfolded.png", alt: "Диван Aura в разложенном виде" },
+    { src: "/images/sofas/aura-sofa/07-main.png", alt: "Диван Aura, дополнительный общий вид" },
+  ],
   specifications: [
     { label: "Размер", value: "246 × 102 × 73 см" },
     { label: "Основание", value: "Массив ореха" },
