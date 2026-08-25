@@ -592,10 +592,45 @@ export const products = [
     image: "/images/armchairs/forma-armchair/01-main.png",
     imageAlt: "Светлое кресло Forma из фактурной ткани",
     gallery: [
-      { src: "/images/armchairs/forma-armchair/01-main.png", alt: "Кресло Forma, вид спереди" },
+      {
+        src: "/images/armchairs/forma-armchair/01-main.png",
+        alt: "Кресло Forma в светлом интерьере, вид спереди",
+      },
+      {
+        src: "/images/armchairs/forma-armchair/02-three-quarter.png",
+        alt: "Кресло Forma в интерьере, вид в три четверти",
+      },
+      {
+        src: "/images/armchairs/forma-armchair/03-armrest-detail.png",
+        alt: "Закруглённый подлокотник кресла Forma крупным планом",
+      },
+      {
+        src: "/images/armchairs/forma-armchair/04-fabric-detail.png",
+        alt: "Фактура светлой обивки кресла Forma крупным планом",
+      },
+      {
+        src: "/images/armchairs/forma-armchair/05-side.png",
+        alt: "Кресло Forma, вид сбоку",
+      },
+      {
+        src: "/images/armchairs/forma-armchair/06-base-detail.png",
+        alt: "Деревянное основание кресла Forma крупным планом",
+      },
+      {
+        src: "/images/armchairs/forma-armchair/07-lifestyle.png",
+        alt: "Кресло Forma с сидящим человеком в гостиной",
+      },
+      {
+        src: "/images/armchairs/forma-armchair/08-dimensions.png",
+        alt: "Схема размеров кресла Forma спереди и сбоку",
+      },
+      {
+        src: "/images/armchairs/forma-armchair/09-interior.png",
+        alt: "Кресло Forma в просторной современной гостиной",
+      },
     ],
     specifications: [
-      { label: "Размер", value: "86 × 92 × 74 см" },
+      { label: "Размер", value: "89 × 81 × 75 см" },
       { label: "Каркас", value: "Берёзовая фанера, массив" },
       { label: "Наполнение", value: "Пенополиуретан разной плотности" },
     ],
