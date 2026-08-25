@@ -28,6 +28,7 @@
 | `/catalog/tableware`  | Посуда               | `src/app/(store)/catalog/tableware/page.tsx` | `ProductPreview`, `lumoTablewareProduct`             |
 | `/product/<slug>`     | Карточка товара      | `src/app/(store)/product/[id]/page.tsx`      | `ProductGallery`, `ProductConfigurator`              |
 | `/about`              | О магазине           | `src/app/(store)/about/page.tsx`             | `storeProfile`                                       |
+| `/stores`             | Магазины             | `src/app/(store)/stores/page.tsx`            | `stores`                                             |
 | `/login`              | Вход и регистрация   | `src/app/(store)/login/page.tsx`             | `AuthForms`                                          |
 | `/profile`            | Личный кабинет       | `src/app/(store)/profile/page.tsx`           | `ProfileDashboard`                                   |
 | `/checkout`           | Оформление заявки    | `src/app/(store)/checkout/page.tsx`          | `CheckoutForm`                                       |
@@ -65,8 +66,18 @@
   `/catalog/sofas`, `/catalog/chairs` и `/catalog/tableware`, остальные категории — в `/catalog`, поскольку их фильтрация пока не
   реализована.
   «Новинки» и «Акции» ведут в существующий каталог,
-  «Магазины» — к контактам шоурума на странице «О нас»; переход на главную доступен через логотип.
-  Массив ссылок `navigationItems` находится в `header.tsx`.
+  «Магазины» — на отдельную страницу четырёх шоурумов; переход на главную доступен через логотип.
+
+### Магазины — `/stores`
+
+Файлы: `src/app/(store)/stores/page.tsx`, `src/modules/stores/components/store-slider.tsx` и
+`src/modules/stores/mock-data.ts`.
+
+Страница рассказывает общую историю пространств Virtual Space и показывает магазины в Нью-Йорке,
+Москве, Минске и Париже. В каждом блоке доступны адрес, краткое описание и управляемая вкладками или
+стрелками галерея из четырёх кадров: фасад, интерьер, ресепшен и интерьерная деталь.
+Массив ссылок `navigationItems` находится в `header.tsx`.
+
 - Логотип `VIRTUAL SPACE` ведёт на `/`. Текст и анимационные задержки букв находятся в
   `header.tsx`.
 - Кнопка поиска сейчас только отображается и не открывает поиск.

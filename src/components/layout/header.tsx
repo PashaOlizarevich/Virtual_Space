@@ -8,7 +8,7 @@ import { MobileNavigation } from "@/components/layout/mobile-navigation";
 import { CartWidget } from "@/modules/cart/components/cart-widget";
 
 const navigationItems = [
-  { href: "/about#about-contact-title", label: "Магазины" },
+  { href: "/stores", label: "Магазины" },
   { href: "/catalog", label: "Новинки" },
   { href: "/catalog", label: "Акции" },
   { href: "/about", label: "О нас" },
