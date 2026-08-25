@@ -1140,3 +1140,14 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 - Ограничения: Browser plugin недоступен, поэтому rendered QA выполнен через локальный Playwright
   Chromium; стандартный Turbopack build не принимает junction `node_modules` из worktree, поэтому
   эквивалентная production-сборка выполнена штатным флагом Next.js `--webpack`.
+
+## Task 76 — Карточка Forma в категории «Кресла»
+
+- Результат: существующее «Кресло Forma» добавлено четвёртой карточкой на страницу
+  `/catalog/armchairs`; карточка ведёт на существующий маршрут `/product/forma-chair`.
+- Файлы: `src/modules/catalog/mock-data.ts`, `docs/progress.md`.
+- Архитектура: использован существующий товар из общего массива `products`, без дублирования его
+  данных и без изменений страницы товара.
+- Проверки: Prettier, ESLint и TypeScript прошли успешно; текущий тест страницы ожидает ровно три
+  карточки и закономерно падает после добавления четвёртой. Тест не изменён, поскольку изменения
+  существующих тестов требуют отдельного разрешения пользователя.

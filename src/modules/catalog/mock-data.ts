@@ -736,6 +736,7 @@ export const poufCategoryProducts = [
 ] as const satisfies readonly Product[];
 
 export const armchairCategoryProducts = [
+  products[0],
   asterArmchairProduct,
   runaArmchairProduct,
   veroArmchairProduct,
