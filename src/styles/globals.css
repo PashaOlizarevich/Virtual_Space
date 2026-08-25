@@ -1395,85 +1395,35 @@ a {
 }
 
 .stores-page {
-  margin-top: -80px;
-  padding-top: 80px;
   background: var(--color-background);
 }
 
-.stores-hero {
-  display: grid;
-  gap: 40px;
-}
-
-.stores-hero__content {
+.stores-intro {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  gap: 28px;
-  padding-block: 64px 0;
+  gap: 24px;
+  border-bottom: 1px solid var(--color-border);
+  padding-block: 72px 56px;
 }
 
-.stores-hero h1,
-.stores-story h2,
+.stores-intro h1,
 .store-card h2,
 .stores-visit h2 {
   margin: 0;
-  font-weight: 400;
   letter-spacing: -0.045em;
 }
 
-.stores-hero h1 {
-  max-width: 620px;
-  font-size: clamp(3rem, 7vw, 6.5rem);
-  line-height: 0.94;
-}
-
-.stores-hero__content p {
-  max-width: 470px;
-  margin: 0;
-  color: var(--color-text-secondary);
-  font-size: 1.05rem;
-  line-height: 1.6;
-}
-
-.stores-hero__media,
-.store-card__media {
-  position: relative;
-  overflow: hidden;
-  background: var(--color-surface-soft);
-}
-
-.stores-hero__media {
-  min-height: 460px;
-}
-
-.stores-hero__media img,
-.store-card__media img {
-  object-fit: cover;
-}
-
-.stores-story {
-  display: grid;
-  gap: 32px;
-  border-bottom: 1px solid var(--color-border);
-  padding-block: 80px;
-}
-
-.stores-story h2,
-.stores-visit h2 {
-  font-size: clamp(2.5rem, 5vw, 4rem);
+.stores-intro h1 {
+  font-size: clamp(2.75rem, 6vw, 4.5rem);
+  font-weight: 500;
   line-height: 1;
 }
 
-.stores-story p,
-.stores-visit p {
+.stores-intro p {
+  max-width: 590px;
   margin: 0;
-  line-height: 1.6;
-}
-
-.stores-story__years {
-  margin-top: 32px !important;
   color: var(--color-text-secondary);
+  line-height: 1.65;
 }
 
 .stores-list {
@@ -1483,9 +1433,9 @@ a {
 
 .store-card {
   display: grid;
-  gap: 36px;
+  gap: 32px;
   border-bottom: 1px solid var(--color-border);
-  padding-block: 48px;
+  padding-block: 40px;
 }
 
 .store-card__details {
@@ -1494,92 +1444,103 @@ a {
   align-items: flex-start;
 }
 
-.store-card h2 {
-  font-size: clamp(2.25rem, 4vw, 3.25rem);
-  line-height: 1;
+.store-card__number {
+  margin: 0 0 20px;
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
 }
 
-.store-card address {
-  max-width: 260px;
-  margin-top: 26px;
+.store-card h2 {
+  font-size: clamp(1.75rem, 3vw, 2.25rem);
+  font-weight: 500;
+  line-height: 1.05;
+}
+
+.store-card__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  margin-top: 34px;
+}
+
+.store-card__meta > div {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+}
+
+.store-card__meta svg {
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  stroke-width: 1.5;
+}
+
+.store-card__meta address,
+.store-card__meta p {
+  max-width: 290px;
+  margin: 0;
   font-style: normal;
   line-height: 1.5;
-}
-
-.store-card__rule {
-  width: 24px;
-  margin-block: 24px;
-  border-top: 1px solid var(--color-text-secondary);
-}
-
-.store-card__details p {
-  max-width: 360px;
-  margin: 0;
-  color: var(--color-text-secondary);
-  line-height: 1.55;
 }
 
 .store-card__gallery {
   min-width: 0;
 }
 
-.store-card__toolbar,
-.store-card__tabs,
-.store-card__controls {
-  display: flex;
-  align-items: center;
-}
-
-.store-card__toolbar {
-  min-height: 52px;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 8px 24px;
-}
-
-.store-card__tabs {
-  max-width: 100%;
-  overflow-x: auto;
-}
-
-.store-card__tabs button {
-  min-height: 44px;
-  border: 0;
-  border-bottom: 1px solid transparent;
-  padding: 0 18px;
-  background: transparent;
-  color: var(--color-text-secondary);
-  cursor: pointer;
-  white-space: nowrap;
-}
-
-.store-card__tabs button:first-child {
-  padding-left: 0;
-}
-
-.store-card__tabs button[aria-selected="true"] {
-  border-bottom-color: var(--color-primary);
-  color: var(--color-text-primary);
-}
-
-.store-card__controls {
-  gap: 8px;
-}
-
-.store-card__controls output {
-  min-width: 64px;
-  text-align: center;
-  font-size: 0.875rem;
-  font-variant-numeric: tabular-nums;
-}
-
 .store-card__media {
-  min-height: 300px;
-  aspect-ratio: 16 / 9;
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 1.9 / 1;
+  background: var(--color-surface-soft);
 }
 
 .store-card__media img {
+  object-fit: cover;
   animation: store-image-reveal var(--motion-normal) var(--motion-standard);
+}
+
+.store-card__arrow {
+  position: absolute;
+  top: 50%;
+  border-radius: 0;
+  box-shadow: var(--shadow-soft);
+  transform: translateY(-50%);
+}
+
+.store-card__arrow--previous {
+  left: 12px;
+}
+
+.store-card__arrow--next {
+  right: 12px;
+}
+
+.store-card__thumbnails {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.store-card__thumbnails button {
+  position: relative;
+  min-width: 0;
+  aspect-ratio: 1.65 / 1;
+  overflow: hidden;
+  border: 2px solid transparent;
+  padding: 3px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.store-card__thumbnails button[aria-selected="true"] {
+  border-color: var(--color-primary);
+}
+
+.store-card__thumbnails img {
+  object-fit: cover;
 }
 
 .stores-visit {
@@ -1590,6 +1551,17 @@ a {
 
 .stores-visit > div {
   max-width: 620px;
+}
+
+.stores-visit h2 {
+  font-size: clamp(2.25rem, 4vw, 3.25rem);
+  font-weight: 400;
+  line-height: 1;
+}
+
+.stores-visit p {
+  margin: 0;
+  line-height: 1.6;
 }
 
 .stores-visit a {
@@ -1607,37 +1579,28 @@ a {
 }
 
 @media (min-width: 900px) {
-  .stores-hero {
-    min-height: 720px;
-    grid-template-columns: minmax(320px, 4fr) minmax(0, 8fr);
-  }
-
-  .stores-hero__content {
-    padding: 148px 48px 88px 0;
-  }
-
-  .stores-hero__media {
-    min-height: 720px;
-  }
-
-  .stores-story {
-    grid-template-columns: repeat(12, minmax(0, 1fr));
-    gap: 32px;
-    padding-block: 96px;
-  }
-
-  .stores-story > div {
-    grid-column: 1 / span 4;
-  }
-
-  .stores-story > p {
-    grid-column: span 4;
+  .stores-intro {
+    padding-block: 96px 64px;
   }
 
   .store-card {
-    grid-template-columns: minmax(260px, 4fr) minmax(0, 8fr);
-    gap: 32px;
-    padding-block: 56px;
+    grid-template-columns: minmax(280px, 4fr) minmax(0, 8fr);
+    grid-template-areas: "details gallery";
+    gap: 40px;
+    padding-block: 64px;
+  }
+
+  .store-card:nth-child(even) {
+    grid-template-columns: minmax(0, 8fr) minmax(280px, 4fr);
+    grid-template-areas: "gallery details";
+  }
+
+  .store-card__details {
+    grid-area: details;
+  }
+
+  .store-card__gallery {
+    grid-area: gallery;
   }
 
   .stores-visit {

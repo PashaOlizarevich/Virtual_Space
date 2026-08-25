@@ -7,6 +7,7 @@ export type StoreImage = {
 export type StoreLocation = {
   city: string;
   address: string;
+  hours: string;
   description: string;
   images: readonly StoreImage[];
 };
