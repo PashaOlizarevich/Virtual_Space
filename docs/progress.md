@@ -1164,3 +1164,16 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 - Архитектура: без изменений.
 - Product Tour: без изменений.
 - Ограничения: нет.
+
+## Task 78 — Название каталога ассета Forma
+
+- Результат: каталог изображения Forma переименован из `forma-chair` в `forma-armchair`; ссылки в
+  mock-данных обновлены без изменения идентификатора, slug и маршрута товара.
+- Файлы: `src/modules/catalog/mock-data.ts`, `public/images/armchairs/forma-armchair/01-main.png`,
+  `docs/progress.md`.
+- Проверки: Prettier, ESLint, TypeScript, точечный Jest-тест страницы `/catalog/armchairs` и
+  `git diff --check` — успешно.
+- Переменные окружения: нет.
+- Архитектура: без изменений.
+- Product Tour: без изменений.
+- Ограничения: нет.
