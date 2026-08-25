@@ -1151,3 +1151,16 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 - Проверки: Prettier, ESLint, TypeScript, все 60 Jest-тестов и production-сборка Next.js через
   Webpack прошли успешно; тест обновлён с явного разрешения пользователя и проверяет четыре
   карточки, включая Forma и переход на `/product/forma-chair`.
+
+## Task 77 — Ассет кресла Forma
+
+- Результат: изображение кресла Forma перенесено из каталога стульев в каталог кресел; ссылки в
+  mock-данных приведены в соответствие с категорией товара.
+- Файлы: `src/modules/catalog/mock-data.ts`, `public/images/armchairs/forma-chair/01-main.png`,
+  `docs/progress.md`.
+- Проверки: Prettier, ESLint, TypeScript, точечный Jest-тест страницы `/catalog/armchairs` и
+  `git diff --check` — успешно.
+- Переменные окружения: нет.
+- Архитектура: без изменений.
+- Product Tour: без изменений.
+- Ограничения: нет.

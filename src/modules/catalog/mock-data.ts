@@ -589,9 +589,11 @@ export const products = [
     description: "Объёмное кресло с мягкими линиями и уютной посадкой.",
     price: 1390,
     currency: "BYN",
-    image: "/images/chairs/forma-chair/01-main.png",
+    image: "/images/armchairs/forma-chair/01-main.png",
     imageAlt: "Светлое кресло Forma из фактурной ткани",
-    gallery: [{ src: "/images/chairs/forma-chair/01-main.png", alt: "Кресло Forma, вид спереди" }],
+    gallery: [
+      { src: "/images/armchairs/forma-chair/01-main.png", alt: "Кресло Forma, вид спереди" },
+    ],
     specifications: [
       { label: "Размер", value: "86 × 92 × 74 см" },
       { label: "Каркас", value: "Берёзовая фанера, массив" },
