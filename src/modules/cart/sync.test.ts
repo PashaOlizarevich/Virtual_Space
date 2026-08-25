@@ -3,7 +3,7 @@ import { describe, expect, it } from "@jest/globals";
 import { mergeCarts } from "@/modules/cart/sync";
 
 const chair = {
-  productId: "forma-chair",
+  productId: "forma-armchair",
   quantity: 2,
   selectedOptions: [{ groupId: "color", optionId: "milk" }],
   observedPrice: 1390,

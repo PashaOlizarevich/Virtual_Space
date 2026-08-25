@@ -4,7 +4,7 @@ import type { CartItem } from "@/modules/cart/types";
 import { validateCartItem } from "@/modules/cart/validation";
 
 const currentItem: CartItem = {
-  productId: "forma-chair",
+  productId: "forma-armchair",
   quantity: 1,
   selectedOptions: [{ groupId: "color", optionId: "milk" }],
   observedPrice: 1390,

@@ -9,7 +9,7 @@ import { useCartStore } from "@/modules/cart/store";
   true;
 
 const chair = {
-  productId: "forma-chair",
+  productId: "forma-armchair",
   quantity: 1,
   selectedOptions: [
     { groupId: "upholstery", optionId: "boucle" },

@@ -70,7 +70,7 @@ describe("adminOrderStatusUpdateSchema", () => {
 describe("adminProductSchema", () => {
   const product = {
     name: "Кресло Forma",
-    slug: "forma-chair",
+    slug: "forma-armchair",
     category: "Кресла",
     description: "Удобное кресло для гостиной",
     price: 1390,

@@ -201,7 +201,7 @@
 
 ### Страница товара — `/product/<slug>`
 
-Файл: `src/app/(store)/product/[id]/page.tsx`. Пример адреса: `/product/forma-chair`. Значение
+Файл: `src/app/(store)/product/[id]/page.tsx`. Пример адреса: `/product/forma-armchair`. Значение
 `<slug>` берётся из поля `slug` товара в `src/modules/catalog/mock-data.ts`.
 
 На странице находятся хлебные крошки, слайдер галереи, название и описание, выбор конфигурации,

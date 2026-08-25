@@ -89,7 +89,7 @@ test("merges guest and server carts, preserves them on logout and restores on re
   page,
 }) => {
   const item = {
-    productId: "forma-chair",
+    productId: "forma-armchair",
     quantity: 1,
     selectedOptions: [{ groupId: "color", optionId: "milk" }],
     observedPrice: 1390,

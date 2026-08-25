@@ -30,7 +30,7 @@ test.describe("checkout form", () => {
           state: {
             items: [
               {
-                productId: "forma-chair",
+                productId: "forma-armchair",
                 quantity: 1,
                 selectedOptions: [
                   { groupId: "upholstery", optionId: "boucle" },
@@ -69,7 +69,7 @@ test.describe("checkout form", () => {
           state: {
             items: [
               {
-                productId: "forma-chair",
+                productId: "forma-armchair",
                 quantity: 1,
                 selectedOptions: [
                   { groupId: "upholstery", optionId: "boucle" },

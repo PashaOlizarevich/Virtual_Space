@@ -20,7 +20,7 @@ test.describe("home page", () => {
     await expect(page.getByRole("button", { name: /Добавить .* в корзину/ })).toHaveCount(4);
     await expect(page.getByRole("link", { name: "Подробнее" }).first()).toHaveAttribute(
       "href",
-      "/product/forma-chair",
+      "/product/forma-armchair",
     );
     const actionOffsets = await page
       .locator(".product-preview__actions")
@@ -60,7 +60,7 @@ test.describe("home page", () => {
     await expect(quickView).toContainText("86 × 92 × 74 см");
     await expect(quickView.getByRole("link", { name: "Перейти к товару" })).toHaveAttribute(
       "href",
-      "/product/forma-chair",
+      "/product/forma-armchair",
     );
   });
 

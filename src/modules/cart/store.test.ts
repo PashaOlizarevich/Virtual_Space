@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it } from "@jest/globals";
 import { CART_STORAGE_KEY, useCartStore } from "@/modules/cart/store";
 
 const chair = {
-  productId: "forma-chair",
+  productId: "forma-armchair",
   selectedOptions: [{ groupId: "color", optionId: "milk" }],
   observedPrice: 1390,
 } as const;
@@ -19,7 +19,7 @@ describe("guest cart store", () => {
     expect(useCartStore.getState().addItem({ ...chair, quantity: 2 })).toBe(true);
 
     expect(useCartStore.getState().items).toEqual([{ ...chair, quantity: 3 }]);
-    expect(window.localStorage.getItem(CART_STORAGE_KEY)).toContain('"productId":"forma-chair"');
+    expect(window.localStorage.getItem(CART_STORAGE_KEY)).toContain('"productId":"forma-armchair"');
   });
 
   it("keeps different product configurations as separate entries", () => {

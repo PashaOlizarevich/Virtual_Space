@@ -32,7 +32,7 @@ test.describe("cart widget", () => {
       if (message.type() === "error") consoleErrors.push(message.text());
     });
 
-    await page.goto("/product/forma-chair");
+    await page.goto("/product/forma-armchair");
     await page.getByLabel("Песочный").check();
     await page.getByRole("button", { name: "Добавить в корзину" }).click();
     await page.getByRole("button", { name: /Открыть корзину/ }).click();
@@ -81,7 +81,7 @@ test.describe("cart widget", () => {
           state: {
             items: [
               {
-                productId: "forma-chair",
+                productId: "forma-armchair",
                 quantity: 1,
                 selectedOptions: [{ groupId: "color", optionId: "milk" }],
                 observedPrice: 1290,

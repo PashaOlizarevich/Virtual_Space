@@ -143,7 +143,7 @@ test.describe("catalog and product", () => {
     await expect(page.getByRole("heading", { name: "Мебель для спокойного дома" })).toBeVisible();
     await page.getByRole("link", { name: "Подробнее" }).first().click();
 
-    await expect(page).toHaveURL(/\/product\/forma-chair$/);
+    await expect(page).toHaveURL(/\/product\/forma-armchair$/);
     await expect(page.getByRole("heading", { name: "Кресло Forma" })).toBeVisible();
     await page.getByLabel("Песочный").check();
     await page.getByRole("button", { name: "Добавить в корзину" }).click();
@@ -152,7 +152,7 @@ test.describe("catalog and product", () => {
     const persistedCart = await page.evaluate(() =>
       window.localStorage.getItem("virtual-space:guest-cart:v1"),
     );
-    expect(persistedCart).toContain('"productId":"forma-chair"');
+    expect(persistedCart).toContain('"productId":"forma-armchair"');
     expect(persistedCart).toContain('"optionId":"sand"');
     expect(consoleErrors).toEqual([]);
   });

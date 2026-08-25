@@ -11,7 +11,7 @@ test("completes the main shopping journey from catalog to order confirmation", a
   await expect(page.getByRole("heading", { name: "Мебель для спокойного дома" })).toBeVisible();
 
   await page.getByRole("link", { name: "Подробнее" }).first().click();
-  await expect(page).toHaveURL(/\/product\/forma-chair$/);
+  await expect(page).toHaveURL(/\/product\/forma-armchair$/);
   await page.getByLabel("Песочный").check();
   await page.getByRole("button", { name: "Добавить в корзину" }).click();
   await expect(page.getByRole("status")).toContainText("Букле, Песочный");

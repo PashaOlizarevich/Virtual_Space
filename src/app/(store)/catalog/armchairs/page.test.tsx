@@ -16,6 +16,6 @@ describe("armchairs category", () => {
     expect(html).toContain('href="/product/aster-armchair"');
     expect(html).toContain('href="/product/runa-armchair"');
     expect(html).toContain('href="/product/vero-armchair"');
-    expect(html).toContain('href="/product/forma-chair"');
+    expect(html).toContain('href="/product/forma-armchair"');
   });
 });

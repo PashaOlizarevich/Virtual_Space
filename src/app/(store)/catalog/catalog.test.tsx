@@ -32,7 +32,7 @@ describe("catalog routes", () => {
   it("renders every loaded product and refresh control", () => {
     const html = renderToStaticMarkup(<CatalogQueryGridView products={products} />);
     expect(html.match(/class="product-preview"/g)).toHaveLength(4);
-    expect(html).toContain('href="/product/forma-chair"');
+    expect(html).toContain('href="/product/forma-armchair"');
     expect(html).toContain("Обновить");
   });
 
@@ -46,7 +46,7 @@ describe("catalog routes", () => {
   });
 
   it("renders product data, options and specifications", async () => {
-    const page = await ProductPage({ params: Promise.resolve({ id: "forma-chair" }) });
+    const page = await ProductPage({ params: Promise.resolve({ id: "forma-armchair" }) });
     const html = renderToStaticMarkup(page);
     expect(html).toContain("Кресло Forma");
     expect(html).toContain("Характеристики");

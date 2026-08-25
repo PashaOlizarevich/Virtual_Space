@@ -583,8 +583,8 @@ export const veroArmchairProduct = {
 
 export const products = [
   {
-    id: "forma-chair",
-    slug: "forma-chair",
+    id: "forma-armchair",
+    slug: "forma-armchair",
     name: "Кресло Forma",
     description: "Объёмное кресло с мягкими линиями и уютной посадкой.",
     price: 1390,
