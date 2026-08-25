@@ -426,3 +426,15 @@
 - Изображения: товарные подпапки в `public/images/dining-tables/`.
 - Переход из меню: `src/components/layout/catalog-menu.tsx`.
 - Стили: `.dining-tables-page*` в `src/styles/globals.css`.
+
+## Категория «Пуфики» — `/catalog/poufs`
+
+Ссылка «Пуфики» в динамической панели каталога ведёт на отдельную страницу категории. На странице
+размещены описание коллекции и три карточки: Arlo, Nola и Taro. Кнопка «Подробнее» в каждой карточке
+открывает общий динамический маршрут товара.
+
+- Маршрут: `src/app/(store)/catalog/poufs/page.tsx`.
+- Состав категории и данные товаров: `poufCategoryProducts` в `src/modules/catalog/mock-data.ts`.
+- Изображения: товарные подпапки в `public/images/poufs/`.
+- Переход из меню: `src/components/layout/catalog-menu.tsx`.
+- Стили: `.poufs-page*` в `src/styles/globals.css`.

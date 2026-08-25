@@ -13,7 +13,7 @@ const categoryGroups = [
   [
     { label: "Диваны", href: "/catalog/sofas" },
     { label: "Кресла", href: "/catalog" },
-    { label: "Пуфики", href: "/catalog" },
+    { label: "Пуфики", href: "/catalog/poufs" },
   ],
   [
     { label: "Стулья", href: "/catalog/chairs" },
