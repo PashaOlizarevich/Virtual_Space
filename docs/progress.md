@@ -1257,3 +1257,15 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 - Ограничения: после успешного теста процесс Playwright снова пришлось остановить вручную из-за
   зависшего завершения локального dev web server; `next-env.d.ts` изменён самим Next.js dev и не
   включён в изменение задачи.
+
+## Task 84 — Инструкция по ручному запуску тестов
+
+- Результат: добавлена отдельная инструкция для ручного запуска lint, typecheck, Jest, build,
+  основных и visual Playwright-тестов; описаны точечный, headed и debug-запуски, HTML-отчёт,
+  переопределение `PLAYWRIGHT_BASE_URL` и диагностика частых ошибок.
+- Файлы: `docs/TESTING.md`, `docs/progress.md`.
+- Проверки: Prettier и `git diff --check` прошли.
+- Переменные окружения: нет; документировано временное использование `PLAYWRIGHT_BASE_URL`.
+- Архитектура: без изменений.
+- Product Tour: без изменений.
+- Ограничения: команды в инструкции соответствуют Windows PowerShell и текущей конфигурации проекта.
