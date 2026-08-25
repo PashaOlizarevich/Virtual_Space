@@ -16,7 +16,7 @@ describe("Header", () => {
     expect(markup).toContain('href="/catalog/sofas"');
     expect(markup).toContain('href="/catalog/tableware"');
     expect(markup).toContain("Весь каталог");
-    expect(markup).toContain('href="/about#about-contact-title"');
+    expect(markup).toContain('href="/stores"');
     expect(markup).toContain('href="/about"');
     expect(markup).toMatch(/Каталог[\s\S]*Магазины[\s\S]*Новинки[\s\S]*Акции[\s\S]*О нас/);
     expect(markup).toContain('role="search"');
