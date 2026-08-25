@@ -3612,6 +3612,7 @@ body:has(dialog[open]) {
 
 @media (min-width: 900px) {
   .about-page {
+    margin-top: -128px;
     padding-top: 0;
   }
 
@@ -4000,12 +4001,12 @@ body:has(dialog[open]) {
 @media (min-width: 900px) {
   .auth-page {
     grid-template-columns: minmax(0, 46fr) minmax(540px, 54fr);
-    margin-top: -80px;
-    padding-top: 80px;
+    margin-top: -128px;
+    padding-top: 128px;
   }
   .auth-page__media {
     min-height: 100svh;
-    margin-top: -80px;
+    margin-top: -128px;
   }
   .auth-panel {
     padding: 72px 8vw 96px;

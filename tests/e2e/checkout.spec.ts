@@ -12,7 +12,9 @@ test.describe("checkout form", () => {
     await page.goto("/checkout");
     await page.getByRole("button", { name: "Оформить заявку" }).click();
 
-    await expect(page.getByRole("alert").first()).toHaveText("Проверьте выделенные поля формы.");
+    await expect(page.locator(".checkout-form__error-summary")).toHaveText(
+      "Проверьте выделенные поля формы.",
+    );
     await expect(page.getByLabel("Имя *")).toBeFocused();
     await expect(page.getByLabel("Имя *")).toHaveAttribute("aria-invalid", "true");
     await expect(page.getByText("Укажите имя — минимум 2 символа.")).toBeVisible();

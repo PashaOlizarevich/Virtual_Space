@@ -1224,3 +1224,22 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 - Ограничения: штатный `127.0.0.1` блокируется Next.js dev-origin; после успешного выполнения сценариев
   Playwright пришлось остановить вручную из-за зависшего завершения dev web server. Browser plugin
   недоступен.
+
+## Task 82 — Отдельный visual E2E-набор
+
+- Результат: добавлен отдельный набор из шести `@visual`-сценариев для геометрии desktop-header,
+  мобильного поиска, cart drawer, checkout и hero-блоков About/Login; основной E2E-запуск исключает
+  visual-тесты. Regression-набор выявил и защитил исправление desktop-смещения hero-блоков после
+  увеличения высоты header с 80 до 128 пикселей. Стабилизированы ожидание обновления корзины и выбор
+  error summary checkout; Playwright переведён на один worker из-за потери ранних hydration-событий
+  при параллельной нагрузке на локальный Next.js dev server.
+- Файлы: `package.json`, `tests/e2e/visual-regression.spec.ts`, `tests/e2e/cart.spec.ts`,
+  `tests/e2e/checkout.spec.ts`, `playwright.config.ts`, `src/styles/globals.css`, `docs/progress.md`.
+- Проверки: Prettier, ESLint, TypeScript, 60 Jest-тестов, production build и 6 visual E2E прошли;
+  два нестабильных основных E2E воспроизведены только параллельно и прошли изолированно до
+  стабилизации ожиданий.
+- Переменные окружения: нет.
+- Архитектура: без изменений.
+- Product Tour: без изменений.
+- Ограничения: Browser plugin недоступен; Playwright запускается через `http://localhost:3000`, потому
+  что Next.js блокирует dev-ресурсы для штатного `127.0.0.1`.

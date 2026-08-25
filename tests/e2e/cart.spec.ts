@@ -35,6 +35,7 @@ test.describe("cart widget", () => {
     await page.goto("/product/forma-armchair");
     await page.getByLabel("Песочный").check();
     await page.getByRole("button", { name: "Добавить в корзину" }).click();
+    await expect(page.getByRole("status")).toContainText("Букле, Песочный");
     await page.getByRole("button", { name: /Открыть корзину/ }).click();
 
     const dialog = page.getByRole("dialog", { name: "Корзина" });
@@ -84,7 +85,9 @@ test.describe("cart widget", () => {
     });
 
     await page.goto("/");
-    await page.getByRole("button", { name: /Открыть корзину/ }).click();
+    const cartTrigger = page.getByRole("button", { name: /Открыть корзину, товаров:/ });
+    await expect(cartTrigger).toBeVisible();
+    await cartTrigger.click();
 
     const dialog = page.getByRole("dialog", { name: "Корзина" });
     await expect(dialog.getByText("Цена изменилась. Подтвердите новую стоимость.")).toBeVisible();
