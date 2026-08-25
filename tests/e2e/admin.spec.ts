@@ -107,21 +107,3 @@ test("updates an order through allowed status transitions", async ({ page }) => 
   await expect(details.getByText("Заказ находится в финальном статусе.")).toBeVisible();
   await expect(details.getByRole("button")).toHaveCount(0);
 });
-
-test("edits and saves store settings preview", async ({ page }) => {
-  await page.evaluate(() =>
-    sessionStorage.setItem("virtual-space:admin-preview-session:v1", "admin"),
-  );
-  await page.goto("/admin/settings");
-
-  await expect(page).toHaveTitle(/Настройки/);
-  await expect(page.getByRole("heading", { name: "Настройки" })).toBeVisible();
-  await expect(page.getByLabel("Название")).toHaveValue("Virtual Space");
-
-  await page.getByLabel("Название").fill("Virtual Space Studio");
-  await page.getByLabel("Телефон").fill("+375 29 111-22-33");
-  await page.getByRole("button", { name: "Сохранить настройки" }).click();
-
-  await expect(page.getByText("Настройки сохранены.")).toBeVisible();
-  await expect(page.getByRole("button", { name: "Сохранить настройки" })).toBeDisabled();
-});

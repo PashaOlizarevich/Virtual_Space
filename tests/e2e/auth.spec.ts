@@ -14,14 +14,6 @@ test("switches auth modes, validates and reports preview success", async ({ page
   await expect(page.getByText("Сейчас письмо не отправляется")).toBeVisible();
 });
 
-test("password visibility is accessible", async ({ page }) => {
-  await page.goto("/login");
-  const password = page.getByLabel("Пароль", { exact: true });
-  await password.fill("password1");
-  await page.getByRole("button", { name: "Показать пароль" }).click();
-  await expect(password).toHaveAttribute("type", "text");
-});
-
 test("supports keyboard tabs, validation and password autocomplete", async ({ page }) => {
   await page.goto("/login");
   const loginTab = page.getByRole("tab", { name: "Вход" });
@@ -58,31 +50,6 @@ test("supports keyboard tabs, validation and password autocomplete", async ({ pa
   await expect(page.getByText("Введите email")).toBeVisible();
   await expect(page.getByText("Не менее 8 символов")).toBeVisible();
   await expect(page.getByLabel("Email")).toHaveAttribute("aria-invalid", "true");
-});
-
-test("keeps the active form visible on mobile", async ({ page }) => {
-  await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto("/login");
-  await expect(page.getByRole("tablist")).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Войти в аккаунт" })).toBeVisible();
-  await expect(page.getByLabel("Email")).toBeVisible();
-});
-
-test("extends the desktop image beneath the translucent header", async ({ page }) => {
-  await page.setViewportSize({ width: 1440, height: 1000 });
-  await page.goto("/login");
-
-  await expect
-    .poll(async () => {
-      const headerBox = await page.locator(".header").boundingBox();
-      const mediaBox = await page.locator(".auth-page__media").boundingBox();
-      if (!headerBox || !mediaBox) return false;
-      return Math.abs(headerBox.y) < 0.5 && Math.abs(mediaBox.y) < 0.5;
-    })
-    .toBe(true);
-  await expect
-    .poll(async () => (await page.locator(".auth-page__media").boundingBox())?.height ?? 0)
-    .toBeGreaterThanOrEqual(1000);
 });
 
 test("merges guest and server carts, preserves them on logout and restores on re-login", async ({

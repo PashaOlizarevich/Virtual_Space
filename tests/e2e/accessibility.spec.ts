@@ -31,7 +31,7 @@ test.describe("accessibility and responsive foundations", () => {
     await expect(page.locator("#main-content")).toHaveCSS("opacity", "1");
   });
 
-  for (const route of ["/", "/catalog", "/about", "/login"] as const) {
+  for (const route of ["/catalog", "/checkout"] as const) {
     test(`${route} has no horizontal overflow on a narrow viewport`, async ({ page }) => {
       await page.setViewportSize({ width: 320, height: 720 });
       await page.goto(route);

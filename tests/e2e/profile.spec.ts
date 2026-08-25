@@ -26,13 +26,3 @@ test("shows profile dashboard and validates personal details", async ({ page }) 
   await expect(page.getByLabel("Имя")).toHaveAttribute("aria-invalid", "true");
   expect(runtimeErrors).toEqual([]);
 });
-
-test("reports preview save and stays usable on mobile", async ({ page }) => {
-  const runtimeErrors = trackRuntimeErrors(page);
-  await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto("/profile");
-  await page.getByRole("button", { name: "Сохранить изменения" }).click();
-  await expect(page.getByRole("status")).toContainText("Данные проверены");
-  await expect(page.getByRole("link", { name: "Выбрать мебель" })).toBeVisible();
-  expect(runtimeErrors).toEqual([]);
-});

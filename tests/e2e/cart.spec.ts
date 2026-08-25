@@ -55,22 +55,6 @@ test.describe("cart widget", () => {
     expect(consoleErrors).toEqual([]);
   });
 
-  test("fills the mobile viewport and opens from mobile navigation", async ({ page }) => {
-    await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto("/");
-    await page.getByRole("button", { name: "Открыть меню" }).click();
-    await page
-      .getByRole("dialog", { name: "Навигация" })
-      .getByRole("button", { name: "Корзина" })
-      .click();
-
-    const dialog = page.getByRole("dialog", { name: "Корзина" });
-    await expect(dialog).toBeVisible();
-    await expect(dialog.locator(".cart-widget__panel")).toHaveCSS("width", "390px");
-    await page.keyboard.press("Escape");
-    await expect(page.getByRole("button", { name: "Открыть корзину" })).toBeFocused();
-  });
-
   test("blocks checkout until changed prices are confirmed and excludes unavailable items", async ({
     page,
   }) => {

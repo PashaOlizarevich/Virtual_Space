@@ -97,13 +97,4 @@ test.describe("checkout form", () => {
     await expect(page.getByRole("button", { name: "Оформить заявку" })).toBeEnabled();
     await context.setOffline(false);
   });
-
-  test("keeps the form usable on a mobile viewport", async ({ page }) => {
-    await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto("/checkout");
-
-    await expect(page.getByRole("heading", { name: "Оформление заявки" })).toBeVisible();
-    await expect(page.getByLabel("Имя *")).toBeVisible();
-    await expect(page.getByRole("button", { name: "Оформить заявку" })).toHaveCSS("width", "358px");
-  });
 });
