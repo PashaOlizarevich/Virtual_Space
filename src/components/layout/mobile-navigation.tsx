@@ -7,7 +7,7 @@ import { useRef } from "react";
 import { Button } from "@/components/ui/button";
 
 const navigationItems = [
-  { href: "/about#about-contact-title", label: "Магазины" },
+  { href: "/stores", label: "Магазины" },
   { href: "/catalog", label: "Новинки" },
   { href: "/catalog", label: "Акции" },
   { href: "/about", label: "О нас" },
