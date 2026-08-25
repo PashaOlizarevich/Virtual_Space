@@ -1094,3 +1094,27 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 - Product Tour: без изменений.
 - Ограничения: изображения реконструированы из миниатюр референса, поэтому отдельные мелкие детали
   восстановлены генеративно; композиция, ракурс, тип сцены и фирменная вывеска сохранены.
+## Task 73 — Страница категории «Пуфики»
+
+- Результат: пункт «Пуфики» в динамическом меню каталога ведёт на `/catalog/poufs`; создана адаптивная
+  страница с содержательным описанием и тремя карточками Arlo, Nola и Taro, связанными с общими страницами товаров.
+- Файлы: `src/app/(store)/catalog/poufs/{page,page.test}.tsx`, `src/components/layout/catalog-menu.tsx`,
+  `src/modules/catalog/mock-data.ts`, `src/styles/globals.css`, `public/images/poufs/**`,
+  `docs/ProductTour.md`, `docs/progress.md`.
+- Проверки: Prettier затронутых файлов, ESLint, TypeScript, Jest, production build и desktop/mobile
+  Playwright QA — успешно; подтверждены три карточки, загрузка изображений, переход к товару,
+  отсутствие ошибок консоли и горизонтального переполнения.
+- Переменные окружения: нет.
+- Архитектура: существующий поток `app -> modules/catalog -> ProductPreview` и общий динамический маршрут товара сохранены.
+- Product Tour: добавлен раздел категории «Пуфики» и карта затронутых файлов.
+- Ограничения: Browser plugin недоступен, поэтому rendered QA выполнен через локальный Playwright Chromium.
+
+## Task 74 — Изоляция Jest-тестов
+
+- Результат: Jest ограничен каталогом `src`, поэтому штатный `npm test` больше не обнаруживает дубли тестов в `.worktrees` и не смешивает разные копии React.
+- Файлы: `jest.config.ts`, `docs/progress.md`.
+- Проверки: `npm test -- --runInBand` — 17 suites и 52 теста прошли; `npm run lint`, `npm run typecheck` и `git diff --check` — успешно.
+- Переменные окружения: нет.
+- Архитектура: без изменений.
+- Product Tour: без изменений.
+- Ограничения: `npm run build` в изолированном worktree не запущен до конца, так как Turbopack не разрешает использовать `node_modules` за границей filesystem root; новые зависимости не устанавливались.

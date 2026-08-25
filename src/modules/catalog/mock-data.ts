@@ -443,6 +443,75 @@ export const elaraDiningTableProduct = {
   optionGroups: [],
 } as const satisfies Product;
 
+export const arloPoufProduct = {
+  id: "arlo-pouf",
+  slug: "arlo-pouf",
+  name: "Пуф Arlo",
+  description: "Мягкий круглый пуф из фактурного букле с устойчивыми ножками из массива дуба.",
+  price: 650,
+  currency: "BYN",
+  image: "/images/poufs/arlo-pouf/01-main.png",
+  imageAlt: "Круглый пуф Arlo в светлой обивке букле на деревянных ножках",
+  gallery: [
+    {
+      src: "/images/poufs/arlo-pouf/01-main.png",
+      alt: "Светлый круглый пуф Arlo из фактурного букле",
+    },
+  ],
+  specifications: [
+    { label: "Размер", value: "Ø 62 × 46 см" },
+    { label: "Обивка", value: "Фактурное букле" },
+    { label: "Опоры", value: "Массив дуба" },
+  ],
+  optionGroups: [],
+} as const satisfies Product;
+
+export const nolaPoufProduct = {
+  id: "nola-pouf",
+  slug: "nola-pouf",
+  name: "Пуф Nola",
+  description: "Цилиндрический пуф с бархатистой обивкой и низким основанием из тёмного ореха.",
+  price: 720,
+  currency: "BYN",
+  image: "/images/poufs/nola-pouf/01-main.png",
+  imageAlt: "Оливковый цилиндрический пуф Nola на основании из тёмного ореха",
+  gallery: [
+    {
+      src: "/images/poufs/nola-pouf/01-main.png",
+      alt: "Пуф Nola в оливковой обивке с деревянным основанием",
+    },
+  ],
+  specifications: [
+    { label: "Размер", value: "Ø 54 × 48 см" },
+    { label: "Обивка", value: "Мебельный велюр" },
+    { label: "Основание", value: "Шпон ореха" },
+  ],
+  optionGroups: [],
+} as const satisfies Product;
+
+export const taroPoufProduct = {
+  id: "taro-pouf",
+  slug: "taro-pouf",
+  name: "Пуф Taro",
+  description: "Лаконичный пуф-куб с мягкими гранями и практичной износостойкой обивкой.",
+  price: 580,
+  currency: "BYN",
+  image: "/images/poufs/taro-pouf/01-main.png",
+  imageAlt: "Квадратный пуф Taro в тёплой светло-бежевой тканевой обивке",
+  gallery: [
+    {
+      src: "/images/poufs/taro-pouf/01-main.png",
+      alt: "Светлый кубический пуф Taro с мягкими гранями",
+    },
+  ],
+  specifications: [
+    { label: "Размер", value: "52 × 52 × 47 см" },
+    { label: "Обивка", value: "Износостойкая рогожка" },
+    { label: "Каркас", value: "Берёзовая фанера" },
+  ],
+  optionGroups: [],
+} as const satisfies Product;
+
 export const products = [
   {
     id: "forma-chair",
@@ -591,6 +660,12 @@ export const diningTableCategoryProducts = [
   elaraDiningTableProduct,
 ] as const satisfies readonly Product[];
 
+export const poufCategoryProducts = [
+  arloPoufProduct,
+  nolaPoufProduct,
+  taroPoufProduct,
+] as const satisfies readonly Product[];
+
 export const allProducts = [
   ...products,
   lumoTablewareProduct,
@@ -604,6 +679,7 @@ export const allProducts = [
   ...mattressCategoryProducts,
   ...textilesDecorCategoryProducts,
   ...diningTableCategoryProducts,
+  ...poufCategoryProducts,
 ] as const satisfies readonly Product[];
 
 export function getProductBySlug(slug: string): Product | undefined {

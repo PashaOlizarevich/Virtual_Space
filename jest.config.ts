@@ -4,9 +4,10 @@ import nextJest from "next/jest.js";
 const createJestConfig = nextJest({ dir: "./" });
 
 const config: Config = {
+  roots: ["<rootDir>/src"],
   testEnvironment: "jsdom",
   coverageDirectory: "coverage",
-  testMatch: ["<rootDir>/**/*.test.{ts,tsx}"],
+  testMatch: ["**/*.test.{ts,tsx}"],
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/src/$1",
   },
