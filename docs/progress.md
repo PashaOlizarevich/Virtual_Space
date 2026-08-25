@@ -1094,6 +1094,7 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 - Product Tour: без изменений.
 - Ограничения: изображения реконструированы из миниатюр референса, поэтому отдельные мелкие детали
   восстановлены генеративно; композиция, ракурс, тип сцены и фирменная вывеска сохранены.
+
 ## Task 73 — Страница категории «Пуфики»
 
 - Результат: пункт «Пуфики» в динамическом меню каталога ведёт на `/catalog/poufs`; создана адаптивная
@@ -1107,7 +1108,6 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 - Переменные окружения: нет.
 - Архитектура: существующий поток `app -> modules/catalog -> ProductPreview` и общий динамический маршрут товара сохранены.
 - Product Tour: добавлен раздел категории «Пуфики» и карта затронутых файлов.
-- Ограничения: Browser plugin недоступен, поэтому rendered QA выполнен через локальный Playwright Chromium.
 
 ## Task 74 — Изоляция Jest-тестов
 
@@ -1118,3 +1118,25 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 - Архитектура: без изменений.
 - Product Tour: без изменений.
 - Ограничения: `npm run build` в изолированном worktree не запущен до конца, так как Turbopack не разрешает использовать `node_modules` за границей filesystem root; новые зависимости не устанавливались.
+
+## Task 75 — Страница категории «Кресла»
+
+- Результат: пункт «Кресла» в динамическом меню каталога ведёт на `/catalog/armchairs`; создана
+  адаптивная страница с содержательным описанием категории и ровно тремя товарными карточками.
+- Файлы: `src/app/(store)/catalog/armchairs/{page,page.test}.tsx`,
+  `src/components/layout/catalog-menu.tsx`, `src/modules/catalog/mock-data.ts`,
+  `src/styles/globals.css`, `public/images/armchairs/**`, `docs/ProductTour.md`.
+- Данные: в общий mock-каталог добавлены кресла Aster, Runa и Vero; карточки и detail-маршруты
+  используют единый источник `allProducts`.
+- Визуал: на основе полного ImageGen-концепта подготовлены три согласованных квадратных фото 1:1 с
+  едиными светом, масштабом и нейтральным интерьерным фоном без пустых полос.
+- Проверки: Prettier затронутых файлов, ESLint, TypeScript, 60 Jest-тестов и production build через
+  webpack прошли; desktop/mobile Playwright QA подтвердил ровно три карточки, загрузку изображений,
+  меню и detail-переход, отсутствие ошибок консоли и горизонтального переполнения.
+- Переменные окружения: нет.
+- Архитектура: сохранён поток `app -> modules/catalog -> ProductPreview` и общий динамический маршрут
+  товара.
+- Product Tour: добавлен раздел `/catalog/armchairs` и карта связанных файлов.
+- Ограничения: Browser plugin недоступен, поэтому rendered QA выполнен через локальный Playwright
+  Chromium; стандартный Turbopack build не принимает junction `node_modules` из worktree, поэтому
+  эквивалентная production-сборка выполнена штатным флагом Next.js `--webpack`.

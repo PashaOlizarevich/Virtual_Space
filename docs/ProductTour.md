@@ -438,3 +438,15 @@
 - Изображения: товарные подпапки в `public/images/poufs/`.
 - Переход из меню: `src/components/layout/catalog-menu.tsx`.
 - Стили: `.poufs-page*` в `src/styles/globals.css`.
+
+## Категория «Кресла» — `/catalog/armchairs`
+
+Ссылка «Кресла» в динамической панели каталога ведёт на отдельную страницу категории. Страница
+объясняет роль кресла в зоне чтения и отдыха и показывает три модели из общего каталога; кнопка
+«Подробнее» открывает полноценный маршрут товара `/product/[id]`.
+
+- Маршрут: `src/app/(store)/catalog/armchairs/page.tsx`.
+- Данные: `armchairCategoryProducts` и соответствующие товары в `src/modules/catalog/mock-data.ts`.
+- Изображения: товарные подпапки в `public/images/armchairs/`.
+- Переход из меню: `src/components/layout/catalog-menu.tsx`.
+- Стили: `.armchairs-page*` в `src/styles/globals.css`.

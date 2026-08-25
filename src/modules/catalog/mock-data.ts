@@ -512,6 +512,75 @@ export const taroPoufProduct = {
   optionGroups: [],
 } as const satisfies Product;
 
+export const asterArmchairProduct = {
+  id: "aster-armchair",
+  slug: "aster-armchair",
+  name: "Кресло Aster",
+  description: "Мягкое кресло в фактурном букле с обволакивающей спинкой и плавными линиями.",
+  price: 1590,
+  currency: "BYN",
+  image: "/images/armchairs/aster-armchair/01-main.png",
+  imageAlt: "Светлое кресло Aster в обивке из фактурного букле",
+  gallery: [
+    {
+      src: "/images/armchairs/aster-armchair/01-main.png",
+      alt: "Кресло Aster в светлом интерьере",
+    },
+  ],
+  specifications: [
+    { label: "Размер", value: "84 × 88 × 82 см" },
+    { label: "Обивка", value: "Фактурное букле" },
+    { label: "Опоры", value: "Сталь с матовым покрытием" },
+  ],
+  optionGroups: [],
+} as const satisfies Product;
+
+export const runaArmchairProduct = {
+  id: "runa-armchair",
+  slug: "runa-armchair",
+  name: "Кресло Runa",
+  description: "Глубокое кресло в шерстяной ткани с тёплым основанием из массива ореха.",
+  price: 1890,
+  currency: "BYN",
+  image: "/images/armchairs/runa-armchair/01-main.png",
+  imageAlt: "Оливковое кресло Runa на основании из тёплого ореха",
+  gallery: [
+    {
+      src: "/images/armchairs/runa-armchair/01-main.png",
+      alt: "Кресло Runa в оливковой обивке",
+    },
+  ],
+  specifications: [
+    { label: "Размер", value: "91 × 94 × 79 см" },
+    { label: "Обивка", value: "Шерстяная ткань" },
+    { label: "Основание", value: "Массив ореха" },
+  ],
+  optionGroups: [],
+} as const satisfies Product;
+
+export const veroArmchairProduct = {
+  id: "vero-armchair",
+  slug: "vero-armchair",
+  name: "Кресло Vero",
+  description: "Компактное поворотное кресло с цельным округлым силуэтом и мягкой поддержкой.",
+  price: 1690,
+  currency: "BYN",
+  image: "/images/armchairs/vero-armchair/01-main.png",
+  imageAlt: "Округлое кресло Vero в тёплой бежевой обивке на поворотном основании",
+  gallery: [
+    {
+      src: "/images/armchairs/vero-armchair/01-main.png",
+      alt: "Поворотное кресло Vero в нейтральном интерьере",
+    },
+  ],
+  specifications: [
+    { label: "Размер", value: "82 × 84 × 75 см" },
+    { label: "Обивка", value: "Мебельный шенилл" },
+    { label: "Механизм", value: "Поворотное основание" },
+  ],
+  optionGroups: [],
+} as const satisfies Product;
+
 export const products = [
   {
     id: "forma-chair",
@@ -666,6 +735,12 @@ export const poufCategoryProducts = [
   taroPoufProduct,
 ] as const satisfies readonly Product[];
 
+export const armchairCategoryProducts = [
+  asterArmchairProduct,
+  runaArmchairProduct,
+  veroArmchairProduct,
+] as const satisfies readonly Product[];
+
 export const allProducts = [
   ...products,
   lumoTablewareProduct,
@@ -680,6 +755,7 @@ export const allProducts = [
   ...textilesDecorCategoryProducts,
   ...diningTableCategoryProducts,
   ...poufCategoryProducts,
+  ...armchairCategoryProducts,
 ] as const satisfies readonly Product[];
 
 export function getProductBySlug(slug: string): Product | undefined {

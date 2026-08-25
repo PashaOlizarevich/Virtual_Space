@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 const categoryGroups = [
   [
     { label: "Диваны", href: "/catalog/sofas" },
-    { label: "Кресла", href: "/catalog" },
+    { label: "Кресла", href: "/catalog/armchairs" },
     { label: "Пуфики", href: "/catalog/poufs" },
   ],
   [
