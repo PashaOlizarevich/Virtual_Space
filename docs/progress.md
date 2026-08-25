@@ -1109,3 +1109,13 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 - Архитектура: существующий поток `app -> modules/catalog -> ProductPreview` и общий динамический маршрут товара сохранены.
 - Product Tour: добавлен раздел категории «Пуфики» и карта затронутых файлов.
 - Ограничения: Browser plugin недоступен, поэтому rendered QA выполнен через локальный Playwright Chromium.
+
+## Task 74 — Изоляция Jest-тестов
+
+- Результат: Jest ограничен каталогом `src`, поэтому штатный `npm test` больше не обнаруживает дубли тестов в `.worktrees` и не смешивает разные копии React.
+- Файлы: `jest.config.ts`, `docs/progress.md`.
+- Проверки: `npm test -- --runInBand` — 17 suites и 52 теста прошли; `npm run lint`, `npm run typecheck` и `git diff --check` — успешно.
+- Переменные окружения: нет.
+- Архитектура: без изменений.
+- Product Tour: без изменений.
+- Ограничения: `npm run build` в изолированном worktree не запущен до конца, так как Turbopack не разрешает использовать `node_modules` за границей filesystem root; новые зависимости не устанавливались.
