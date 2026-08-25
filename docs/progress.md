@@ -1243,3 +1243,17 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 - Product Tour: без изменений.
 - Ограничения: Browser plugin недоступен; Playwright запускается через `http://localhost:3000`, потому
   что Next.js блокирует dev-ресурсы для штатного `127.0.0.1`.
+
+## Task 83 — Разрешённый Playwright dev-origin
+
+- Результат: Next.js dev-server разрешает дополнительный origin `127.0.0.1`, используемый штатным
+  `baseURL` Playwright; предупреждения и блокировка dev-ресурсов устранены без расширения production-доступа.
+- Файлы: `next.config.ts`, `docs/progress.md`.
+- Проверки: Prettier, ESLint и TypeScript прошли; интерактивный Playwright-тест header через штатный
+  `http://127.0.0.1:3000` прошёл без предупреждений `Blocked cross-origin request`.
+- Переменные окружения: нет.
+- Архитектура: без изменений.
+- Product Tour: без изменений.
+- Ограничения: после успешного теста процесс Playwright снова пришлось остановить вручную из-за
+  зависшего завершения локального dev web server; `next-env.d.ts` изменён самим Next.js dev и не
+  включён в изменение задачи.
