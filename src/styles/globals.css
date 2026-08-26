@@ -1251,6 +1251,7 @@ a {
     .mattresses-page__grid .product-preview:nth-child(3n) .product-preview__quick-view,
     .textiles-decor-page__grid .product-preview:nth-child(3n) .product-preview__quick-view,
     .dining-tables-page__grid .product-preview:nth-child(3n) .product-preview__quick-view,
+    .living-room-tables-page__grid .product-preview:nth-child(3n) .product-preview__quick-view,
     .poufs-page__grid .product-preview:nth-child(3n) .product-preview__quick-view,
     .armchairs-page__grid .product-preview:nth-child(3n) .product-preview__quick-view {
       right: calc(100% - 20px);
@@ -2639,6 +2640,7 @@ a {
 .mattresses-page,
 .textiles-decor-page,
 .dining-tables-page,
+.living-room-tables-page,
 .poufs-page,
 .armchairs-page {
   padding-block: 64px 96px;
@@ -2651,6 +2653,7 @@ a {
 .mattresses-page__header,
 .textiles-decor-page__header,
 .dining-tables-page__header,
+.living-room-tables-page__header,
 .poufs-page__header,
 .armchairs-page__header {
   display: flex;
@@ -2668,6 +2671,7 @@ a {
 .mattresses-page__header h1,
 .textiles-decor-page__header h1,
 .dining-tables-page__header h1,
+.living-room-tables-page__header h1,
 .poufs-page__header h1,
 .armchairs-page__header h1 {
   margin: 0;
@@ -2684,6 +2688,7 @@ a {
 .mattresses-page__description,
 .textiles-decor-page__description,
 .dining-tables-page__description,
+.living-room-tables-page__description,
 .poufs-page__description,
 .armchairs-page__description {
   max-width: 500px;
@@ -2696,6 +2701,7 @@ a {
 .mattresses-page__collection,
 .textiles-decor-page__collection,
 .dining-tables-page__collection,
+.living-room-tables-page__collection,
 .poufs-page__collection,
 .armchairs-page__collection {
   padding-top: 48px;
@@ -2708,6 +2714,7 @@ a {
 .mattresses-page__collection > h2,
 .textiles-decor-page__collection > h2,
 .dining-tables-page__collection > h2,
+.living-room-tables-page__collection > h2,
 .poufs-page__collection > h2,
 .armchairs-page__collection > h2 {
   margin: 0 0 32px;
@@ -2734,6 +2741,7 @@ a {
 .mattresses-page__grid,
 .textiles-decor-page__grid,
 .dining-tables-page__grid,
+.living-room-tables-page__grid,
 .poufs-page__grid,
 .armchairs-page__grid {
   display: grid;
@@ -2747,6 +2755,7 @@ a {
 .mattresses-page__grid .product-preview,
 .textiles-decor-page__grid .product-preview,
 .dining-tables-page__grid .product-preview,
+.living-room-tables-page__grid .product-preview,
 .poufs-page__grid .product-preview,
 .armchairs-page__grid .product-preview {
   grid-column: 1 / -1;
@@ -2762,6 +2771,7 @@ a {
 .mattresses-page__grid .product-preview__media,
 .textiles-decor-page__grid .product-preview__media,
 .dining-tables-page__grid .product-preview__media,
+.living-room-tables-page__grid .product-preview__media,
 .poufs-page__grid .product-preview__media,
 .armchairs-page__grid .product-preview__media {
   aspect-ratio: 1;
@@ -2774,6 +2784,7 @@ a {
 .mattresses-page__grid .product-preview__content,
 .textiles-decor-page__grid .product-preview__content,
 .dining-tables-page__grid .product-preview__content,
+.living-room-tables-page__grid .product-preview__content,
 .poufs-page__grid .product-preview__content,
 .armchairs-page__grid .product-preview__content {
   padding: 20px;
@@ -3368,6 +3379,7 @@ body:has(dialog[open]) {
   .mattresses-page__grid .product-preview,
   .textiles-decor-page__grid .product-preview,
   .dining-tables-page__grid .product-preview,
+  .living-room-tables-page__grid .product-preview,
   .poufs-page__grid .product-preview,
   .armchairs-page__grid .product-preview {
     grid-column: span 6;
@@ -3386,6 +3398,7 @@ body:has(dialog[open]) {
   .mattresses-page,
   .textiles-decor-page,
   .dining-tables-page,
+  .living-room-tables-page,
   .poufs-page,
   .armchairs-page {
     padding-block: 88px 128px;
@@ -3397,6 +3410,7 @@ body:has(dialog[open]) {
   .mattresses-page__header,
   .textiles-decor-page__header,
   .dining-tables-page__header,
+  .living-room-tables-page__header,
   .poufs-page__header,
   .armchairs-page__header {
     padding-block: 24px 56px;
@@ -3408,6 +3422,7 @@ body:has(dialog[open]) {
   .mattresses-page__collection,
   .textiles-decor-page__collection,
   .dining-tables-page__collection,
+  .living-room-tables-page__collection,
   .poufs-page__collection,
   .armchairs-page__collection {
     padding-top: 56px;
@@ -3425,6 +3440,7 @@ body:has(dialog[open]) {
   .mattresses-page__grid .product-preview,
   .textiles-decor-page__grid .product-preview,
   .dining-tables-page__grid .product-preview,
+  .living-room-tables-page__grid .product-preview,
   .poufs-page__grid .product-preview,
   .armchairs-page__grid .product-preview {
     grid-column: span 4;
@@ -3437,6 +3453,7 @@ body:has(dialog[open]) {
     .mattresses-page__grid .product-preview,
     .textiles-decor-page__grid .product-preview,
     .dining-tables-page__grid .product-preview,
+    .living-room-tables-page__grid .product-preview,
     .poufs-page__grid .product-preview,
     .armchairs-page__grid .product-preview {
       overflow: visible;
