@@ -1317,3 +1317,16 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 - Ограничения: Browser plugin недоступен; E2E не запускались и не изменялись, поскольку новый
   критический сквозной сценарий не добавлялся. Стандартный Turbopack build в изолированном worktree
   не поддержал junction на общие зависимости, поэтому production build проверен штатным webpack.
+
+## Task 88 — Новые изображения столов для гостиной
+
+- Результат: для Riva, Orsa и Plano сгенерированы отдельные интерьерные фотографии в едином
+  каталожном стиле; карточки и страницы товаров получили новые изображения, расширенные описания и
+  уточнённые alt-тексты.
+- Файлы: `src/modules/catalog/mock-data.ts`, `public/images/living-room-tables/**`,
+  `docs/progress.md`.
+- Проверки: ESLint, TypeScript, 62 Jest-теста, production build через webpack и `git diff --check` —
+  успешно.
+- Переменные окружения: нет.
+- Архитектура и Product Tour: без изменений.
+- Ограничения: E2E не запускались и не изменялись; пользовательский сценарий не менялся.
