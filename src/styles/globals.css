@@ -946,9 +946,8 @@ a {
   inset: 4.4px;
   border: 1px solid rgb(17 17 17 / 10%);
   border-radius: 50%;
-  background: rgb(255 255 255 / 88%);
-  box-shadow: 0 4px 16px rgb(17 17 17 / 8%);
-  backdrop-filter: blur(8px);
+  background: transparent;
+  backdrop-filter: blur(5px);
   content: "";
 }
 
@@ -958,13 +957,12 @@ a {
   height: 19.2px;
 }
 
-.product-preview__favorite.button:hover::before,
-.product-preview__favorite.button[aria-pressed="true"]::before {
-  background: var(--color-background);
-}
-
 .product-preview__favorite.button:hover,
 .product-preview__favorite.button[aria-pressed="true"] {
+  color: var(--color-primary);
+}
+
+.product-preview__favorite.button[aria-pressed="true"] svg {
   color: var(--color-primary);
 }
 
