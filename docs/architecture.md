@@ -21,6 +21,7 @@
 | Категории        | Явные страницы диванов, стульев и посуды                      | Данные категорий из БД; динамический маршрут только при достаточном количестве однотипных категорий |
 | Изображения      | Оптимизированные локальные файлы в `public/images`            | Cloudinary для управляемых товарных изображений, метаданные в PostgreSQL                            |
 | Корзина          | Zustand, localStorage и mock-сверка                           | Zustand для гостевого UX и обязательная серверная сверка цены/доступности                           |
+| Избранное        | Zustand и localStorage со списком ID товаров                  | Гостевой Zustand плюс PostgreSQL-список пользователя с объединением после входа                     |
 | Авторизация      | Preview-сессии пользователя и администратора в sessionStorage | Auth.js, серверная сессия и проверка роли на каждой защищённой операции                             |
 | Админка          | Клиентские preview-gates и mock transport                     | Защищённые Server Actions/Route Handlers и серверные сервисы                                        |
 | Заказы           | Валидация формы и mock submit                                 | Транзакционный order service, Prisma и уведомление Telegram после commit                            |
@@ -134,6 +135,7 @@ virtual-space/
 │   │   ├── cart/                  # Zustand, schemas, validation и sync
 │   │   ├── catalog/               # карточки, слайдер, configurator, mock/query
 │   │   ├── checkout/              # форма, schemas и mock submit
+│   │   ├── favorites/             # гостевые ID, persist и клиентский список избранного
 │   │   ├── settings/              # mock-информация и контакты
 │   │   └── users/                 # preview-профиль и история
 │   ├── components/

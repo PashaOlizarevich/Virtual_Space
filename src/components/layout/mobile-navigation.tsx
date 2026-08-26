@@ -1,6 +1,6 @@
 "use client";
 
-import { Menu, ShoppingBag, UserRound, X } from "lucide-react";
+import { Heart, Menu, ShoppingBag, UserRound, X } from "lucide-react";
 import Link from "next/link";
 import { useRef } from "react";
 
@@ -91,6 +91,15 @@ export function MobileNavigation() {
             >
               <UserRound aria-hidden="true" />
               Личный кабинет
+            </Link>
+            <Link
+              className="mobile-navigation__action"
+              href="/favorites"
+              prefetch={false}
+              onClick={closeNavigation}
+            >
+              <Heart aria-hidden="true" />
+              Избранное
             </Link>
             <button
               className="mobile-navigation__action"

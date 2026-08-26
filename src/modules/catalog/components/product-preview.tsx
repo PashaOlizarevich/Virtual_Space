@@ -7,6 +7,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { useCartStore } from "@/modules/cart/store";
 import type { Product } from "@/modules/catalog/types";
+import { FavoriteButton } from "@/modules/favorites/components/favorite-button";
 
 const priceFormatter = new Intl.NumberFormat("ru-BY", {
   style: "currency",
@@ -42,6 +43,7 @@ export function ProductPreview({
           quality={imageQuality}
           loading={imageLoading}
         />
+        <FavoriteButton productId={product.id} productName={product.name} />
       </div>
       <div className="product-preview__content">
         <div className="product-preview__heading">

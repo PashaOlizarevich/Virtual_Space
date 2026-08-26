@@ -1,4 +1,4 @@
-import { UserRound } from "lucide-react";
+import { Heart, UserRound } from "lucide-react";
 import Link from "next/link";
 
 import { CatalogMenu } from "@/components/layout/catalog-menu";
@@ -61,6 +61,14 @@ export function Header() {
             aria-label="Личный кабинет"
           >
             <UserRound aria-hidden="true" />
+          </Link>
+          <Link
+            className="header__icon-link"
+            href="/favorites"
+            prefetch={false}
+            aria-label="Избранное"
+          >
+            <Heart aria-hidden="true" />
           </Link>
           <CartWidget />
         </div>

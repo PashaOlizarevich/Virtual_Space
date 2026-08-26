@@ -1330,3 +1330,26 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 - Переменные окружения: нет.
 - Архитектура и Product Tour: без изменений.
 - Ограничения: E2E не запускались и не изменялись; пользовательский сценарий не менялся.
+
+## Task 89 — Гостевое избранное
+
+- Результат: добавлены доступные кнопки-сердца на общие карточки товаров, ссылки на избранное в
+  desktop- и mobile-навигацию, публичная страница `/favorites` с актуальными карточками и пустым
+  состоянием, а также валидируемое Zustand-хранилище упорядоченных ID в localStorage. Неизвестные ID
+  безопасно игнорируются, состояние гидратации не создаёт расхождение первого рендера.
+- Файлы: `src/modules/favorites/**`, `src/app/(store)/favorites/page.tsx`,
+  `src/modules/catalog/components/product-preview.tsx`, `src/components/layout/header.tsx`,
+  `src/components/layout/mobile-navigation.tsx`, `src/styles/globals.css`, `docs/architecture.md`,
+  `docs/ProductTour.md`, `docs/progress.md`.
+- Проверки: целевые 7 Jest-тестов, полный набор из 69 Jest-тестов, ESLint, TypeScript, production
+  build через webpack, целевой Prettier check и `git diff --check` прошли; Playwright QA на
+  1440×1000 и 390×844 подтвердила добавление, восстановление, удаление, пустое состояние и отсутствие
+  ошибок консоли.
+- Переменные окружения: нет.
+- Архитектура: в `docs/architecture.md` зафиксирован гостевой favorites-модуль и будущая серверная
+  синхронизация с PostgreSQL после входа.
+- Product Tour: обновлены разделы навигации и публичных страниц.
+- Ограничения: избранное пока хранится только в текущем браузере и не связано с preview-авторизацией;
+  Browser plugin недоступен, поэтому визуальная QA выполнена обычным Playwright; глобальный
+  `npm run format:check` находит ранее существовавшие несоответствия в служебных каталогах и чужих
+  worktree, файлы задачи проверены адресно; E2E-файлы не изменялись.

@@ -83,9 +83,10 @@
   `header.tsx`.
 - Кнопка поиска сейчас только отображается и не открывает поиск.
 - Иконка пользователя ведёт на `/login`.
+- Иконка сердца между личным кабинетом и корзиной ведёт на `/favorites`.
 - Иконка корзины открывает drawer-компонент
   `src/modules/cart/components/cart-widget.tsx`.
-- Мобильное меню, его ссылки, переход в `/profile` и открытие корзины находятся в
+- Мобильное меню, его ссылки, переходы в `/profile`, `/favorites` и открытие корзины находятся в
   `src/components/layout/mobile-navigation.tsx`.
 - Разметка, категории и focus-management панели каталога находятся в
   `src/components/layout/catalog-menu.tsx`; на mobile пункт «Каталог» закрывает основную навигацию и
@@ -113,6 +114,23 @@
 - Стили: классы `.cart-widget*` в `src/styles/globals.css`.
 
 ## Публичные страницы
+
+### Избранное — `/favorites`
+
+Публичная страница показывает сохранённые гостем товары в порядке добавления. Сердце на общей
+карточке `ProductPreview` добавляет или удаляет товар; повторное нажатие на странице избранного сразу
+убирает карточку. При пустом списке показаны пояснение и переход в каталог.
+
+- Маршрут и актуальный mock-каталог: `src/app/(store)/favorites/page.tsx`.
+- Сетка и сопоставление сохранённых ID с каталогом:
+  `src/modules/favorites/components/favorites-grid.tsx`.
+- Кнопка-сердце: `src/modules/favorites/components/favorite-button.tsx`.
+- Валидация и гостевое хранение ID в localStorage: `src/modules/favorites/schemas.ts` и
+  `src/modules/favorites/store.ts`.
+- Стили: `.favorites-page*` и `.product-preview__favorite` в `src/styles/globals.css`.
+
+Ограничение текущего этапа: избранное хранится только в браузере и не связано с preview-авторизацией.
+После появления Auth.js и PostgreSQL гостевой список должен объединяться с серверным после входа.
 
 ### Главная — `/`
 
