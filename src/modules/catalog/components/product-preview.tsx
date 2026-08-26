@@ -20,6 +20,7 @@ type ProductPreviewProps = Readonly<{
   imageSizes?: string;
   imageQuality?: 75 | 100;
   imageLoading?: "eager" | "lazy";
+  showNewBadge?: boolean;
 }>;
 
 export function ProductPreview({
@@ -27,6 +28,7 @@ export function ProductPreview({
   imageSizes = "(max-width: 599px) 100vw, (max-width: 899px) 50vw, 25vw",
   imageQuality = 75,
   imageLoading = "lazy",
+  showNewBadge = false,
 }: ProductPreviewProps) {
   const addItem = useCartStore((state) => state.addItem);
   const productHref = `/product/${product.slug}`;
@@ -43,6 +45,7 @@ export function ProductPreview({
           quality={imageQuality}
           loading={imageLoading}
         />
+        {showNewBadge ? <span className="product-preview__badge">Новинка</span> : null}
         <FavoriteButton productId={product.id} productName={product.name} />
       </div>
       <div className="product-preview__content">

@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 
 const navigationItems = [
   { href: "/stores", label: "Магазины" },
-  { href: "/catalog", label: "Новинки" },
+  { href: "/new", label: "Новинки" },
   { href: "/catalog", label: "Акции" },
   { href: "/about", label: "О нас" },
 ] as const;

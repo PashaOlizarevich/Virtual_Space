@@ -1521,3 +1521,24 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 - Product Tour: без изменений; фактические пользовательские функции и маршруты не менялись.
 - Ограничения: план не реализует Prisma schema, миграции или backend; PostgreSQL-платформа и хостинг
   остаются отдельными решениями будущего этапа.
+
+## Task 100 — Публичная страница новинок
+
+- Результат: добавлен маршрут `/new` с metadata, выборкой активных новинок из общего mock-каталога,
+  сортировкой по началу периода, текстовыми метками карточек и доступным пустым состоянием; desktop-
+  и mobile-навигация ведут на новый маршрут.
+- Файлы: `src/app/(store)/new/page.tsx`, `src/modules/catalog/new-arrivals.ts`,
+  `src/modules/catalog/types.ts`, `src/modules/catalog/mock-data.ts`,
+  `src/modules/catalog/components/product-preview.tsx`, layout-навигация, стили, Jest-тесты,
+  `docs/ProductTour.md`, `docs/architecture.md`, `docs/implementation-plan.md`, `docs/progress.md`.
+- Проверки: ESLint, TypeScript, 33 Jest-набора (81 тест), production build, адресные Jest-тесты,
+  desktop/mobile Chromium QA и `view_image` прошли; маршрут `/new` подтверждён как динамический.
+- Переменные окружения: нет.
+- Архитектура: mock/DTO-контракт товара расширен nullable ISO 8601 UTC-полями `newFrom` и
+  `newUntil`; статус вычисляется чистой функцией по включительному интервалу и не связан с
+  `createdAt`/`updatedAt`.
+- Product Tour: добавлены маршрут `/new`, пользовательский сценарий, навигация и карта ключевых
+  файлов.
+- Ограничения: Prisma/backend ещё не подключены; управление периодом в админке намеренно отложено до
+  постоянного хранения и должно включать переключатель, даты начала/окончания и рекомендуемое
+  окончание через 30 дней.

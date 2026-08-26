@@ -18,6 +18,8 @@ export type ProductPreview = Readonly<{
   currency: ProductCurrency;
   image: string;
   imageAlt: string;
+  newFrom?: string | null;
+  newUntil?: string | null;
 }>;
 
 export type Product = ProductPreview &

@@ -271,6 +271,7 @@ Frontend не решает, можно ли оформить заказ, как�
 - `src/app/(store)/catalog/<category>/page.tsx` задаёт маршрут, metadata и композицию страницы; типы, данные и представления товара остаются в `modules/catalog`.
 - Явные страницы допустимы для небольшого числа визуально отличающихся curated-категорий. Динамический `catalog/[category]` вводится после перехода к данным из БД и только когда он устраняет подтверждённое дублирование.
 - Общие представления товара (`ProductPreview`, `ProductGallery`, `ProductConfigurator`) размещаются в `modules/catalog/components` и переиспользуются главной, каталогом, категориями и страницей товара. Отдельная категория не создаёт собственную дублирующую карточку.
+- Статус новинки является временным маркетинговым состоянием товара: nullable `newFrom` и `newUntil` передаются как ISO 8601 UTC-строки в mock/DTO-контракте, а чистая функция каталога проверяет включительный интервал и сортирует активные новинки по `newFrom` от новых к ранним. `createdAt` и `updatedAt` не определяют этот статус.
 - `components/layout` содержит глобальный каркас и интерактивную навигацию: Header, mega-menu каталога, mobile navigation и переходы между маршрутами. Layout может компоновать публичный UI модулей и ссылки на доменные маршруты, но не получает цены, остатки и другие бизнес-данные напрямую.
 - Анимация, пропорции изображения, hover quick view и визуальное число колонок являются UI-решениями из `docs/DESIGN.md` и не меняют архитектурные границы.
 
@@ -341,7 +342,7 @@ PostgreSQL — источник истины для товаров, актуал
 
 Минимальная модель MVP:
 
-- `Product`: id, slug, name, description, price (`Decimal`), stock, isActive, material, style, dimensions, rating при необходимости, timestamps.
+- `Product`: id, slug, name, description, price (`Decimal`), stock, isActive, nullable newFrom/newUntil, material, style, dimensions, rating при необходимости, timestamps.
 - `ProductImage`: id, productId, cloudinaryPublicId, secureUrl, alt, position.
 - `Category`: id, slug, name; связь с товарами.
 - `ProductColor` либо нормализованная связь цветов — если товар реально имеет несколько цветов/вариантов.

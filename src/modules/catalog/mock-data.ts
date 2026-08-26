@@ -9,6 +9,8 @@ export const lumoTablewareProduct = {
   currency: "BYN",
   image: "/images/tableware/lumo-plates/01-main.png",
   imageAlt: "Четыре светлые керамические тарелки Lumo на каменной столешнице",
+  newFrom: "2026-08-22T00:00:00.000Z",
+  newUntil: "2027-08-22T23:59:59.999Z",
   gallery: [
     {
       src: "/images/tableware/lumo-plates/01-main.png",
@@ -59,6 +61,8 @@ export const nomaChairProduct = {
   currency: "BYN",
   image: "/images/chairs/noma-chair/01-main.png",
   imageAlt: "Стул Noma из светлого дуба с плетёным сиденьем",
+  newFrom: "2026-08-15T00:00:00.000Z",
+  newUntil: "2027-08-15T23:59:59.999Z",
   gallery: [{ src: "/images/chairs/noma-chair/01-main.png", alt: "Дубовый стул Noma" }],
   specifications: [
     { label: "Размер", value: "49 × 54 × 80 см" },
@@ -95,6 +99,8 @@ export const lentoSofaProduct = {
   currency: "BYN",
   image: "/images/sofas/lento-sofa/01-main.png",
   imageAlt: "Светлый двухместный диван Lento с округлыми подлокотниками",
+  newFrom: "2026-08-01T00:00:00.000Z",
+  newUntil: "2027-08-01T23:59:59.999Z",
   gallery: [
     { src: "/images/sofas/lento-sofa/01-main.png", alt: "Двухместный диван Lento" },
     { src: "/images/sofas/lento-sofa/02-side.png", alt: "Диван Lento, вид сбоку" },

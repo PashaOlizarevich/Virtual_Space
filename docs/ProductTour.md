@@ -23,6 +23,7 @@
 | --------------------- | -------------------- | -------------------------------------------- | ---------------------------------------------------- |
 | `/`                   | Главная              | `src/app/(store)/page.tsx`                   | `ProductPreview`, `featuredProducts`, `storeProfile` |
 | `/catalog`            | Каталог              | `src/app/(store)/catalog/page.tsx`           | `CatalogQueryGrid`                                   |
+| `/new`                | Новинки              | `src/app/(store)/new/page.tsx`               | `ProductPreview`, `getActiveNewArrivals`             |
 | `/catalog/sofas`      | Диваны               | `src/app/(store)/catalog/sofas/page.tsx`     | `ProductPreview`, `sofaCategoryProducts`             |
 | `/catalog/chairs`     | Стулья               | `src/app/(store)/catalog/chairs/page.tsx`    | `ProductPreview`, `chairCategoryProducts`            |
 | `/catalog/tableware`  | Посуда               | `src/app/(store)/catalog/tableware/page.tsx` | `ProductPreview`, `lumoTablewareProduct`             |
@@ -65,7 +66,7 @@
   и ссылкой «Весь каталог»; «Диваны», «Стулья» и «Посуда» ведут на отдельные страницы
   `/catalog/sofas`, `/catalog/chairs` и `/catalog/tableware`, остальные категории — в `/catalog`, поскольку их фильтрация пока не
   реализована.
-  «Новинки» и «Акции» ведут в существующий каталог,
+  «Новинки» ведут на отдельную страницу `/new`, а «Акции» — в существующий каталог,
   «Магазины» — на отдельную страницу четырёх шоурумов; переход на главную доступен через логотип.
 
 ### Магазины — `/stores`
@@ -88,6 +89,21 @@
   `src/modules/cart/components/cart-widget.tsx`.
 - Мобильное меню, его ссылки, переходы в `/profile`, `/favorites` и открытие корзины находятся в
   `src/components/layout/mobile-navigation.tsx`.
+
+### Новинки — `/new`
+
+Файлы: `src/app/(store)/new/page.tsx`, `src/modules/catalog/new-arrivals.ts`,
+`src/modules/catalog/mock-data.ts` и общий `src/modules/catalog/components/product-preview.tsx`.
+
+Страница показывает товары, у которых текущий момент входит в заданный включительный интервал
+`newFrom` — `newUntil`, и сортирует их по началу периода от более новых к более ранним. Даты в
+mock-контракте хранятся как ISO 8601 UTC-строки; товар без полного корректного периода не считается
+новинкой. Карточки получают текстовую метку «Новинка», а при отсутствии активных позиций страница
+показывает доступное пустое состояние со ссылкой на `/catalog`.
+
+Поля пока задаются только в общем mock-каталоге. Preview-админка не управляет публичной страницей;
+переключатель «Показывать в новинках», дата начала и дата окончания с рекомендуемым периодом 30 дней
+должны появиться вместе с постоянным backend/Prisma-хранилищем.
 
 ### Футер сайта
 
@@ -377,6 +393,7 @@
 | Пункты мобильного меню                                     | `src/components/layout/mobile-navigation.tsx`                  |
 | Название, описание, контакты и соцсети магазина            | `src/modules/settings/mock-data.ts`                            |
 | Товары, цены, slug, изображения, варианты и характеристики | `src/modules/catalog/mock-data.ts`                             |
+| Периоды и вычисление активных новинок                      | `mock-data.ts`, `src/modules/catalog/new-arrivals.ts`          |
 | Какие товары показаны на главной                           | `featuredProducts` в `src/modules/catalog/mock-data.ts`        |
 | Три преимущества на главной                                | `advantages` в `src/app/(store)/page.tsx`                      |
 | Демо-профиль и история заказов                             | `src/modules/users/mock-data.ts`                               |
