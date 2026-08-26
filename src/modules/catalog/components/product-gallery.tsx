@@ -6,10 +6,17 @@ import { useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import type { ProductImage } from "@/modules/catalog/types";
+import { FavoriteButton } from "@/modules/favorites/components/favorite-button";
 
 const SWIPE_THRESHOLD = 48;
 
-export function ProductGallery({ images }: Readonly<{ images: readonly ProductImage[] }>) {
+type ProductGalleryProps = Readonly<{
+  images: readonly ProductImage[];
+  productId?: string;
+  productName?: string;
+}>;
+
+export function ProductGallery({ images, productId, productName }: ProductGalleryProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const touchStartX = useRef<number | null>(null);
   const hasMultipleImages = images.length > 1;
@@ -66,6 +73,9 @@ export function ProductGallery({ images }: Readonly<{ images: readonly ProductIm
             sizes="(max-width: 899px) 100vw, 58vw"
           />
         </figure>
+        {productId && productName ? (
+          <FavoriteButton productId={productId} productName={productName} />
+        ) : null}
         {hasMultipleImages ? (
           <>
             <Button

@@ -9,14 +9,9 @@ import { useFavoritesHydrated } from "@/modules/favorites/use-favorites-hydrated
 type FavoriteButtonProps = Readonly<{
   productId: string;
   productName: string;
-  appearance?: "card" | "detail";
 }>;
 
-export function FavoriteButton({
-  productId,
-  productName,
-  appearance = "card",
-}: FavoriteButtonProps) {
+export function FavoriteButton({ productId, productName }: FavoriteButtonProps) {
   const hydrated = useFavoritesHydrated();
   const isFavorite = useFavoritesStore((state) => state.productIds.includes(productId));
   const toggle = useFavoritesStore((state) => state.toggle);
@@ -27,16 +22,15 @@ export function FavoriteButton({
 
   return (
     <Button
-      className={appearance === "card" ? "product-preview__favorite" : "product-detail__favorite"}
-      variant={appearance === "card" ? "ghost" : "secondary"}
-      size={appearance === "card" ? "icon" : "default"}
+      className="product-preview__favorite"
+      variant="ghost"
+      size="icon"
       aria-label={label}
       aria-pressed={selected}
       disabled={!hydrated}
       onClick={() => toggle(productId)}
     >
       <Heart aria-hidden="true" fill={selected ? "currentColor" : "none"} />
-      {appearance === "detail" && (selected ? "В избранном" : "В избранное")}
     </Button>
   );
 }

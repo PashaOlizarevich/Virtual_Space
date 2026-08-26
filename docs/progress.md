@@ -1385,3 +1385,22 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 - Ограничения: Browser plugin недоступен; существующие E2E-файлы не изменялись. Глобальный
   Prettier-check по-прежнему отмечает ранее существовавшие несоответствия в служебных каталогах и
   старых worktree, поэтому файлы задачи проверены адресно.
+
+## Task 92 — Сердце поверх фотографии товара
+
+- Результат: на странице конкретного товара кнопка избранного перенесена из блока действий в правый
+  верхний угол главной фотографии и оформлена тем же компактным сердцем, что и карточки каталога.
+  Состояние, гидратационная безопасность, `aria-label`, `aria-pressed` и область нажатия 44×44
+  пикселя сохранены.
+- Файлы: `src/app/(store)/product/[id]/page.tsx`,
+  `src/modules/catalog/components/product-configurator.tsx`,
+  `src/modules/catalog/components/product-gallery.tsx`,
+  `src/modules/favorites/components/favorite-button.tsx`,
+  `src/modules/favorites/components/product-gallery-favorite.test.tsx`, `src/styles/globals.css`,
+  `docs/ProductTour.md`, `docs/progress.md`.
+- Проверки: целевые 4 Jest-теста, полный набор из 70 Jest-тестов, ESLint, TypeScript, адресный
+  Prettier, production build и `git diff --check` прошли.
+- Переменные окружения: нет.
+- Архитектура: без изменений; используется существующий favorites-модуль.
+- Product Tour: уточнено расположение кнопки избранного на странице товара.
+- Ограничения: Browser plugin недоступен; существующие E2E-файлы не изменялись.

@@ -31,7 +31,11 @@ export default async function ProductPage(props: ProductPageProps) {
           <span>{product.name}</span>
         </nav>
         <div className="product-detail__layout">
-          <ProductGallery images={product.gallery} />
+          <ProductGallery
+            images={product.gallery}
+            productId={product.id}
+            productName={product.name}
+          />
           <section className="product-detail__summary" aria-labelledby="product-title">
             <div className="product-detail__intro">
               <h1 id="product-title">{product.name}</h1>
