@@ -24,6 +24,7 @@
 | `/`                   | Главная              | `src/app/(store)/page.tsx`                   | `ProductPreview`, `featuredProducts`, `storeProfile` |
 | `/catalog`            | Каталог              | `src/app/(store)/catalog/page.tsx`           | `CatalogQueryGrid`                                   |
 | `/new`                | Новинки              | `src/app/(store)/new/page.tsx`               | `ProductPreview`, `getActiveNewArrivals`             |
+| `/sale`               | Акции                | `src/app/(store)/sale/page.tsx`              | `PromotionHero`, `PromotionProductGrid`              |
 | `/catalog/sofas`      | Диваны               | `src/app/(store)/catalog/sofas/page.tsx`     | `ProductPreview`, `sofaCategoryProducts`             |
 | `/catalog/chairs`     | Стулья               | `src/app/(store)/catalog/chairs/page.tsx`    | `ProductPreview`, `chairCategoryProducts`            |
 | `/catalog/tableware`  | Посуда               | `src/app/(store)/catalog/tableware/page.tsx` | `ProductPreview`, `lumoTablewareProduct`             |
@@ -66,7 +67,7 @@
   и ссылкой «Весь каталог»; «Диваны», «Стулья» и «Посуда» ведут на отдельные страницы
   `/catalog/sofas`, `/catalog/chairs` и `/catalog/tableware`, остальные категории — в `/catalog`, поскольку их фильтрация пока не
   реализована.
-  «Новинки» ведут на отдельную страницу `/new`, а «Акции» — в существующий каталог,
+  «Новинки» ведут на отдельную страницу `/new`, а «Акции» — на `/sale`,
   «Магазины» — на отдельную страницу четырёх шоурумов; переход на главную доступен через логотип.
 
 ### Магазины — `/stores`
@@ -104,6 +105,21 @@ mock-контракте хранятся как ISO 8601 UTC-строки; то�
 Поля пока задаются только в общем mock-каталоге. Preview-админка не управляет публичной страницей;
 переключатель «Показывать в новинках», дата начала и дата окончания с рекомендуемым периодом 30 дней
 должны появиться вместе с постоянным backend/Prisma-хранилищем.
+
+### Акции — `/sale`
+
+Файлы: `src/app/(store)/sale/page.tsx`, `src/modules/promotions/promotions.ts`,
+`src/modules/promotions/mock-data.ts` и компоненты в `src/modules/promotions/components`.
+
+Страница показывает редакционный hero главной активной акции, её включительный период и товары всех
+действующих акций. Доменная функция получает дату явно, исключает неактивные акции и отсутствующие
+товары, рассчитывает процентную цену и не допускает повторного применения акции к одному товару.
+Карточка переиспользует `ProductPreview`, поэтому сохраняет избранное, переход к товару и добавление в
+корзину, но дополнительно показывает зачёркнутую исходную цену, текущую цену и текстовый процент
+скидки. Если активных предложений нет, доступно пустое состояние со ссылкой на каталог.
+
+Текущий источник данных — mock-витрина. Перед production-оформлением заказа сервер должен заново
+проверить применимость акции и рассчитать цену, а заказ — сохранить снимок итоговой цены и акции.
 
 ### Футер сайта
 

@@ -21,6 +21,12 @@ type ProductPreviewProps = Readonly<{
   imageQuality?: 75 | 100;
   imageLoading?: "eager" | "lazy";
   showNewBadge?: boolean;
+  pricing?: Readonly<{
+    originalPrice: number;
+    currentPrice: number;
+    discountPercent: number;
+    promotionId: string;
+  }>;
 }>;
 
 export function ProductPreview({
@@ -29,6 +35,7 @@ export function ProductPreview({
   imageQuality = 75,
   imageLoading = "lazy",
   showNewBadge = false,
+  pricing,
 }: ProductPreviewProps) {
   const addItem = useCartStore((state) => state.addItem);
   const productHref = `/product/${product.slug}`;
@@ -51,11 +58,30 @@ export function ProductPreview({
       <div className="product-preview__content">
         <div className="product-preview__heading">
           <h3 className="product-preview__name">{product.name}</h3>
-          <p className="product-preview__price">{priceFormatter.format(product.price)}</p>
+          {pricing ? (
+            <div
+              className="product-preview__promotional-price"
+              aria-label={`Цена по акции ${priceFormatter.format(pricing.currentPrice)}, прежняя цена ${priceFormatter.format(pricing.originalPrice)}, скидка ${pricing.discountPercent}%`}
+            >
+              <span className="product-preview__original-price" aria-hidden="true">
+                {priceFormatter.format(pricing.originalPrice)}
+              </span>
+              <span className="product-preview__price" aria-hidden="true">
+                {priceFormatter.format(pricing.currentPrice)}
+              </span>
+            </div>
+          ) : (
+            <p className="product-preview__price">{priceFormatter.format(product.price)}</p>
+          )}
         </div>
         <p className="product-preview__description text-body-sm text-secondary">
           {product.description}
         </p>
+        {pricing ? (
+          <p className="product-preview__discount text-body-sm">
+            Скидка {pricing.discountPercent}%
+          </p>
+        ) : null}
         <div className="product-preview__actions">
           <Link className="button button--secondary button--default" href={productHref}>
             Подробнее
@@ -66,7 +92,7 @@ export function ProductPreview({
               addItem({
                 productId: product.id,
                 selectedOptions: [],
-                observedPrice: product.price,
+                observedPrice: pricing?.currentPrice ?? product.price,
               })
             }
           >
@@ -82,7 +108,7 @@ export function ProductPreview({
         <p className="text-label-caps text-secondary">Быстрый просмотр</p>
         <div className="product-preview__quick-heading">
           <h4>{product.name}</h4>
-          <p>{priceFormatter.format(product.price)}</p>
+          <p>{priceFormatter.format(pricing?.currentPrice ?? product.price)}</p>
         </div>
         <p className="text-body-sm text-secondary">{product.description}</p>
         {dimensions ? (

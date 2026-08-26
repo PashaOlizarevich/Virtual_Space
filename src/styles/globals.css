@@ -1259,6 +1259,26 @@ a {
   white-space: nowrap;
 }
 
+.product-preview__promotional-price {
+  display: flex;
+  flex: none;
+  align-items: baseline;
+  gap: 10px;
+  white-space: nowrap;
+}
+
+.product-preview__original-price {
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+}
+
+.product-preview__discount {
+  margin: 0;
+  font-weight: 500;
+}
+
 .product-preview__description {
   display: -webkit-box;
   overflow: hidden;
@@ -2855,6 +2875,99 @@ a {
   gap: 48px 16px;
 }
 
+.sale-page {
+  padding-bottom: 96px;
+  background: var(--color-background);
+}
+
+.promotion-hero {
+  display: grid;
+  min-width: 0;
+  min-height: 640px;
+}
+
+.promotion-hero__content {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 28px;
+  padding-block: 64px;
+}
+
+.promotion-hero h1,
+.promotion-hero p,
+.promotion-products h2 {
+  margin: 0;
+}
+
+.promotion-hero h1 {
+  width: 100%;
+  max-width: min(640px, calc(100vw - (var(--page-gutter) * 2)));
+  font-size: clamp(3.25rem, 6vw, 5.5rem);
+  font-weight: 400;
+  line-height: 0.92;
+  letter-spacing: -0.05em;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+}
+
+.promotion-hero__description {
+  width: 100%;
+  max-width: min(520px, calc(100vw - (var(--page-gutter) * 2)));
+  color: var(--color-text-secondary);
+  font-size: 1.0625rem;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+
+.promotion-hero__period {
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: lowercase;
+}
+
+.promotion-hero__media {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  min-height: 460px;
+  overflow: hidden;
+  background: var(--color-surface-soft);
+}
+
+.promotion-hero__media img {
+  object-fit: cover;
+}
+
+.promotion-products {
+  padding-top: 72px;
+  scroll-margin-top: 96px;
+}
+
+.promotion-products h2 {
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 24px;
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -0.035em;
+}
+
+.promotion-products__grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 56px 16px;
+  padding-top: 24px;
+}
+
+.sale-page__empty {
+  margin-top: 72px;
+}
+
 .tableware-page,
 .chairs-page,
 .sofas-page,
@@ -3595,6 +3708,9 @@ body:has(dialog[open]) {
   .catalog-page__grid .product-preview {
     grid-column: span 6;
   }
+  .promotion-products__grid .product-preview {
+    grid-column: span 6;
+  }
   .chairs-page__grid .product-preview,
   .sofas-page__grid .product-preview,
   .beds-page__grid .product-preview,
@@ -3612,6 +3728,26 @@ body:has(dialog[open]) {
   .catalog-page,
   .product-detail {
     padding-block: 88px 128px;
+  }
+  .sale-page {
+    padding-bottom: 128px;
+  }
+  .promotion-hero {
+    grid-template-columns: minmax(0, 48fr) minmax(0, 52fr);
+    margin-top: -128px;
+    padding-top: 128px;
+  }
+  .promotion-hero__content {
+    padding: 80px 64px 80px 12px;
+  }
+  .promotion-hero__media {
+    min-height: 640px;
+  }
+  .promotion-products {
+    padding-top: 88px;
+  }
+  .promotion-products__grid .product-preview {
+    grid-column: span 4;
   }
   .tableware-page,
   .chairs-page,
