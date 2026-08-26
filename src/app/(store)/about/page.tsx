@@ -53,7 +53,7 @@ export default function AboutPage() {
       <section className="about-contact" aria-labelledby="about-contact-title">
         <Container className="about-contact__layout">
           <h2 id="about-contact-title">Приходите знакомиться</h2>
-          <address className="about-contact__details">
+          <address className="about-contact__details" id="contacts">
             {storeProfile.contacts.map((contact) => (
               <div className="about-contact__item" key={contact.label}>
                 <span>{contact.label}</span>

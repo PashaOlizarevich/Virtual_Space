@@ -1429,3 +1429,43 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 - Архитектура: без изменений.
 - Product Tour: без изменений.
 - Ограничения: существующие E2E-файлы не изменялись.
+
+## Task 95 — Адаптивный футер публичного магазина
+
+- Результат: создан переиспользуемый тёмный `SiteFooter` с четырьмя смысловыми desktop-колонками,
+  адаптивной сеткой 4→2→1, контактами из `storeProfile`, доступными внешними кнопками Telegram и
+  ВКонтакте, нижним разделителем и кнопкой плавной прокрутки наверх с учётом
+  `prefers-reduced-motion`. Футер подключён только к публичному store layout; отсутствующие
+  покупательские разделы помечены как готовящиеся без создания битых маршрутов.
+- Файлы: `src/components/layout/site-footer.tsx`,
+  `src/components/layout/scroll-to-top-button.tsx`, `src/components/layout/site-footer.test.tsx`,
+  `src/app/(store)/layout.tsx`, `src/app/(store)/about/page.tsx`, `src/styles/globals.css`,
+  `docs/ProductTour.md`, `docs/progress.md`.
+- Проверки: адресный Prettier, ESLint, TypeScript, 71 Jest-тест, production build и
+  `git diff --check` прошли. Playwright QA на 1536, 820 и 390 пикселях подтвердила сетку 4→2→1,
+  отсутствие горизонтального переполнения и работу кнопки «Наверх»; desktop, tablet и mobile
+  рендеры сверены с созданным дизайн-концептом через `view_image`.
+- Переменные окружения: нет.
+- Архитектура: без изменений; добавлены layout-компоненты в существующую публичную оболочку.
+- Product Tour: добавлен раздел общего футера публичного сайта.
+- Ограничения: Browser plugin недоступен, поэтому rendered QA выполнена обычным Playwright;
+  существующие E2E-файлы не изменялись. Покупательские информационные страницы пока отсутствуют.
+
+## Task 96 — Социальные сети вместо предфутерного CTA
+
+- Результат: с главной страницы удалён отдельный контактный CTA «Давайте создадим пространство
+  вместе» и его неиспользуемые стили. В ряд социальных кнопок общего футера добавлен Instagram с
+  доступным названием, безопасной ссылкой-заглушкой и локальной SVG-иконкой, согласованной с
+  Telegram и ВКонтакте.
+- Файлы: `src/app/(store)/page.tsx`, `src/app/(store)/page.test.tsx`,
+  `src/components/layout/site-footer.tsx`, `src/components/layout/site-footer.test.tsx`,
+  `src/styles/globals.css`, `docs/ProductTour.md`, `docs/progress.md`.
+- Проверки: адресный Prettier, ESLint, TypeScript, 71 Jest-тест, production build и
+  `git diff --check` прошли. Playwright QA на 1536 и 390 пикселях подтвердила отсутствие CTA, три
+  социальные кнопки в одном ряду и отсутствие горизонтального переполнения; оба рендера проверены
+  через `view_image`.
+- Переменные окружения: нет.
+- Архитектура: без изменений.
+- Product Tour: удалён контактный CTA из состава главной, к соцсетям футера добавлен Instagram.
+- Ограничения: Browser plugin недоступен, поэтому rendered QA выполнена обычным Playwright;
+  существующие E2E-файлы не изменялись.

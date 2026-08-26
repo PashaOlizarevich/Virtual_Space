@@ -88,6 +88,23 @@
   `src/modules/cart/components/cart-widget.tsx`.
 - Мобильное меню, его ссылки, переходы в `/profile`, `/favorites` и открытие корзины находятся в
   `src/components/layout/mobile-navigation.tsx`.
+
+### Футер сайта
+
+Футер показывается после основного содержимого на всех публичных страницах через
+`src/app/(store)/layout.tsx` и не входит в административную часть.
+
+Основные файлы: `src/components/layout/site-footer.tsx` и
+`src/components/layout/scroll-to-top-button.tsx`.
+
+- Навигация «О компании» ведёт на существующие страницы `/about`, `/stores` и контактный раздел
+  страницы «О нас»; покупательские разделы отображаются как готовящиеся и не создают битые маршруты.
+- Телефон, часы работы, почта и адрес берутся из `storeProfile` в
+  `src/modules/settings/mock-data.ts`.
+- Социальные кнопки Telegram, ВКонтакте и Instagram пока используют безопасные внешние
+  ссылки-заглушки.
+- Кнопка «Наверх» плавно прокручивает страницу к началу и отключает плавность при
+  `prefers-reduced-motion`.
 - Разметка, категории и focus-management панели каталога находятся в
   `src/components/layout/catalog-menu.tsx`; на mobile пункт «Каталог» закрывает основную навигацию и
   открывает адаптивную версию этой же панели.
@@ -143,7 +160,6 @@
    якорю `#showcase` на этой же странице.
 2. «Избранное для вашего дома» — сетка карточек `ProductPreview`.
 3. «Почему Virtual Space» — три преимущества из локального массива `advantages`.
-4. Контактный блок «Давайте создадим пространство вместе».
 
 Где править:
 
@@ -151,7 +167,7 @@
 - Hero-изображение: `public/images/home/hero-v2.png`; его путь также задан в `page.tsx`.
 - Карточку товара и быстрый просмотр: `src/modules/catalog/components/product-preview.tsx`.
 - Товары на главной: `featuredProducts` в `src/modules/catalog/mock-data.ts`.
-- Описание магазина и контакты: `src/modules/settings/mock-data.ts`.
+- Описание магазина: `src/modules/settings/mock-data.ts`.
 - Стили: `.home-*` и `.product-preview*` в `src/styles/globals.css`.
 
 ### Каталог — `/catalog`

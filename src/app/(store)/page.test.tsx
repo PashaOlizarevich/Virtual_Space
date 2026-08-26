@@ -4,7 +4,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 import HomePage from "@/app/(store)/page";
 
 describe("HomePage", () => {
-  it("renders the store information, featured products, advantages, and contacts", () => {
+  it("renders the store information, featured products, and advantages", () => {
     const html = renderToStaticMarkup(<HomePage />);
 
     expect(html).toContain("Пространство, в котором хочется остаться");
@@ -18,7 +18,8 @@ describe("HomePage", () => {
     expect(html).toContain('href="/product/forma-armchair"');
     expect(html).toContain('aria-label="Добавить «Кресло Forma» в корзину"');
     expect(html).toContain("Почему Virtual Space");
-    expect(html).toContain("hello@virtualspace.example");
+    expect(html).not.toContain("Давайте создадим пространство вместе");
+    expect(html).not.toContain("hello@virtualspace.example");
     expect(html).not.toContain("Рейтинг");
   });
 });

@@ -82,24 +82,6 @@ export default function HomePage() {
           </div>
         </Section>
       </Container>
-
-      <section className="home-contact" aria-labelledby="contact-title">
-        <Container className="home-contact__container">
-          <div className="home-contact__intro">
-            <p className="text-label-caps">{storeProfile.name}</p>
-            <h2 id="contact-title">Давайте создадим пространство вместе</h2>
-            <p>Поможем выбрать мебель и спланировать спокойный, цельный интерьер.</p>
-          </div>
-          <address className="home-contact__details">
-            {storeProfile.contacts.map((contact) => (
-              <div className="home-contact__item" key={contact.label}>
-                <span>{contact.label}</span>
-                {contact.href ? <a href={contact.href}>{contact.value}</a> : <p>{contact.value}</p>}
-              </div>
-            ))}
-          </address>
-        </Container>
-      </section>
     </main>
   );
 }
