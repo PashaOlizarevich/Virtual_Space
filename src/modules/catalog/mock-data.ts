@@ -443,6 +443,78 @@ export const elaraDiningTableProduct = {
   optionGroups: [],
 } as const satisfies Product;
 
+export const rivaCoffeeTableProduct = {
+  id: "riva-coffee-table",
+  slug: "riva-coffee-table",
+  name: "Стол Riva",
+  description:
+    "Овальный журнальный стол из светлого дуба: скруглённая столешница и две выразительные опоры создают спокойный центр диванной зоны.",
+  price: 1190,
+  currency: "BYN",
+  image: "/images/living-room-tables/riva-coffee-table/01-main.png",
+  imageAlt: "Овальный журнальный стол Riva из светлого дуба в тёплой гостиной",
+  gallery: [
+    {
+      src: "/images/living-room-tables/riva-coffee-table/01-main.png",
+      alt: "Овальный дубовый стол Riva на светлом ковре у дивана",
+    },
+  ],
+  specifications: [
+    { label: "Размер", value: "110 × 60 × 38 см" },
+    { label: "Материал", value: "Массив и шпон дуба" },
+    { label: "Отделка", value: "Натуральное масло" },
+  ],
+  optionGroups: [],
+} as const satisfies Product;
+
+export const orsaSideTableProduct = {
+  id: "orsa-side-table",
+  slug: "orsa-side-table",
+  name: "Стол Orsa",
+  description:
+    "Компактный приставной стол из американского ореха с монолитной опорой — удобное место для книги, напитка или камерного декора рядом с креслом.",
+  price: 790,
+  currency: "BYN",
+  image: "/images/living-room-tables/orsa-side-table/01-main.png",
+  imageAlt: "Круглый приставной стол Orsa из тёмного ореха рядом с креслом",
+  gallery: [
+    {
+      src: "/images/living-room-tables/orsa-side-table/01-main.png",
+      alt: "Скульптурный ореховый стол Orsa в современной гостиной",
+    },
+  ],
+  specifications: [
+    { label: "Размер", value: "Ø 52 × 48 см" },
+    { label: "Материал", value: "Шпон американского ореха" },
+    { label: "Отделка", value: "Матовое масло" },
+  ],
+  optionGroups: [],
+} as const satisfies Product;
+
+export const planoCoffeeTableProduct = {
+  id: "plano-coffee-table",
+  slug: "plano-coffee-table",
+  name: "Стол Plano",
+  description:
+    "Просторный журнальный стол из массива дуба с архитектурным основанием и мягкими углами объединяет композицию большой гостиной.",
+  price: 1390,
+  currency: "BYN",
+  image: "/images/living-room-tables/plano-coffee-table/01-main.png",
+  imageAlt: "Прямоугольный журнальный стол Plano из натурального дуба в светлой гостиной",
+  gallery: [
+    {
+      src: "/images/living-room-tables/plano-coffee-table/01-main.png",
+      alt: "Просторный дубовый стол Plano перед светлым диваном",
+    },
+  ],
+  specifications: [
+    { label: "Размер", value: "120 × 65 × 40 см" },
+    { label: "Материал", value: "Массив дуба" },
+    { label: "Отделка", value: "Защитное матовое масло" },
+  ],
+  optionGroups: [],
+} as const satisfies Product;
+
 export const arloPoufProduct = {
   id: "arlo-pouf",
   slug: "arlo-pouf",
@@ -795,6 +867,12 @@ export const diningTableCategoryProducts = [
   elaraDiningTableProduct,
 ] as const satisfies readonly Product[];
 
+export const livingRoomTableCategoryProducts = [
+  rivaCoffeeTableProduct,
+  orsaSideTableProduct,
+  planoCoffeeTableProduct,
+] as const satisfies readonly Product[];
+
 export const poufCategoryProducts = [
   arloPoufProduct,
   nolaPoufProduct,
@@ -821,6 +899,7 @@ export const allProducts = [
   ...mattressCategoryProducts,
   ...textilesDecorCategoryProducts,
   ...diningTableCategoryProducts,
+  ...livingRoomTableCategoryProducts,
   ...poufCategoryProducts,
   ...armchairCategoryProducts,
 ] as const satisfies readonly Product[];

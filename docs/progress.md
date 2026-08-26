@@ -1297,3 +1297,36 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 - Архитектура: без изменений.
 - Product Tour: без изменений.
 - Ограничения: E2E не запускались; новый критический сквозной сценарий не добавлялся.
+
+## Task 87 — Столы для гостиной
+
+- Результат: пункт «Столы для гостиной» в панели каталога ведёт на отдельную страницу
+  `/catalog/living-room-tables`; на странице размещены описание категории и ровно три карточки Riva,
+  Orsa и Plano с переходами на страницы товаров и добавлением в корзину.
+- Файлы: `src/app/(store)/catalog/living-room-tables/page.tsx`,
+  `src/app/(store)/catalog/living-room-tables/page.test.tsx`,
+  `src/components/layout/catalog-menu-route.test.tsx`, `src/components/layout/catalog-menu.tsx`,
+  `src/modules/catalog/mock-data.ts`, `src/styles/globals.css`, `docs/ProductTour.md`,
+  `docs/progress.md`.
+- Проверки: Prettier, ESLint, TypeScript, 62 Jest-теста и production build через webpack — успешно;
+  новый маршрут статически сгенерирован.
+- Переменные окружения: нет.
+- Архитектура: без изменений; использованы существующие `ProductPreview`, mock-каталог и общий
+  динамический маршрут `/product/[id]`.
+- Product Tour: добавлена карта категории `/catalog/living-room-tables`.
+- Ограничения: Browser plugin недоступен; E2E не запускались и не изменялись, поскольку новый
+  критический сквозной сценарий не добавлялся. Стандартный Turbopack build в изолированном worktree
+  не поддержал junction на общие зависимости, поэтому production build проверен штатным webpack.
+
+## Task 88 — Новые изображения столов для гостиной
+
+- Результат: для Riva, Orsa и Plano сгенерированы отдельные интерьерные фотографии в едином
+  каталожном стиле; карточки и страницы товаров получили новые изображения, расширенные описания и
+  уточнённые alt-тексты.
+- Файлы: `src/modules/catalog/mock-data.ts`, `public/images/living-room-tables/**`,
+  `docs/progress.md`.
+- Проверки: ESLint, TypeScript, 62 Jest-теста, production build через webpack и `git diff --check` —
+  успешно.
+- Переменные окружения: нет.
+- Архитектура и Product Tour: без изменений.
+- Ограничения: E2E не запускались и не изменялись; пользовательский сценарий не менялся.

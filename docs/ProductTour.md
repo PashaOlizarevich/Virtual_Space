@@ -427,6 +427,17 @@
 - Переход из меню: `src/components/layout/catalog-menu.tsx`.
 - Стили: `.dining-tables-page*` в `src/styles/globals.css`.
 
+## Категория «Столы для гостиной» — `/catalog/living-room-tables`
+
+Ссылка «Столы для гостиной» в динамической панели каталога ведёт на отдельную страницу категории. На
+странице размещены описание коллекции и ровно три карточки: Riva, Orsa и Plano. Из каждой карточки
+можно перейти на общий динамический маршрут товара или добавить позицию в корзину.
+
+- Маршрут: `src/app/(store)/catalog/living-room-tables/page.tsx`.
+- Данные: `livingRoomTableCategoryProducts` в `src/modules/catalog/mock-data.ts`.
+- Переход из меню: `src/components/layout/catalog-menu.tsx`.
+- Стили: `.living-room-tables-page*` в `src/styles/globals.css`.
+
 ## Категория «Пуфики» — `/catalog/poufs`
 
 Ссылка «Пуфики» в динамической панели каталога ведёт на отдельную страницу категории. На странице
