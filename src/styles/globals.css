@@ -935,17 +935,36 @@ a {
   right: 12px;
   width: 44px;
   min-height: 44px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--color-text-primary);
+}
+
+.product-preview__favorite.button::before {
+  position: absolute;
+  inset: 4.4px;
   border: 1px solid rgb(17 17 17 / 10%);
   border-radius: 50%;
   background: rgb(255 255 255 / 88%);
-  color: var(--color-text-primary);
   box-shadow: 0 4px 16px rgb(17 17 17 / 8%);
   backdrop-filter: blur(8px);
+  content: "";
+}
+
+.product-preview__favorite.button svg {
+  position: relative;
+  width: 19.2px;
+  height: 19.2px;
+}
+
+.product-preview__favorite.button:hover::before,
+.product-preview__favorite.button[aria-pressed="true"]::before {
+  background: var(--color-background);
 }
 
 .product-preview__favorite.button:hover,
 .product-preview__favorite.button[aria-pressed="true"] {
-  background: var(--color-background);
   color: var(--color-primary);
 }
 
