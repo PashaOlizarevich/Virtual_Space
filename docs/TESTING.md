@@ -22,6 +22,16 @@ npm run build
 
 Команды проверяют ESLint, TypeScript, 60 unit/component/integration-тестов Jest и production-сборку.
 
+## Запуск всех тестов
+
+Чтобы последовательно запустить все тесты проекта, включая visual regression-тесты, выполните:
+
+```powershell
+npm test -- --runInBand
+npm run test:e2e
+npm run test:e2e:visual
+```
+
 ## Основные E2E-тесты
 
 ```powershell
