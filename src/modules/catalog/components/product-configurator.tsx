@@ -6,6 +6,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useCartStore } from "@/modules/cart/store";
 import type { Product } from "@/modules/catalog/types";
+import { FavoriteButton } from "@/modules/favorites/components/favorite-button";
 
 const priceFormatter = new Intl.NumberFormat("ru-BY", {
   style: "currency",
@@ -50,27 +51,30 @@ export function ProductConfigurator({ product }: Readonly<{ product: Product }>)
           </fieldset>
         ))}
       </div>
-      <Button
-        className="product-configurator__submit"
-        onClick={() => {
-          const added = addItem({
-            productId: product.id,
-            selectedOptions: product.optionGroups.map((group) => ({
-              groupId: group.id,
-              optionId: selection[group.id] ?? "",
-            })),
-            observedPrice: product.price,
-          });
-          setConfirmation(
-            added
-              ? `«${product.name}» добавлен в корзину: ${selectedLabels.join(", ")}.`
-              : "Не удалось добавить товар. Обновите страницу и попробуйте ещё раз.",
-          );
-        }}
-      >
-        <ShoppingBag data-icon="inline-start" aria-hidden="true" />
-        Добавить в корзину
-      </Button>
+      <div className="product-configurator__actions">
+        <Button
+          className="product-configurator__submit"
+          onClick={() => {
+            const added = addItem({
+              productId: product.id,
+              selectedOptions: product.optionGroups.map((group) => ({
+                groupId: group.id,
+                optionId: selection[group.id] ?? "",
+              })),
+              observedPrice: product.price,
+            });
+            setConfirmation(
+              added
+                ? `«${product.name}» добавлен в корзину: ${selectedLabels.join(", ")}.`
+                : "Не удалось добавить товар. Обновите страницу и попробуйте ещё раз.",
+            );
+          }}
+        >
+          <ShoppingBag data-icon="inline-start" aria-hidden="true" />
+          Добавить в корзину
+        </Button>
+        <FavoriteButton appearance="detail" productId={product.id} productName={product.name} />
+      </div>
       <p className="product-configurator__status" role="status" aria-live="polite">
         {confirmation}
       </p>
