@@ -418,7 +418,8 @@ Admin form -> Server Action -> auth() + role ADMIN -> Zod
   -> revalidatePath / Query invalidation -> UI
 ```
 
-Разрешены `NEW -> PROCESSING -> COMPLETED`, а также `NEW|PROCESSING -> CANCELLED`. Остальные переходы отклоняются сервером.
+Разрешены `NEW -> CONFIRMED -> IN_PROGRESS -> COMPLETED`, а также переходы в `CANCELLED` из
+`NEW`, `CONFIRMED` и `IN_PROGRESS`. Остальные переходы отклоняются сервером.
 
 ### Загрузка изображения
 
