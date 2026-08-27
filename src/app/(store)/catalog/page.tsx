@@ -5,7 +5,14 @@ import { CatalogQueryGrid } from "@/modules/catalog/components/catalog-query-gri
 
 export const metadata: Metadata = { title: "Каталог — Virtual Space" };
 
-export default function CatalogPage() {
+type CatalogPageProps = Readonly<{
+  searchParams?: Promise<{ page?: string | string[] }>;
+}>;
+
+export default async function CatalogPage({ searchParams }: CatalogPageProps = {}) {
+  const pageParam = (await searchParams)?.page;
+  const initialPageParam = Array.isArray(pageParam) ? pageParam[0] : pageParam;
+
   return (
     <main className="catalog-page">
       <Container>
@@ -18,7 +25,7 @@ export default function CatalogPage() {
           </p>
         </header>
         <CatalogCategoryShowcase />
-        <CatalogQueryGrid />
+        <CatalogQueryGrid initialPageParam={initialPageParam} />
       </Container>
     </main>
   );

@@ -18,18 +18,17 @@ describe("catalog routes", () => {
     expect(html).toContain("Диван Aura");
   });
 
-  it("renders the asynchronous catalog loading state", () => {
+  it("renders the asynchronous catalog loading state", async () => {
     const queryClient = new QueryClient();
+    const page = await CatalogPage();
     const html = renderToStaticMarkup(
-      <QueryClientProvider client={queryClient}>
-        <CatalogPage />
-      </QueryClientProvider>,
+      <QueryClientProvider client={queryClient}>{page}</QueryClientProvider>,
     );
-    expect(html).toContain("Мебель для спокойного дома");
+    expect(html).toContain("Мебель и детали для отдыха");
     expect(html).toContain("Загрузка товара 1");
   });
 
-  it("renders every loaded product and refresh control", () => {
+  it("renders loaded products without navigation below the desktop limit", () => {
     const html = renderToStaticMarkup(<CatalogQueryGridView products={products} />);
     expect(html.match(/class="product-preview"/g)).toHaveLength(4);
     expect(html).toContain('href="/product/forma-armchair"');
