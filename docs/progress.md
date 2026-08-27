@@ -1699,3 +1699,21 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 - Product Tour: без изменений.
 - Ограничения: документ описывает подготовительный контракт; Prisma schema, миграции, mapper и
   Auth.js остаются задачами последующих пунктов.
+
+## Task 110 — PostgreSQL и среды развёртывания
+
+- Результат: для первого DB-релиза выбраны Vercel и Neon; зафиксированы изолированные Neon-ветки для
+  local, каждого preview и production, pooled runtime URL, direct migration URL, правила доступа к
+  секретам и отдельный сериализованный release-процесс миграций через preview в production.
+- Файлы: `docs/database-deployment-decisions.md`, `docs/architecture.md`,
+  `docs/implementation-plan.md`, `.env.example`, `docs/progress.md`.
+- Проверки: адресный Prettier, ESLint, TypeScript, production build и `git diff --check` прошли.
+  Полный Jest: 99 из 100 тестов прошли; несвязанный устаревший тест `/new` ожидает ссылку «Акции» на
+  `/catalog` вместо фактического `/sale` и не изменялся без разрешения пользователя.
+- Переменные окружения: добавлено безопасное имя `DATABASE_URL_UNPOOLED`; значения не создавались и
+  не читались.
+- Архитектура: Neon закреплён как PostgreSQL-платформа для Vercel; runtime и migration connections,
+  изоляция сред и порядок релиза описаны в отдельном нормативном документе.
+- Product Tour: без изменений.
+- Ограничения: внешние ресурсы и CI не создавались; конкретный регион, тариф, backup/retention и
+  production credentials выбираются перед фактическим provisioning с учётом доступности и требований.

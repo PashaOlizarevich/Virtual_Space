@@ -521,6 +521,7 @@ UI использует `error.tsx`, `global-error.tsx`, `not-found.tsx`, сос
 
 ```dotenv
 DATABASE_URL=
+DATABASE_URL_UNPOOLED=
 AUTH_SECRET=
 AUTH_URL=
 CLOUDINARY_CLOUD_NAME=
@@ -538,7 +539,9 @@ OPENAI_API_KEY=
 - `.env*` с секретами не коммитятся; `.env.example` содержит только имена и безопасные подсказки;
 - `server/env.ts` валидирует env при старте/сборке и выдаёт понятную ошибку;
 - только значения с префиксом `NEXT_PUBLIC_` могут попасть в клиент, и среди них не должно быть секретов;
-- Prisma client, `DATABASE_URL`, Auth config/secret, Cloudinary secret, Telegram token, OpenAI key, проверка ролей, бизнес-правила, расчёты заказа и доступ к БД — строго server-only;
+- Prisma client, `DATABASE_URL`, `DATABASE_URL_UNPOOLED`, Auth config/secret, Cloudinary secret,
+  Telegram token, OpenAI key, проверка ролей, бизнес-правила, расчёты заказа и доступ к БД — строго
+  server-only;
 - секреты на Vercel/сервере задаются средствами окружения, а не в Docker image или репозитории.
 
 ## 15. Статические и пользовательские файлы
@@ -557,16 +560,24 @@ OPENAI_API_KEY=
 
 ### Основной production-вариант: Vercel
 
-Один Git-репозиторий и один Next.js deployment. PostgreSQL и Cloudinary — управляемые внешние сервисы. Pipeline:
+Один Git-репозиторий и один Next.js deployment. PostgreSQL размещается в Neon через Neon-managed
+Vercel Integration, Cloudinary остаётся управляемым внешним сервисом. Runtime использует pooled
+`DATABASE_URL`, а отдельный migration job — direct `DATABASE_URL_UNPOOLED`. Pipeline:
 
 ```text
 Pull Request -> install from lock-file -> lint -> unit/integration tests -> build -> preview
 main         -> те же проверки -> prisma migrate deploy -> production deploy -> smoke/e2e
 ```
 
-Миграции выполняются один раз отдельным release-шагом, а не при каждом serverless cold start. Перед несовместимыми изменениями применяется expand/migrate/contract: сначала совместимая схема, затем код/данные, затем удаление старого поля.
+Миграции выполняются один раз сериализованным release-шагом через direct connection до rollout, а не
+во время build, старта или serverless cold start. Перед несовместимыми изменениями применяется
+expand/migrate/contract: сначала совместимая схема, затем код/данные, затем удаление старого поля.
 
-Для self-hosting позже можно добавить Dockerfile с `next build`/standalone output и запуском Node.js. Docker не нужен для первого Vercel-развёртывания и не меняет модульную архитектуру. Нужны отдельные production/preview БД и env; preview не должен менять production-данные.
+Для self-hosting позже можно добавить Dockerfile с `next build`/standalone output и запуском Node.js.
+Docker не нужен для первого Vercel-развёртывания и не меняет модульную архитектуру. Production
+использует защищённую Neon-ветку, каждый preview — отдельную ephemeral-ветку, local — отдельную
+dev-ветку. Preview/local не получают production credentials или немаскированные production-данные.
+Полные правила зафиксированы в `docs/database-deployment-decisions.md`.
 
 Обязательные проверки перед релизом: TypeScript/`next build`, ESLint, Jest, критические Playwright-сценарии, валидные миграции. Seed не запускается автоматически в production.
 

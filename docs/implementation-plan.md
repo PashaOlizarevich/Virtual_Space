@@ -26,6 +26,7 @@
 23. Подготовка: зафиксировать для первого DB-релиза статусы заказа `NEW`, `CONFIRMED`, `IN_PROGRESS`, `COMPLETED` и `CANCELLED`; использовать группы и значения товарных опций без отдельных SKU-вариантов; хранить деньги как PostgreSQL `numeric` и Prisma `Decimal`, передавая сумму через DTO в виде decimal-строки с валютой `BYN`; сначала реализовать Auth.js для администратора, а пользовательскую авторизацию и серверную корзину перенести на следующий этап.
     Подробное обоснование и критерии соблюдения: `docs/first-db-release-decisions.md`.
 24. Подготовка: выбрать PostgreSQL-платформу и среду развёртывания для local, preview и production; определить требования к connection pooling с учётом выбранного хостинга, правила доступа к секретам и отдельный release-процесс применения миграций.
+    Подробное решение, матрица окружений и критерии соблюдения: `docs/database-deployment-decisions.md`.
 25. Подготовка: определить политику хранения заказов, удаления или анонимизации пользователей и безопасный способ создания первого администратора без сохранения credentials в репозитории.
 26. База данных: создать Prisma config, `prisma/schema.prisma`, конфигурацию PostgreSQL и единый server-only PrismaClient в `src/server`.
 27. База данных: создать модели `Category`, `Product`, `ProductImage`, `ProductSpecification`, `ProductOptionGroup`, `ProductOption` и `StoreSettings`.
