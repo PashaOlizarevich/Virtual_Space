@@ -340,21 +340,37 @@ API не считается границей безопасности само �
 
 ## 8. База данных
 
-PostgreSQL — источник истины для товаров, актуальных цен, доступности, заказов, настроек магазина и, с этапа 2, пользователей и их корзин. Prisma schema и миграции — исполняемое описание структуры БД.
+PostgreSQL — источник истины для товаров, актуальных цен, доступности, заказов, настроек магазина и
+административной identity. Покупательские аккаунты и их корзины добавляются с этапа 2. Prisma schema
+и миграции — исполняемое описание структуры БД.
 
 Минимальная модель MVP:
 
 - `Product`: id, slug, name, description, price (`Decimal`), stock, isActive, nullable newFrom/newUntil, material, style, dimensions, rating при необходимости, timestamps.
 - `ProductImage`: id, productId, cloudinaryPublicId, secureUrl, alt, position.
 - `Category`: id, slug, name; связь с товарами.
-- `ProductColor` либо нормализованная связь цветов — если товар реально имеет несколько цветов/вариантов.
+- `ProductOptionGroup`: id, productId, stable key, label, position.
+- `ProductOption`: id, groupId, stable key, label, position.
 - `Order`: id, publicNumber, customerName, phone, email, comment, total, status, timestamps, optional userId.
 - `OrderItem`: orderId, productId nullable, snapshotName, snapshotPrice, quantity, snapshotOptions, lineTotal.
 - `OrderStatusHistory`: orderId, previousStatus, newStatus, changedByUserId, createdAt.
 - `StoreSettings`: singleton/именованные настройки магазина и контакты.
-- таблицы Auth.js и `User.role`, если Auth.js используется уже для администратора.
+- таблицы Auth.js и `User.role` для административной авторизации.
 
 Этап 2 добавляет `Cart`, `CartItem` и пользовательские сценарии. Не нужно создавать их для гостевой корзины MVP, если пользовательская авторизация ещё не реализована.
+
+### Решения первого DB-релиза
+
+- `Order.status` использует только значения `NEW`, `CONFIRMED`, `IN_PROGRESS`, `COMPLETED` и
+  `CANCELLED`.
+- Товарные опции представлены группами и значениями. `ProductVariant` и отдельные SKU для комбинаций
+  опций в первый релиз не входят; такая сущность добавляется отдельной миграцией, только когда
+  комбинации потребуется собственный SKU, цена или остаток.
+- Денежные значения хранятся как PostgreSQL `numeric` и Prisma `Decimal`. Публичный денежный DTO имеет
+  форму `{ amount: string; currency: "BYN" }`, где `amount` — каноническая decimal-строка, а не
+  JavaScript `number` и не сериализованный Prisma-тип.
+- Auth.js сначала обслуживает администратора. Пользовательская авторизация и постоянная серверная
+  корзина относятся к следующему этапу; гостевая корзина до этого остаётся клиентской.
 
 Ключевые правила БД:
 
