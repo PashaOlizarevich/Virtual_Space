@@ -1640,3 +1640,20 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 - Ограничения: Browser plugin недоступен, поэтому rendered QA выполнен обычным Playwright;
   существующие E2E-файлы не изменялись. В dev Console остаётся несвязанное предупреждение Next Image
   LCP для обложки категории.
+
+## Task 106 — Обновлённые обложки категорий каталога
+
+- Результат: по предоставленному визуальному референсу заново сгенерированы фотореалистичные
+  интерьерные обложки для пуфиков, кресел, диванов, обеденных столов и стульев; основной набор
+  заменён в витрине, второй самостоятельный вариант стульев сохранён рядом для последующего выбора.
+- Файлы: `public/images/catalog-categories/poufs.png`,
+  `public/images/catalog-categories/armchairs.png`, `public/images/catalog-categories/sofas.png`,
+  `public/images/catalog-categories/dining-tables.png`,
+  `public/images/catalog-categories/chairs.png`,
+  `public/images/catalog-categories/chairs-v2.png`, `docs/progress.md`.
+- Проверки: изображения визуально проверены после генерации; связанный component-тест витрины и
+  `git diff --check` прошли.
+- Переменные окружения: нет.
+- Архитектура: без изменений.
+- Product Tour: без изменений; пути основных обложек сохранены.
+- Ограничения: `chairs-v2.png` сохранён как дополнительный вариант и пока не подключён в UI.
