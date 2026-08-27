@@ -907,7 +907,9 @@ export const allProducts = [
   ...diningTableCategoryProducts,
   ...livingRoomTableCategoryProducts,
   ...poufCategoryProducts,
-  ...armchairCategoryProducts,
+  asterArmchairProduct,
+  runaArmchairProduct,
+  veroArmchairProduct,
 ] as const satisfies readonly Product[];
 
 export function getProductBySlug(slug: string): Product | undefined {

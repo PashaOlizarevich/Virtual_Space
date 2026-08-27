@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Container } from "@/components/layout/container";
+import { CatalogCategoryShowcase } from "@/modules/catalog/components/catalog-category-showcase";
 import { CatalogQueryGrid } from "@/modules/catalog/components/catalog-query-grid";
 
 export const metadata: Metadata = { title: "Каталог — Virtual Space" };
@@ -10,11 +11,13 @@ export default function CatalogPage() {
       <Container>
         <header className="catalog-page__header">
           <p className="text-label-caps text-secondary">Каталог</p>
-          <h1>Мебель для спокойного дома</h1>
+          <h1>Пространство, собранное вокруг вас</h1>
           <p className="text-body-md text-secondary">
-            Предметы с ясной формой, натуральными материалами и вниманием к ежедневному комфорту.
+            Мебель и детали для отдыха, общения и повседневных ритуалов — спокойная основа дома, в
+            котором всё на своём месте.
           </p>
         </header>
+        <CatalogCategoryShowcase />
         <CatalogQueryGrid />
       </Container>
     </main>

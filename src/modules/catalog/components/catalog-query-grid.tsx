@@ -57,10 +57,11 @@ export function CatalogQueryGridView({
 
   return (
     <section className="catalog-query" aria-labelledby="catalog-results-title">
+      <div className="catalog-query__heading">
+        <p className="text-label-caps text-secondary">Коллекция Virtual Space</p>
+        <h2 id="catalog-results-title">Все предметы</h2>
+      </div>
       <div className="catalog-query__toolbar">
-        <h2 id="catalog-results-title" className="sr-only">
-          Товары каталога
-        </h2>
         <p className="text-body-sm text-secondary" aria-live="polite">
           {isFetching ? "Обновляем коллекцию…" : `В коллекции: ${products.length}`}
         </p>
