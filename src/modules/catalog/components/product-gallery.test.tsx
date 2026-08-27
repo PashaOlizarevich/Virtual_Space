@@ -54,5 +54,30 @@ describe("ProductGallery", () => {
     );
     expect(container.querySelector(".product-gallery__arrow")).toBeNull();
     expect(container.querySelector(".product-gallery__thumbnails")).toBeNull();
+    expect(container.querySelector(".product-gallery__counter")).toBeNull();
+  });
+
+  it("opens the current image fullscreen and supports keyboard navigation and closing", () => {
+    act(() => root.render(<ProductGallery images={images} productName="Modul" />));
+
+    act(() => {
+      container.querySelector<HTMLButtonElement>('[aria-label="Следующее изображение"]')?.click();
+      container.querySelector<HTMLButtonElement>(".product-gallery__item")?.click();
+    });
+
+    const dialog = document.body.querySelector<HTMLElement>('[role="dialog"]');
+    expect(dialog?.querySelector("img")?.getAttribute("alt")).toBe(images[1].alt);
+    expect(document.body.style.overflow).toBe("hidden");
+
+    act(() => {
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight" }));
+    });
+    expect(dialog?.querySelector("img")?.getAttribute("alt")).toBe(images[0].alt);
+
+    act(() => {
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
+    });
+    expect(document.body.querySelector('[role="dialog"]')).toBeNull();
+    expect(document.body.style.overflow).toBe("");
   });
 });

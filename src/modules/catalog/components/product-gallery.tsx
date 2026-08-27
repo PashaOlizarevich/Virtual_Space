@@ -2,13 +2,13 @@
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
-import { useRef, useState } from "react";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { FullscreenProductGallery } from "@/modules/catalog/components/fullscreen-product-gallery";
+import { useGalleryNavigation } from "@/modules/catalog/hooks/use-gallery-navigation";
 import type { ProductImage } from "@/modules/catalog/types";
 import { FavoriteButton } from "@/modules/favorites/components/favorite-button";
-
-const SWIPE_THRESHOLD = 48;
 
 type ProductGalleryProps = Readonly<{
   images: readonly ProductImage[];
@@ -17,54 +17,31 @@ type ProductGalleryProps = Readonly<{
 }>;
 
 export function ProductGallery({ images, productId, productName }: ProductGalleryProps) {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const touchStartX = useRef<number | null>(null);
+  const [isFullscreenOpen, setIsFullscreenOpen] = useState(false);
+  const navigation = useGalleryNavigation(images.length);
+  const { activeIndex, setActiveIndex, showPrevious, showNext } = navigation;
   const hasMultipleImages = images.length > 1;
   const activeImage = images[activeIndex] ?? images[0];
 
   if (!activeImage) return null;
 
-  function showPrevious() {
-    setActiveIndex((current) => (current === 0 ? images.length - 1 : current - 1));
-  }
-
-  function showNext() {
-    setActiveIndex((current) => (current === images.length - 1 ? 0 : current + 1));
-  }
-
-  function handleTouchEnd(clientX: number) {
-    if (touchStartX.current === null) return;
-    const distance = clientX - touchStartX.current;
-    touchStartX.current = null;
-    if (Math.abs(distance) < SWIPE_THRESHOLD) return;
-    if (distance > 0) showPrevious();
-    else showNext();
-  }
-
   return (
-    <section
-      className="product-gallery"
-      aria-label="Галерея товара"
-      onKeyDown={(event) => {
-        if (!hasMultipleImages) return;
-        if (event.key === "ArrowLeft") {
-          event.preventDefault();
-          showPrevious();
-        }
-        if (event.key === "ArrowRight") {
-          event.preventDefault();
-          showNext();
-        }
-      }}
-    >
+    <section className="product-gallery" aria-label="Галерея товара">
       <div
         className="product-gallery__viewport"
         onTouchStart={(event) => {
-          touchStartX.current = event.touches[0]?.clientX ?? null;
+          navigation.handleTouchStart(event.touches[0]?.clientX ?? 0);
         }}
-        onTouchEnd={(event) => handleTouchEnd(event.changedTouches[0]?.clientX ?? 0)}
+        onTouchEnd={(event) => navigation.handleTouchEnd(event.changedTouches[0]?.clientX ?? 0)}
       >
-        <figure className="product-gallery__item">
+        <button
+          className="product-gallery__item"
+          type="button"
+          aria-label={`Открыть изображение ${activeIndex + 1} из ${images.length} на весь экран`}
+          onClick={() => {
+            if (!navigation.shouldIgnoreClick()) setIsFullscreenOpen(true);
+          }}
+        >
           <Image
             src={activeImage.src}
             alt={activeImage.alt}
@@ -72,7 +49,7 @@ export function ProductGallery({ images, productId, productName }: ProductGaller
             preload={activeIndex === 0}
             sizes="(max-width: 899px) 100vw, 58vw"
           />
-        </figure>
+        </button>
         {productId && productName ? (
           <FavoriteButton productId={productId} productName={productName} />
         ) : null}
@@ -120,6 +97,13 @@ export function ProductGallery({ images, productId, productName }: ProductGaller
           ))}
         </div>
       ) : null}
+      <FullscreenProductGallery
+        images={images}
+        initialIndex={activeIndex}
+        open={isFullscreenOpen}
+        productName={productName ?? "Товар"}
+        onClose={() => setIsFullscreenOpen(false)}
+      />
     </section>
   );
 }
