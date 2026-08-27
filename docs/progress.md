@@ -1615,3 +1615,28 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 - Архитектура: без изменений.
 - Product Tour: без изменений.
 - Ограничения: существующие E2E не изменялись и не запускались.
+
+## Task 105 — Постраничная карусель каталога
+
+- Результат: раздел товаров `/catalog` ограничен страницами по 12 карточек на desktop/tablet и по 5
+  на mobile `< 600px`; добавлены ручные стрелки, вычисляемые индикаторы, доступный live-статус и
+  защищённый горизонтальный свайп без autoplay. Параметр `?page=` канонизируется, синхронизирован с
+  Back/Forward, а при смене breakpoint новая страница сохраняет первый видимый товар.
+- Файлы: `src/app/(store)/catalog/page.tsx`,
+  `src/app/(store)/catalog/catalog.test.tsx`,
+  `src/modules/catalog/components/catalog-query-grid.tsx`,
+  `src/modules/catalog/components/catalog-query-grid.test.tsx`, `src/styles/globals.css`,
+  `docs/ProductTour.md`, `docs/progress.md`.
+- Проверки: 12 адресных Jest-тестов, ESLint, TypeScript, production build и `git diff --check`
+  прошли. Chromium QA на 1440×1000 и 390×844 подтвердила сетку 4×3, мобильные 5 карточек,
+  стрелки, фокус, URL/Back, clamp, resize, swipe и отсутствие horizontal overflow. Полный Jest:
+  99 из 100 тестов прошли; несвязанный устаревший тест `/new` по-прежнему ожидает ссылку «Акции» на
+  `/catalog` вместо фактического `/sale`.
+- Переменные окружения: нет.
+- Архитектура: публичный контракт данных не изменён; управление страницей изолировано внутри
+  query-grid, поэтому будущая серверная пагинация сможет заменить источник и slice без замены
+  навигационного UI.
+- Product Tour: описание `/catalog` дополнено адаптивной пагинацией, URL и swipe.
+- Ограничения: Browser plugin недоступен, поэтому rendered QA выполнен обычным Playwright;
+  существующие E2E-файлы не изменялись. В dev Console остаётся несвязанное предупреждение Next Image
+  LCP для обложки категории.
