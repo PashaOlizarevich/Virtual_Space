@@ -1705,7 +1705,7 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 - Результат: для первого DB-релиза выбраны Vercel и Neon; зафиксированы изолированные Neon-ветки для
   local, каждого preview и production, pooled runtime URL, direct migration URL, правила доступа к
   секретам и отдельный сериализованный release-процесс миграций через preview в production.
-- Файлы: `docs/database-deployment-decisions.md`, `docs/architecture.md`,
+- Файлы: `docs/first-db-release-decisions.md`, `docs/architecture.md`,
   `docs/implementation-plan.md`, `.env.example`, `docs/progress.md`.
 - Проверки: адресный Prettier, ESLint, TypeScript, production build и `git diff --check` прошли.
   Полный Jest: 99 из 100 тестов прошли; несвязанный устаревший тест `/new` ожидает ссылку «Акции» на

@@ -577,7 +577,7 @@ expand/migrate/contract: сначала совместимая схема, за�
 Docker не нужен для первого Vercel-развёртывания и не меняет модульную архитектуру. Production
 использует защищённую Neon-ветку, каждый preview — отдельную ephemeral-ветку, local — отдельную
 dev-ветку. Preview/local не получают production credentials или немаскированные production-данные.
-Полные правила зафиксированы в `docs/database-deployment-decisions.md`.
+Полные правила зафиксированы в `docs/first-db-release-decisions.md`.
 
 Обязательные проверки перед релизом: TypeScript/`next build`, ESLint, Jest, критические Playwright-сценарии, валидные миграции. Seed не запускается автоматически в production.
 
