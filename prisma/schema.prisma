@@ -71,6 +71,7 @@ model ProductSpecification {
 model ProductOptionGroup {
   id        BigInt   @id @default(autoincrement())
   productId BigInt
+  key       String
   label     String
   position  Int
   createdAt DateTime @default(now()) @db.Timestamptz(3)
@@ -83,6 +84,7 @@ model ProductOptionGroup {
 model ProductOption {
   id        BigInt   @id @default(autoincrement())
   groupId   BigInt
+  key       String
   label     String
   position  Int
   createdAt DateTime @default(now()) @db.Timestamptz(3)
