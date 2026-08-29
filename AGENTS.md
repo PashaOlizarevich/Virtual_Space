@@ -127,6 +127,10 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 <!-- END:nextjs-agent-rules -->
 
+## Выполнение implementation plan
+
+- После выполнения каждого пункта из `docs/implementation-plan.md` добавляй в `docs/first-db-release-decisions.md` отдельное описание фактически выполненных изменений и принятых решений.
+
 ## Тестирование
 
 Перед созданием, изменением, запуском или диагностикой любых тестов и Playwright обязательно прочитай
