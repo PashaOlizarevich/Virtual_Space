@@ -356,6 +356,9 @@ PrismaClient уже настроены; доменные модели и пер�
 - `OrderItem`: orderId, productId nullable, snapshotName, snapshotPrice, quantity, snapshotOptions, lineTotal.
 - `OrderStatusHistory`: orderId, previousStatus, newStatus, changedByUserId, createdAt.
 - `StoreSettings`: singleton/именованные настройки магазина и контакты.
+- Основные настройки адресуются стабильным уникальным ключом `primary`; каталог индексируется под
+  активную общую выборку, выборку категории и период новинки, а дочерние данные товара имеют
+  уникальные позиции внутри родителя и составные области уникальности стабильных ключей.
 - таблицы Auth.js и `User.role` для административной авторизации.
 
 Этап 2 добавляет `Cart`, `CartItem` и пользовательские сценарии. Не нужно создавать их для гостевой корзины MVP, если пользовательская авторизация ещё не реализована.

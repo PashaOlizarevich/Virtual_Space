@@ -1820,3 +1820,23 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 - Product Tour: без изменений — пользовательские маршруты и сценарии не менялись.
 - Ограничения: составные unique-ограничения добавляются пунктом 31, SQL-миграция — пунктом 32;
   подключение к PostgreSQL, `db push`, seed и backfill не выполнялись.
+
+## Task 117 — Ограничения и индексы каталога и настроек
+
+- Результат: добавлены составные индексы активного каталога, категории и новинок, стабильная
+  сортировка категорий, уникальные Cloudinary public id, позиции дочерних записей и области
+  уникальности характеристик и стабильных ключей опций; основная конфигурация магазина получила
+  уникальный ключ `primary`.
+- Файлы: `prisma/schema.prisma`, `docs/architecture.md`, `docs/first-db-release-decisions.md`,
+  `docs/progress.md`.
+- Проверки: Prisma format, `prisma validate`, `prisma generate`, Prisma schema diff от пустой схемы,
+  Prettier для изменённых Markdown-файлов, ESLint, TypeScript, production build и `git diff --check`
+  прошли. Jest не запустился из-за существующей конфигурации, ссылающейся на отсутствующий
+  `next/dist/build/swc/jest-transformer.js`.
+- Переменные окружения: нет; для Prisma CLI использован только безопасный локальный placeholder
+  `DATABASE_URL_UNPOOLED` без подключения к PostgreSQL.
+- Архитектура: зафиксированы стабильный ключ основной конфигурации и области индексации каталога и
+  дочерних данных товара.
+- Product Tour: без изменений — пользовательские маршруты и сценарии не менялись.
+- Ограничения: SQL-миграция, подключение к PostgreSQL, `db push`, seed и backfill не выполнялись и
+  остаются границей пункта 32.

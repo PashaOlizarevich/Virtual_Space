@@ -17,6 +17,8 @@ model Category {
   products  Product[]
   createdAt DateTime  @default(now()) @db.Timestamptz(3)
   updatedAt DateTime  @updatedAt @db.Timestamptz(3)
+
+  @@index([name, id])
 }
 
 model Product {
@@ -41,6 +43,10 @@ model Product {
   images         ProductImage[]
   specifications ProductSpecification[]
   optionGroups   ProductOptionGroup[]
+
+  @@index([categoryId, isActive, createdAt(sort: Desc), id(sort: Desc)])
+  @@index([isActive, createdAt(sort: Desc), id(sort: Desc)])
+  @@index([isActive, newFrom(sort: Desc), newUntil, id(sort: Desc)])
 }
 
 model ProductImage {
@@ -54,6 +60,9 @@ model ProductImage {
   updatedAt          DateTime @updatedAt @db.Timestamptz(3)
 
   product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, position])
+  @@unique([cloudinaryPublicId])
 }
 
 model ProductSpecification {
@@ -66,6 +75,9 @@ model ProductSpecification {
   updatedAt DateTime @updatedAt @db.Timestamptz(3)
 
   product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, label])
+  @@unique([productId, position])
 }
 
 model ProductOptionGroup {
@@ -79,6 +91,9 @@ model ProductOptionGroup {
 
   product Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
   options ProductOption[]
+
+  @@unique([productId, key])
+  @@unique([productId, position])
 }
 
 model ProductOption {
@@ -91,8 +106,12 @@ model ProductOption {
   updatedAt DateTime @updatedAt @db.Timestamptz(3)
 
   group ProductOptionGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@unique([groupId, key])
+  @@unique([groupId, position])
 }
 
 model StoreSettings {
-  id BigInt @id @default(autoincrement())
+  id  BigInt @id @default(autoincrement())
+  key String @unique @default("primary")
 }
