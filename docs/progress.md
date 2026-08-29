@@ -1753,3 +1753,15 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 - Product Tour: без изменений.
 - Ограничения: доменные модели, миграции, seed и подключение к реальной PostgreSQL не входят в пункт
   26 и не выполнялись.
+
+## Task 113 — Модели каталога и настроек магазина
+
+- Результат: в Prisma schema созданы валидные каркасы `Category`, `Product`, `ProductImage`,
+  `ProductSpecification`, `ProductOptionGroup`, `ProductOption` и `StoreSettings` с последовательными
+  `BigInt`-первичными ключами.
+- Граница пункта: обязательные поля, связи, внешние ключи, стабильные ключи опций, ограничения и
+  индексы намеренно не добавлялись — они относятся к пунктам 28, 30 и 31 плана.
+- Файлы: `prisma/schema.prisma`, `docs/progress.md`.
+- Миграция и данные: изменение классифицировано как недеструктивное schema-only; SQL-миграция,
+  подключение к PostgreSQL, `db push` и seed не выполнялись и остаются отдельными пунктами плана.
+- Product Tour: без изменений — пользовательские маршруты и сценарии не менялись.

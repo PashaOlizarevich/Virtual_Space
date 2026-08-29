@@ -5,3 +5,31 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+model Category {
+  id BigInt @id @default(autoincrement())
+}
+
+model Product {
+  id BigInt @id @default(autoincrement())
+}
+
+model ProductImage {
+  id BigInt @id @default(autoincrement())
+}
+
+model ProductSpecification {
+  id BigInt @id @default(autoincrement())
+}
+
+model ProductOptionGroup {
+  id BigInt @id @default(autoincrement())
+}
+
+model ProductOption {
+  id BigInt @id @default(autoincrement())
+}
+
+model StoreSettings {
+  id BigInt @id @default(autoincrement())
+}
