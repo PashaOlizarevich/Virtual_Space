@@ -1717,3 +1717,21 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 - Product Tour: без изменений.
 - Ограничения: внешние ресурсы и CI не создавались; конкретный регион, тариф, backup/retention и
   production credentials выбираются перед фактическим provisioning с учётом доступности и требований.
+
+## Task 111 — Retention и первый администратор
+
+- Результат: зафиксированы независимое хранение заказов, консервативный retention до юридического
+  подтверждения, необратимая анонимизация аккаунта без удаления истории заказов и одноразовый
+  server-only bootstrap первого администратора без credentials в Git, seed, аргументах или логах.
+- Файлы: `docs/first-db-release-decisions.md`, `docs/architecture.md`,
+  `docs/implementation-plan.md`, `docs/progress.md`.
+- Проверки: адресный Prettier, ESLint, TypeScript, production build и `git diff --check` прошли.
+  Jest не запустился: существующий `jest.config.ts` ссылается на отсутствующий в установленном Next.js
+  модуль `next/dist/build/swc/jest-transformer.js`; тесты не выполнялись.
+- Переменные окружения: нет.
+- Архитектура: добавлены обязательные границы будущих FK/`onDelete`, account deletion, retention job
+  и bootstrap CLI; Prisma schema и runtime-код не изменялись.
+- Product Tour: без изменений.
+- Ограничения: точный юридический срок, privacy notice и backup retention должны быть подтверждены
+  владельцем с профильным специалистом до production; schema, job и CLI реализуются позже. Jest
+  требует отдельного исправления конфигурации или установки, не входящего в пункт 25.
