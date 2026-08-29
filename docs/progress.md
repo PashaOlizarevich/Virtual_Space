@@ -1735,3 +1735,21 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 - Ограничения: точный юридический срок, privacy notice и backup retention должны быть подтверждены
   владельцем с профильным специалистом до production; schema, job и CLI реализуются позже. Jest
   требует отдельного исправления конфигурации или установки, не входящего в пункт 25.
+
+## Task 112 — Базовая инфраструктура Prisma
+
+- Результат: добавлены Prisma 7 config, базовая PostgreSQL schema без преждевременных моделей и
+  единый server-only PrismaClient с `@prisma/adapter-pg`; CLI и runtime разделены между direct и
+  pooled URL согласно решениям первого DB-релиза.
+- Файлы: `prisma.config.ts`, `prisma/schema.prisma`, `src/server/db.ts`,
+  `docs/architecture.md`, `docs/first-db-release-decisions.md`, `docs/progress.md`.
+- Проверки: `prisma validate`, `prisma generate`, ESLint, TypeScript и production build прошли;
+  `git diff --check` прошёл. Jest не запустился из-за существующей конфигурации: отсутствует
+  `next/dist/build/swc/jest-transformer.js`, на который ссылается `jest.config.ts`.
+- Переменные окружения: используются ранее заведённые `DATABASE_URL` и
+  `DATABASE_URL_UNPOOLED`; новые имена не добавлены, значения не читались и не сохранялись.
+- Архитектура: документ отражает реализованный Prisma-фундамент; границы слоёв и принятые решения не
+  изменены.
+- Product Tour: без изменений.
+- Ограничения: доменные модели, миграции, seed и подключение к реальной PostgreSQL не входят в пункт
+  26 и не выполнялись.

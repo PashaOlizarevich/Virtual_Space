@@ -505,6 +505,25 @@ bootstrap-команде.
 решении является консервативной технической границей до профильного подтверждения, а не юридическим
 заключением.
 
+## Пункт 26 — базовая инфраструктура Prisma
+
+Реализован недеструктивный schema-only фундамент без доменных таблиц и без миграции:
+
+- `prisma.config.ts` указывает на `prisma/schema.prisma` и каталог `prisma/migrations`, а для CLI,
+  introspection и будущих миграций требует direct-подключение `DATABASE_URL_UNPOOLED`;
+- `prisma/schema.prisma` фиксирует PostgreSQL datasource и генератор `prisma-client-js`. Модели не
+  добавлены преждевременно: их связи, ограничения и индексы относятся к следующим пунктам плана;
+- `src/server/db.ts` помечен `server-only`, требует только pooled `DATABASE_URL`, создаёт
+  `@prisma/adapter-pg` и переиспользует один `PrismaClient` через `globalThis`, включая hot reload;
+- runtime-код не читает direct URL, Prisma config не читает pooled URL, значения секретов не
+  хранятся и не выводятся;
+- миграция, подключение к реальной БД, `db push`, seed и создание внешней инфраструктуры не
+  выполнялись.
+
+При запуске Prisma CLI оператор или release job должен заранее внедрить
+`DATABASE_URL_UNPOOLED`. При запуске серверного data-access слоя Next.js должен внедрить
+`DATABASE_URL`; отсутствие переменной приводит к fail-fast ошибке только с её безопасным именем.
+
 ## Связанные документы
 
 - `docs/implementation-plan.md` — пункт 23 и последующие шаги реализации;
