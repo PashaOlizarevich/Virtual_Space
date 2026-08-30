@@ -10,12 +10,7 @@ import { useCartStore } from "@/modules/cart/store";
 import type { CartItem } from "@/modules/cart/types";
 import { validateCartItem, type ValidatedCartItem } from "@/modules/cart/validation";
 import type { Product } from "@/modules/catalog/types";
-
-const priceFormatter = new Intl.NumberFormat("ru-BY", {
-  style: "currency",
-  currency: "BYN",
-  maximumFractionDigits: 0,
-});
+import { formatMoney } from "@/shared/money";
 
 function getOptionLabels(item: CartItem, product: Product) {
   return item.selectedOptions.flatMap(({ groupId, optionId }) => {
@@ -82,12 +77,12 @@ function CartLine({ entry }: Readonly<{ entry: ValidatedCartItem }>) {
           {currentPrice !== null ? (
             <div className="cart-widget__item-price">
               {entry.status === "price-changed" ? (
-                <del aria-label={`Прежняя цена: ${priceFormatter.format(item.observedPrice)}`}>
-                  {priceFormatter.format(item.observedPrice)}
+                <del aria-label={`Прежняя цена: ${formatMoney(item.observedPrice)}`}>
+                  {formatMoney(item.observedPrice)}
                 </del>
               ) : null}
-              <span aria-label={`Актуальная цена: ${priceFormatter.format(currentPrice)}`}>
-                {priceFormatter.format(currentPrice * item.quantity)}
+              <span aria-label={`Актуальная цена: ${formatMoney(currentPrice)}`}>
+                {formatMoney(currentPrice * item.quantity)}
               </span>
             </div>
           ) : null}
@@ -235,7 +230,7 @@ export function CartWidget() {
               </div>
               <div className="cart-widget__total">
                 <dt>Итого</dt>
-                <dd>{priceFormatter.format(total)}</dd>
+                <dd>{formatMoney(total)}</dd>
               </div>
             </dl>
             <Link

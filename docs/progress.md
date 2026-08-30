@@ -1927,3 +1927,22 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 - Product Tour: без изменений — маршруты и пользовательские сценарии не менялись.
 - Ограничения: Prisma-запросы и mapper не добавлялись и остаются объёмом пунктов 36–37; общий денежный
   mapper и frontend formatter остаются объёмом пункта 35.
+
+## Task 122 — Единый денежный DTO и formatter
+
+- Результат: добавлены общий JSON-safe `MoneyDto` с канонической decimal-строкой и валютой `BYN`,
+  Zod-схема, mapper из Decimal-like/legacy `number`, безопасное преобразование для отображения и общий
+  formatter; catalog DTO и существующие frontend-потребители используют единый контракт.
+- Файлы: `src/shared/money.ts`, `src/shared/money.test.ts`, `src/modules/catalog/server/dto.ts`,
+  компоненты каталога, корзины, профиля и административных экранов, `docs/architecture.md`,
+  `docs/first-db-release-decisions.md`, `docs/progress.md`.
+- Проверки: целевые Jest-тесты денежного контракта и catalog DTO (14 тестов), ESLint, TypeScript,
+  production build, Prettier для затронутых файлов и `git diff --check` прошли. Полный Jest выполнил
+  119 тестов: 118 прошли, один существующий тест `/new` ожидает ссылку «Акции» на `/catalog` вместо
+  фактического `/sale`.
+- Переменные окружения: нет.
+- Архитектура: `docs/architecture.md` дополнен общей денежной границей и правилом переходной поддержки
+  frontend `number` только для отображения.
+- Product Tour: без изменений.
+- Ограничения: клиентские расчёты остаются недоверенными; Prisma-запросы, доменные mapper результатов и
+  серверный пересчёт заказа относятся к последующим пунктам плана.

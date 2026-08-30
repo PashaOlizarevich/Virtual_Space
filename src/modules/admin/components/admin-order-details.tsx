@@ -7,6 +7,7 @@ import {
   type AdminOrderStatus,
 } from "@/modules/admin/types";
 import { cn } from "@/shared/utils";
+import { formatMoney } from "@/shared/money";
 
 export const adminOrderStatusLabels: Record<AdminOrderStatus, string> = {
   new: "Новый",
@@ -17,11 +18,7 @@ export const adminOrderStatusLabels: Record<AdminOrderStatus, string> = {
 };
 
 export function formatAdminOrderMoney(value: number) {
-  return new Intl.NumberFormat("ru-BY", {
-    style: "currency",
-    currency: "BYN",
-    maximumFractionDigits: 0,
-  }).format(value);
+  return formatMoney(value);
 }
 
 export function formatAdminOrderDate(value: string) {

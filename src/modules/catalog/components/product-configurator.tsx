@@ -6,12 +6,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useCartStore } from "@/modules/cart/store";
 import type { Product } from "@/modules/catalog/types";
-
-const priceFormatter = new Intl.NumberFormat("ru-BY", {
-  style: "currency",
-  currency: "BYN",
-  maximumFractionDigits: 0,
-});
+import { formatMoney } from "@/shared/money";
 
 export function ProductConfigurator({ product }: Readonly<{ product: Product }>) {
   const addItem = useCartStore((state) => state.addItem);
@@ -25,7 +20,7 @@ export function ProductConfigurator({ product }: Readonly<{ product: Product }>)
 
   return (
     <div className="product-configurator">
-      <p className="product-detail__price">{priceFormatter.format(product.price)}</p>
+      <p className="product-detail__price">{formatMoney(product.price)}</p>
       <div className="product-configurator__options">
         {product.optionGroups.map((group) => (
           <fieldset className="product-option" key={group.id}>

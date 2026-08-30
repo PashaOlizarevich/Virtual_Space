@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { moneyDtoSchema } from "@/shared/money";
+
 const identifierSchema = z.string().trim().min(1).max(128);
 const labelSchema = z.string().trim().min(1).max(160);
 const textSchema = z.string().trim().min(1).max(5_000);
@@ -11,10 +13,7 @@ const imageSourceSchema = z
   .max(2_048)
   .refine((value) => value.startsWith("/") || value.startsWith("https://"));
 
-export const catalogMoneyDtoSchema = z.strictObject({
-  amount: z.string().regex(/^\d{1,10}\.\d{2}$/),
-  currency: z.literal("BYN"),
-});
+export const catalogMoneyDtoSchema = moneyDtoSchema;
 
 export const categoryDtoSchema = z.strictObject({
   slug: identifierSchema,

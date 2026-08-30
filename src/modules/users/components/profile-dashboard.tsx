@@ -15,12 +15,7 @@ import { validateCartItem } from "@/modules/cart/validation";
 import { updateProfilePreview } from "@/modules/users/mock-transport";
 import { profileDetailsSchema, type ProfileDetailsValues } from "@/modules/users/schemas";
 import type { ProfileDetails, ProfileOrder, OrderStatus } from "@/modules/users/types";
-
-const priceFormatter = new Intl.NumberFormat("ru-BY", {
-  style: "currency",
-  currency: "BYN",
-  maximumFractionDigits: 0,
-});
+import { formatMoney } from "@/shared/money";
 
 const dateFormatter = new Intl.DateTimeFormat("ru-BY", {
   day: "numeric",
@@ -145,7 +140,7 @@ function CurrentCart() {
             </div>
             <div>
               <dt>Предварительная сумма</dt>
-              <dd>{priceFormatter.format(total)}</dd>
+              <dd>{formatMoney(total)}</dd>
             </div>
           </dl>
           <p className="profile-card__note">
@@ -198,7 +193,7 @@ function OrderHistory({ orders }: Readonly<{ orders: readonly ProfileOrder[] }>)
                 </div>
                 <div>
                   <dt>Сумма</dt>
-                  <dd>{priceFormatter.format(order.total)}</dd>
+                  <dd>{formatMoney(order.total)}</dd>
                 </div>
               </dl>
             </li>

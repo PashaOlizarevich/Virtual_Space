@@ -11,12 +11,7 @@ import { FullscreenProductGallery } from "@/modules/catalog/components/fullscree
 import { useGalleryNavigation } from "@/modules/catalog/hooks/use-gallery-navigation";
 import type { Product } from "@/modules/catalog/types";
 import { FavoriteButton } from "@/modules/favorites/components/favorite-button";
-
-const priceFormatter = new Intl.NumberFormat("ru-BY", {
-  style: "currency",
-  currency: "BYN",
-  maximumFractionDigits: 0,
-});
+import { formatMoney } from "@/shared/money";
 
 type ProductPreviewProps = Readonly<{
   product: Product;
@@ -112,17 +107,17 @@ export function ProductPreview({
           {pricing ? (
             <div
               className="product-preview__promotional-price"
-              aria-label={`Цена по акции ${priceFormatter.format(pricing.currentPrice)}, прежняя цена ${priceFormatter.format(pricing.originalPrice)}, скидка ${pricing.discountPercent}%`}
+              aria-label={`Цена по акции ${formatMoney(pricing.currentPrice)}, прежняя цена ${formatMoney(pricing.originalPrice)}, скидка ${pricing.discountPercent}%`}
             >
               <span className="product-preview__original-price" aria-hidden="true">
-                {priceFormatter.format(pricing.originalPrice)}
+                {formatMoney(pricing.originalPrice)}
               </span>
               <span className="product-preview__price" aria-hidden="true">
-                {priceFormatter.format(pricing.currentPrice)}
+                {formatMoney(pricing.currentPrice)}
               </span>
             </div>
           ) : (
-            <p className="product-preview__price">{priceFormatter.format(product.price)}</p>
+            <p className="product-preview__price">{formatMoney(product.price)}</p>
           )}
         </div>
         <p className="product-preview__description text-body-sm text-secondary">
@@ -159,7 +154,7 @@ export function ProductPreview({
         <p className="text-label-caps text-secondary">Быстрый просмотр</p>
         <div className="product-preview__quick-heading">
           <h4>{product.name}</h4>
-          <p>{priceFormatter.format(pricing?.currentPrice ?? product.price)}</p>
+          <p>{formatMoney(pricing?.currentPrice ?? product.price)}</p>
         </div>
         <p className="text-body-sm text-secondary">{product.description}</p>
         {dimensions ? (

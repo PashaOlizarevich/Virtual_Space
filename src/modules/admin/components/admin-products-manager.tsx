@@ -23,6 +23,7 @@ import {
   type AdminProductValues,
 } from "@/modules/admin/schemas";
 import type { AdminProduct, AdminProductImage } from "@/modules/admin/types";
+import { formatMoney } from "@/shared/money";
 
 const EMPTY_VALUES: AdminProductValues = {
   name: "",
@@ -33,14 +34,6 @@ const EMPTY_VALUES: AdminProductValues = {
   stock: 0,
   published: true,
 };
-
-function formatPrice(price: number) {
-  return new Intl.NumberFormat("ru-BY", {
-    style: "currency",
-    currency: "BYN",
-    maximumFractionDigits: 0,
-  }).format(price);
-}
 
 function readImage(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -433,7 +426,7 @@ export function AdminProductsManager() {
                       </div>
                     </td>
                     <td>{product.category}</td>
-                    <td>{formatPrice(product.price)}</td>
+                    <td>{formatMoney(product.price)}</td>
                     <td>
                       <span
                         className={product.stock === 0 ? "admin-product-stock--empty" : undefined}
