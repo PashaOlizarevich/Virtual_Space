@@ -1910,3 +1910,20 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 - Product Tour: без изменений — пользовательские маршруты и сценарии не менялись.
 - Ограничения: миграция и seed не применялись к реальной БД; production seed запрещён, а запуск в
   разрешённой среде выполняется оператором отдельно после `prisma migrate deploy`.
+
+## Task 120 — Безопасные DTO каталога и публичных настроек
+
+- Результат: добавлены строгие серверные Zod-контракты каталога, товара, категорий и публичных настроек
+  магазина; DTO ограничены allowlist-полями, JSON-сериализуемыми значениями, ISO-датами, канонической
+  decimal-строкой, безопасными ссылками и лимитами размеров.
+- Файлы: `src/modules/catalog/server/dto.ts`, `src/modules/catalog/server/dto.test.ts`,
+  `src/modules/settings/server/dto.ts`, `src/modules/settings/server/dto.test.ts`,
+  `docs/architecture.md`, `docs/first-db-release-decisions.md`, `docs/progress.md`.
+- Проверки: целевые Jest-тесты (6 тестов), ESLint, TypeScript, production build и `git diff --check`
+  прошли. Полный Jest: 107 из 108 тестов прошли; существующий `src/app/(store)/new/page.test.tsx`
+  ожидает ссылку акции `/catalog`, тогда как фактическая навигация ведёт на `/sale`.
+- Переменные окружения: нет.
+- Архитектура: зафиксированы server-области публичных allowlist DTO и исключённые внутренние поля.
+- Product Tour: без изменений — маршруты и пользовательские сценарии не менялись.
+- Ограничения: Prisma-запросы и mapper не добавлялись и остаются объёмом пунктов 36–37; общий денежный
+  mapper и frontend formatter остаются объёмом пункта 35.
