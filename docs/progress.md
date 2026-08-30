@@ -1995,7 +1995,7 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
   `src/modules/cart/validation.ts`, `src/modules/promotions/promotions.ts`, `prisma/seed-data.ts`,
   `docs/architecture.md`, `docs/ProductTour.md`, `docs/first-db-release-decisions.md`.
 - Проверки: ESLint, TypeScript, production build с безопасным локальным placeholder `DATABASE_URL` и
-  `git diff --check` прошли. Полный Jest: 34 suites и 112 тестов прошли; 10 прежних синхронных
+  `git diff --check` прошли. Полный Jest: 34 suites и 112 тестов прошли; 11 прежних синхронных
   page/footer suites требуют отдельного разрешения на адаптацию к Prisma/jsdom, а существующий тест
   `/new` по-прежнему ожидает устаревшую ссылку `/catalog` вместо `/sale`.
 - Переменные окружения: новых нет; для runtime по-прежнему обязателен `DATABASE_URL`.
