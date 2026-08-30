@@ -1946,3 +1946,21 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 - Product Tour: без изменений.
 - Ограничения: клиентские расчёты остаются недоверенными; Prisma-запросы, доменные mapper результатов и
   серверный пересчёт заказа относятся к последующим пунктам плана.
+
+## Task 123 — Server-only запросы каталога и публичных настроек
+
+- Результат: добавлены узкие Prisma query-функции и services для категорий, пагинированного каталога,
+  активного товара по `slug` и основного публичного профиля магазина. Каталог валидирует slug и размер
+  страницы, использует keyset cursor и стабильную сортировку; все модули помечены `server-only`.
+- Файлы: `src/modules/catalog/server/queries.ts`, `src/modules/catalog/server/service.ts`,
+  `src/modules/catalog/server/queries.test.ts`, `src/modules/settings/server/queries.ts`,
+  `src/modules/settings/server/service.ts`, `src/modules/settings/server/queries.test.ts`,
+  `docs/first-db-release-decisions.md`, `docs/progress.md`.
+- Проверки: 4 целевых unit-теста, ESLint, TypeScript и production build прошли. Полный Jest выполнил
+  123 теста: 122 прошли, один существующий тест `/new` падает из-за устаревшего ожидания ссылки
+  «Акции» на `/catalog` вместо фактического `/sale`; тест не изменялся без отдельного разрешения.
+- Переменные окружения: новые переменные не добавлены; реальная PostgreSQL не подключалась.
+- Архитектура: реализован server-only DAL с явными `select`; DTO mapping намеренно оставлен пункту 37,
+  frontend и Product Tour не изменялись.
+- Ограничения: запросы не выполнялись против реальной БД; transport/API и интеграция страниц относятся
+  к последующим пунктам плана.
