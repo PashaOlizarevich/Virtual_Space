@@ -1871,3 +1871,23 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
   разрешения пользователя; `npm audit --omit=dev` сообщает о трёх high advisory в транзитивной
   зависимости Prisma `deepmerge-ts`, а предложенный автоматический fix понижает Prisma до 6.12 и
   поэтому не применялся.
+
+## Task 120 — Первая миграция каталога и настроек
+
+- Результат: создана первая версионируемая Prisma-миграция PostgreSQL для enum `Currency`, моделей
+  каталога и `StoreSettings`; добавлен migration lock провайдера. Сохранённый SQL совпадает с
+  актуальным Prisma diff от пустой схемы после нормализации переводов строк.
+- Файлы: `prisma/migrations/20260830120000_create_catalog_and_settings/migration.sql`,
+  `prisma/migrations/migration_lock.toml`, `docs/architecture.md`,
+  `docs/first-db-release-decisions.md`, `docs/progress.md`.
+- Проверки: ручной и автоматический просмотр SQL не выявил `DROP`, удаления данных, сужения типов,
+  `ALTER COLUMN` или обязательных полей без backfill; `prisma validate`, `prisma generate`, ESLint,
+  TypeScript и production build прошли. Jest выполнил 100 тестов: 99 прошли, один существующий тест
+  `/new` падает из-за устаревшего ожидания ссылки «Акции» на `/catalog` вместо фактического `/sale`.
+- Переменные окружения: нет; для офлайн-команд Prisma использован только безопасный placeholder
+  `DATABASE_URL_UNPOOLED`, без подключения к PostgreSQL.
+- Архитектура: документ обновлён и теперь отражает фактическое наличие первой миграции каталога и
+  настроек; отдельный документ решений содержит классификацию, SQL-review и release-ограничения.
+- Product Tour: без изменений — пользовательские маршруты и сценарии не менялись.
+- Ограничения: миграция не применялась к реальной БД; целевая схема должна быть пустой и не содержать
+  одноимённых объектов, иначе перед `prisma migrate deploy` требуется отдельная сверка и baseline.
