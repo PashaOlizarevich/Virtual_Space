@@ -6,6 +6,9 @@ const createJestConfig = nextJest({ dir: "./" });
 const config: Config = {
   roots: ["<rootDir>/src"],
   testEnvironment: "jsdom",
+  testEnvironmentOptions: {
+    customExportConditions: ["node", "node-addons"],
+  },
   coverageDirectory: "coverage",
   testMatch: ["**/*.test.{ts,tsx}"],
   moduleNameMapper: {
