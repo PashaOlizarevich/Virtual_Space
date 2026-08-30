@@ -2004,3 +2004,19 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 - Product Tour: обновлены главная, каталог, категории, товар, `/about`, футер и карта данных.
 - Ограничения: реальная PostgreSQL в этой среде не подключалась, поэтому browser visual QA и
   end-to-end проверка фактических DB-данных недоступны; тестовые файлы не изменялись без разрешения.
+
+## Task 126 — Проверка каталога и БД
+
+- Результат: подтверждены unique-ограничения slug, серверная фильтрация неактивных товаров, точное
+  преобразование денег, строгие DTO/mapper, повторяемый seed и основные запросы каталога и настроек;
+  read-only security-review блока 26–39 не выявил подтверждённых findings.
+- Файлы: `docs/first-db-release-decisions.md`, `docs/progress.md`.
+- Проверки: целевые Jest-тесты — 8 suites / 28 tests passed; `prisma validate`, `prisma generate`,
+  ESLint, TypeScript и production build — успешно. Полный Jest: 34 suites passed, 12 failed
+  (11 page suites требуют jsdom `TextEncoder`/изоляции Prisma, один тест `/new` ожидает старый маршрут
+  акции); существующие тесты не изменялись без отдельного разрешения.
+- Переменные окружения: нет; для Prisma CLI и build использованы только одноразовые placeholder URL.
+- Архитектура: без изменений.
+- Product Tour: без изменений.
+- Ограничения: проверка выполнена без живой PostgreSQL; миграция и seed не применялись; полный Jest
+  остаётся красным из-за существующих page-тестов пункта 38.
