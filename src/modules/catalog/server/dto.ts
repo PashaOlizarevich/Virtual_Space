@@ -64,8 +64,14 @@ export const catalogDtoSchema = z.strictObject({
   products: z.array(productPreviewDtoSchema).max(500),
 });
 
+export const catalogCursorDtoSchema = z.strictObject({
+  id: identifierSchema,
+  createdAt: isoDateTimeSchema,
+});
+
 export type CatalogMoneyDto = z.infer<typeof catalogMoneyDtoSchema>;
 export type CategoryDto = z.infer<typeof categoryDtoSchema>;
 export type ProductPreviewDto = z.infer<typeof productPreviewDtoSchema>;
 export type ProductDto = z.infer<typeof productDtoSchema>;
 export type CatalogDto = z.infer<typeof catalogDtoSchema>;
+export type CatalogCursorDto = z.infer<typeof catalogCursorDtoSchema>;

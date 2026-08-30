@@ -2,14 +2,23 @@ import "server-only";
 
 import { z } from "zod";
 
+import type {
+  CatalogCursorDto,
+  CategoryDto,
+  ProductDto,
+  ProductPreviewDto,
+} from "@/modules/catalog/server/dto";
+import {
+  mapCatalogCursor,
+  mapCategoryRecord,
+  mapProductDetailRecord,
+  mapProductPreviewRecord,
+} from "@/modules/catalog/server/mapper";
 import {
   findPublicCategories,
   findPublicProductBySlug,
   findPublicProductPage,
   type CatalogCursor,
-  type CategoryRecord,
-  type ProductDetailRecord,
-  type ProductPreviewRecord,
 } from "@/modules/catalog/server/queries";
 
 const slugSchema = z
@@ -36,13 +45,13 @@ export type CatalogPageInput = Readonly<{
 }>;
 
 export type CatalogPageResult = Readonly<{
-  categories: readonly CategoryRecord[];
-  products: readonly ProductPreviewRecord[];
-  nextCursor: CatalogCursor | null;
+  categories: readonly CategoryDto[];
+  products: readonly ProductPreviewDto[];
+  nextCursor: CatalogCursorDto | null;
 }>;
 
-export async function getPublicCategories(): Promise<readonly CategoryRecord[]> {
-  return findPublicCategories();
+export async function getPublicCategories(): Promise<readonly CategoryDto[]> {
+  return (await findPublicCategories()).map(mapCategoryRecord);
 }
 
 export async function getPublicCatalog(input: CatalogPageInput = {}): Promise<CatalogPageResult> {
@@ -61,15 +70,17 @@ export async function getPublicCatalog(input: CatalogPageInput = {}): Promise<Ca
   const lastProduct = products.at(-1);
 
   return {
-    categories,
-    products,
+    categories: categories.map(mapCategoryRecord),
+    products: products.map(mapProductPreviewRecord),
     nextCursor:
       productsWithLookahead.length > pageSize && lastProduct
-        ? { id: lastProduct.id, createdAt: lastProduct.createdAt }
+        ? mapCatalogCursor({ id: lastProduct.id, createdAt: lastProduct.createdAt })
         : null,
   };
 }
 
-export async function getPublicProductBySlug(slug: string): Promise<ProductDetailRecord | null> {
-  return findPublicProductBySlug(slugSchema.parse(slug));
+export async function getPublicProductBySlug(slug: string): Promise<ProductDto | null> {
+  const product = await findPublicProductBySlug(slugSchema.parse(slug));
+
+  return product ? mapProductDetailRecord(product) : null;
 }

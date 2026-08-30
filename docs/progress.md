@@ -1964,3 +1964,24 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
   frontend и Product Tour не изменялись.
 - Ограничения: запросы не выполнялись против реальной БД; transport/API и интеграция страниц относятся
   к последующим пунктам плана.
+
+## Task 124 — Безопасные mapper'ы каталога и публичных настроек
+
+- Результат: добавлены server-only mapper'ы Prisma-результатов каталога и настроек; services теперь
+  возвращают строгие JSON-safe DTO, включая строковые `BigInt`, ISO-даты, `MoneyDto`, стабильные ключи
+  опций и сериализуемый cursor пагинации. JSON-колонки настроек валидируются как недоверенные данные.
+- Файлы: `src/modules/catalog/server/dto.ts`, `src/modules/catalog/server/mapper.ts`,
+  `src/modules/catalog/server/mapper.test.ts`, `src/modules/catalog/server/service.ts`,
+  `src/modules/settings/server/mapper.ts`, `src/modules/settings/server/mapper.test.ts`,
+  `src/modules/settings/server/service.ts`, `docs/architecture.md`,
+  `docs/first-db-release-decisions.md`, `docs/progress.md`.
+- Проверки: 5 целевых mapper-тестов, ESLint, TypeScript, `prisma validate`, `prisma generate`, production
+  build и read-only security review прошли. Полный Jest выполнил 128 тестов: 127 прошли, один
+  существующий тест `/new` падает из-за устаревшего ожидания ссылки «Акции» на `/catalog` вместо
+  фактического `/sale`; тест не изменялся без отдельного разрешения.
+- Переменные окружения: новые переменные не добавлены; Prisma CLI проверен с безопасным локальным
+  placeholder `DATABASE_URL_UNPOOLED` без подключения к PostgreSQL.
+- Архитектура: зафиксирована доменная mapper-граница между Prisma query и публичным service DTO;
+  Product Tour: без изменений — маршруты и пользовательские сценарии не менялись.
+- Ограничения: запросы не выполнялись против реальной БД; transport/API и подключение UI относятся к
+  следующим пунктам плана.
