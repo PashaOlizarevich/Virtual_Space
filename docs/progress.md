@@ -1854,3 +1854,20 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 - Product Tour: без изменений.
 - Ограничения: для загрузки проектной конфигурации в уже открытом клиенте требуется новый сеанс
   Codex; Context7 настроен без необязательного API-ключа.
+
+## Task 119 — Восстановление запуска Jest на Windows
+
+- Результат: устранён сбой Jest до выполнения тестов, вызванный недоступным native binding
+  `unrs-resolver` в Jest 30 на текущем Windows-окружении; runtime закреплён на совместимом Jest 29.7,
+  сохранён современный jsdom для React 19, а SSR-тесты используют Node export conditions.
+- Файлы: `package.json`, `package-lock.json`, `jest.config.ts`, `docs/progress.md`.
+- Проверки: Jest выполняет все 100 тестов — 99 прошли, один существующий тест `/new` падает из-за
+  устаревшего ожидания ссылки «Акции» на `/catalog` вместо фактического `/sale`; ESLint, TypeScript,
+  production build и `git diff --check` прошли.
+- Переменные окружения: нет.
+- Архитектура: без изменений; исправлена только тестовая инфраструктура.
+- Product Tour: без изменений.
+- Ограничения: существующий тест `src/app/(store)/new/page.test.tsx` не изменялся без отдельного
+  разрешения пользователя; `npm audit --omit=dev` сообщает о трёх high advisory в транзитивной
+  зависимости Prisma `deepmerge-ts`, а предложенный автоматический fix понижает Prisma до 6.12 и
+  поэтому не применялся.
