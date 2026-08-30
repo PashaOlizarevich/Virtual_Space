@@ -1891,3 +1891,22 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 - Product Tour: без изменений — пользовательские маршруты и сценарии не менялись.
 - Ограничения: миграция не применялась к реальной БД; целевая схема должна быть пустой и не содержать
   одноимённых объектов, иначе перед `prisma migrate deploy` требуется отдельная сверка и baseline.
+
+## Task 121 — Повторяемый seed каталога и настроек
+
+- Результат: добавлена Prisma seed-команда, которая преобразует текущие mock-данные в категории,
+  товары, галереи, характеристики, группы/значения опций и основную конфигурацию магазина; все записи
+  создаются или обновляются через стабильные ключи и `upsert`, неизвестные записи не удаляются.
+- Файлы: `prisma/seed.ts`, `prisma/seed-data.ts`, `prisma.config.ts`, `prisma/schema.prisma`,
+  `prisma/migrations/20260830143000_add_store_settings_content/migration.sql`,
+  `src/server/seed-data.test.ts`, `docs/first-db-release-decisions.md`, `docs/progress.md`.
+- Проверки: `prisma validate`, `prisma generate`, TypeScript, ESLint, production build и три unit-теста
+  mapping прошли. Полный Jest выполнил 103 теста: 102 прошли, один существующий тест `/new` падает
+  из-за устаревшего ожидания ссылки «Акции» на `/catalog` вместо фактического `/sale`.
+- Переменные окружения: новые переменные не добавлены; Prisma CLI проверен с безопасным локальным
+  placeholder `DATABASE_URL_UNPOOLED` без подключения к PostgreSQL.
+- Архитектура: mock-файлы остаются временным источником только для подготовки seed до интеграционного
+  пункта 38; `StoreSettings` расширен до фактического хранилища текущего `storeProfile`.
+- Product Tour: без изменений — пользовательские маршруты и сценарии не менялись.
+- Ограничения: миграция и seed не применялись к реальной БД; production seed запрещён, а запуск в
+  разрешённой среде выполняется оператором отдельно после `prisma migrate deploy`.

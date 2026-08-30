@@ -112,6 +112,12 @@ model ProductOption {
 }
 
 model StoreSettings {
-  id  BigInt @id @default(autoincrement())
-  key String @unique @default("primary")
+  id          BigInt   @id @default(autoincrement())
+  key         String   @unique @default("primary")
+  name        String
+  description String
+  contacts    Json
+  socials     Json
+  createdAt   DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime @updatedAt @db.Timestamptz(3)
 }
