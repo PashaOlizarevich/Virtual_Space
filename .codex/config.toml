@@ -1,5 +1,11 @@
 # Project-scoped MCP configuration. Keep the set minimal and do not store secrets here.
 
+[mcp_servers.context7]
+command = "npx"
+args = ["-y", "@upstash/context7-mcp"]
+startup_timeout_ms = 40_000
+
 [mcp_servers.chrome-devtools]
 command = "npx"
 args = ["-y", "chrome-devtools-mcp@latest"]
+startup_timeout_ms = 40_000
