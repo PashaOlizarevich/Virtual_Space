@@ -1,6 +1,7 @@
 import type { CartItem } from "@/modules/cart/types";
 import { allProducts } from "@/modules/catalog/mock-data";
 import type { Product } from "@/modules/catalog/types";
+import { moneyToNumber } from "@/shared/money";
 
 export type ValidatedCartItem =
   | Readonly<{ status: "available"; item: CartItem; product: Product; currentPrice: number }>
@@ -21,10 +22,12 @@ export function validateCartItem(item: CartItem): ValidatedCartItem {
     return { status: "unavailable", item, product };
   }
 
+  const currentPrice = moneyToNumber(product.price);
+
   return {
-    status: item.observedPrice === product.price ? "available" : "price-changed",
+    status: item.observedPrice === currentPrice ? "available" : "price-changed",
     item,
     product,
-    currentPrice: product.price,
+    currentPrice,
   };
 }

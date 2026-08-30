@@ -1,26 +1,25 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { cache } from "react";
 import { Container } from "@/components/layout/container";
 import { ProductConfigurator } from "@/modules/catalog/components/product-configurator";
 import { ProductGallery } from "@/modules/catalog/components/product-gallery";
-import { allProducts, getProductBySlug } from "@/modules/catalog/mock-data";
+import { getPublicProductBySlug } from "@/modules/catalog/server/service";
 
-export function generateStaticParams() {
-  return allProducts.map((product) => ({ id: product.slug }));
-}
+const getProduct = cache(getPublicProductBySlug);
 
 type ProductPageProps = { params: Promise<{ id: string }> };
 
 export async function generateMetadata(props: ProductPageProps): Promise<Metadata> {
-  const product = getProductBySlug((await props.params).id);
+  const product = await getProduct((await props.params).id);
   return product
     ? { title: `${product.name} — Virtual Space`, description: product.description }
     : {};
 }
 
 export default async function ProductPage(props: ProductPageProps) {
-  const product = getProductBySlug((await props.params).id);
+  const product = await getProduct((await props.params).id);
   if (!product) notFound();
   return (
     <main className="product-detail">

@@ -1,5 +1,6 @@
 import type { Product } from "@/modules/catalog/types";
 import type { ActivePromotions, Promotion, PromotionalProduct } from "@/modules/promotions/types";
+import { moneyToNumber } from "@/shared/money";
 
 function parseTimestamp(value: string): number | undefined {
   const timestamp = Date.parse(value);
@@ -62,12 +63,13 @@ export function getActivePromotions(
 
       const product = productsById.get(productId);
       if (!product) continue;
+      const originalPrice = moneyToNumber(product.price);
 
       assignedProductIds.add(productId);
       promotionalProducts.push({
         product,
-        originalPrice: product.price,
-        currentPrice: calculatePromotionalPrice(product.price, promotion.discountPercent),
+        originalPrice,
+        currentPrice: calculatePromotionalPrice(originalPrice, promotion.discountPercent),
         discountPercent: promotion.discountPercent,
         promotionId: promotion.id,
       });

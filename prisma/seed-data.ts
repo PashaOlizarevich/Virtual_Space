@@ -1,6 +1,7 @@
 import type { Product } from "../src/modules/catalog/types";
 import { allProducts } from "../src/modules/catalog/mock-data";
 import { storeProfile } from "../src/modules/settings/mock-data";
+import { MONEY_CURRENCY, moneyToNumber } from "../src/shared/money";
 
 export const categoryNames = {
   armchairs: "Кресла",
@@ -40,8 +41,8 @@ export const catalogSeed = allProducts.map((product: Product) => ({
   categorySlug: categorySlugFrom(product),
   name: product.name,
   description: product.description,
-  price: product.price.toFixed(2),
-  currency: product.currency,
+  price: moneyToNumber(product.price).toFixed(2),
+  currency: product.currency ?? MONEY_CURRENCY,
   stock: 10,
   isActive: true,
   newFrom: product.newFrom ? new Date(product.newFrom) : null,

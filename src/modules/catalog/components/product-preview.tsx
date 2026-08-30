@@ -11,10 +11,15 @@ import { FullscreenProductGallery } from "@/modules/catalog/components/fullscree
 import { useGalleryNavigation } from "@/modules/catalog/hooks/use-gallery-navigation";
 import type { Product } from "@/modules/catalog/types";
 import { FavoriteButton } from "@/modules/favorites/components/favorite-button";
-import { formatMoney } from "@/shared/money";
+import { formatMoney, moneyToNumber } from "@/shared/money";
+
+type ProductCardData =
+  | Product
+  | (Omit<Product, "gallery" | "specifications" | "optionGroups"> &
+      Partial<Pick<Product, "gallery" | "specifications" | "optionGroups">>);
 
 type ProductPreviewProps = Readonly<{
-  product: Product;
+  product: ProductCardData;
   imageSizes?: string;
   imageQuality?: 75 | 100;
   imageLoading?: "eager" | "lazy";
@@ -36,14 +41,14 @@ export function ProductPreview({
   pricing,
 }: ProductPreviewProps) {
   const addItem = useCartStore((state) => state.addItem);
-  const images =
-    product.gallery.length > 0 ? product.gallery : [{ src: product.image, alt: product.imageAlt }];
+  const gallery = product.gallery ?? [];
+  const images = gallery.length > 0 ? gallery : [{ src: product.image, alt: product.imageAlt }];
   const navigation = useGalleryNavigation(images.length);
   const [isFullscreenOpen, setIsFullscreenOpen] = useState(false);
   const activeImage = images[navigation.activeIndex] ?? images[0];
   const hasMultipleImages = images.length > 1;
   const productHref = `/product/${product.slug}`;
-  const dimensions = product.specifications.find(({ label }) => label === "Размер")?.value;
+  const dimensions = product.specifications?.find(({ label }) => label === "Размер")?.value;
 
   return (
     <article className="product-preview">
@@ -138,7 +143,7 @@ export function ProductPreview({
               addItem({
                 productId: product.id,
                 selectedOptions: [],
-                observedPrice: pricing?.currentPrice ?? product.price,
+                observedPrice: pricing?.currentPrice ?? moneyToNumber(product.price),
               })
             }
           >

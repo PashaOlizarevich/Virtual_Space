@@ -2,14 +2,15 @@ import type { Metadata } from "next";
 
 import { Container } from "@/components/layout/container";
 import { ProductPreview } from "@/modules/catalog/components/product-preview";
-import { chairCategoryProducts } from "@/modules/catalog/mock-data";
+import { getPublicCatalog } from "@/modules/catalog/server/service";
 
 export const metadata: Metadata = {
   title: "Стулья — Virtual Space",
   description: "Стулья для обеденной зоны, рабочего места и спокойных домашних пауз.",
 };
 
-export default function ChairsPage() {
+export default async function ChairsPage() {
+  const { products } = await getPublicCatalog({ categorySlug: "chairs", pageSize: 100 });
   return (
     <main className="chairs-page">
       <Container>
@@ -25,7 +26,7 @@ export default function ChairsPage() {
         <section className="chairs-page__collection" aria-labelledby="chairs-title">
           <h2 id="chairs-title">В коллекции</h2>
           <div className="chairs-page__grid">
-            {chairCategoryProducts.map((product) => (
+            {products.map((product) => (
               <ProductPreview key={product.id} product={product} imageQuality={100} />
             ))}
           </div>

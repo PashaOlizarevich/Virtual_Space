@@ -2,14 +2,15 @@ import type { Metadata } from "next";
 
 import { Container } from "@/components/layout/container";
 import { ProductPreview } from "@/modules/catalog/components/product-preview";
-import { diningTableCategoryProducts } from "@/modules/catalog/mock-data";
+import { getPublicCatalog } from "@/modules/catalog/server/service";
 
 export const metadata: Metadata = {
   title: "Столы обеденные — Virtual Space",
   description: "Обеденные столы из натурального дерева для семейных ужинов и встреч с близкими.",
 };
 
-export default function DiningTablesPage() {
+export default async function DiningTablesPage() {
+  const { products } = await getPublicCatalog({ categorySlug: "dining-tables", pageSize: 100 });
   return (
     <main className="dining-tables-page">
       <Container>
@@ -26,7 +27,7 @@ export default function DiningTablesPage() {
         <section className="dining-tables-page__collection" aria-labelledby="dining-tables-title">
           <h2 id="dining-tables-title">В коллекции</h2>
           <div className="dining-tables-page__grid">
-            {diningTableCategoryProducts.map((product) => (
+            {products.map((product) => (
               <ProductPreview key={product.id} product={product} imageLoading="eager" />
             ))}
           </div>

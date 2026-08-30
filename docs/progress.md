@@ -1985,3 +1985,22 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
   Product Tour: без изменений — маршруты и пользовательские сценарии не менялись.
 - Ограничения: запросы не выполнялись против реальной БД; transport/API и подключение UI относятся к
   следующим пунктам плана.
+
+## Task 125 — Публичные страницы на PostgreSQL
+
+- Результат: главная, каталог, десять страниц категорий, карточка товара, `/about` и футер переведены
+  с mock-источников на server-only services и безопасные DTO PostgreSQL; удалён неиспользуемый
+  клиентский mock query каталога, а UI и гостевая корзина поддерживают `MoneyDto`.
+- Файлы: `src/app/(store)/**`, `src/components/layout/site-footer.tsx`, компоненты и типы каталога,
+  `src/modules/cart/validation.ts`, `src/modules/promotions/promotions.ts`, `prisma/seed-data.ts`,
+  `docs/architecture.md`, `docs/ProductTour.md`, `docs/first-db-release-decisions.md`.
+- Проверки: ESLint, TypeScript, production build с безопасным локальным placeholder `DATABASE_URL` и
+  `git diff --check` прошли. Полный Jest: 34 suites и 112 тестов прошли; 10 прежних синхронных
+  page/footer suites требуют отдельного разрешения на адаптацию к Prisma/jsdom, а существующий тест
+  `/new` по-прежнему ожидает устаревшую ссылку `/catalog` вместо `/sale`.
+- Переменные окружения: новых нет; для runtime по-прежнему обязателен `DATABASE_URL`.
+- Архитектура: PostgreSQL стал источником истины для заявленных публичных страниц; публичный store
+  segment переведён на динамический server render, DTO остаются границей между Prisma и UI.
+- Product Tour: обновлены главная, каталог, категории, товар, `/about`, футер и карта данных.
+- Ограничения: реальная PostgreSQL в этой среде не подключалась, поэтому browser visual QA и
+  end-to-end проверка фактических DB-данных недоступны; тестовые файлы не изменялись без разрешения.

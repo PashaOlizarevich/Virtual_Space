@@ -1,6 +1,5 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
 import { ChevronLeft, ChevronRight, RefreshCw } from "lucide-react";
 import {
   useCallback,
@@ -14,11 +13,10 @@ import {
 import { FeedbackState, LoadingState, RetryButton } from "@/components/ui/feedback-state";
 import { Button } from "@/components/ui/button";
 import { ProductPreview } from "@/modules/catalog/components/product-preview";
-import { catalogQueryOptions } from "@/modules/catalog/queries";
-import type { Product } from "@/modules/catalog/types";
+import type { ProductPreview as CatalogProductPreview } from "@/modules/catalog/types";
 
 type CatalogQueryGridViewProps = Readonly<{
-  products?: readonly Product[];
+  products?: readonly CatalogProductPreview[];
   initialPageParam?: string;
   isLoading?: boolean;
   isFetching?: boolean;
@@ -60,7 +58,7 @@ export function CatalogQueryGridView({
   isLoading = false,
   isFetching = false,
   error = null,
-  onRefresh = () => undefined,
+  onRefresh = () => window.location.reload(),
 }: CatalogQueryGridViewProps) {
   if (isLoading) {
     return (
@@ -104,7 +102,7 @@ export function CatalogQueryGridView({
 }
 
 type CatalogQueryGridResultsProps = Readonly<{
-  products: readonly Product[];
+  products: readonly CatalogProductPreview[];
   initialPageParam?: string;
   isFetching: boolean;
   onRefresh: () => void;
@@ -295,19 +293,4 @@ function updateCatalogUrl(page: number, mode: "push" | "replace") {
   const nextUrl = `${url.pathname}${url.search}${url.hash}`;
   if (mode === "push") window.history.pushState(null, "", nextUrl);
   else window.history.replaceState(null, "", nextUrl);
-}
-
-export function CatalogQueryGrid({ initialPageParam }: Readonly<{ initialPageParam?: string }>) {
-  const query = useQuery(catalogQueryOptions());
-
-  return (
-    <CatalogQueryGridView
-      products={query.data}
-      initialPageParam={initialPageParam}
-      isLoading={query.isPending}
-      isFetching={query.isFetching}
-      error={query.error}
-      onRefresh={() => void query.refetch()}
-    />
-  );
 }

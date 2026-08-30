@@ -1,3 +1,5 @@
+import type { FormattableMoney } from "@/shared/money";
+
 export type ProductCurrency = "BYN";
 
 export type ProductImage = Readonly<{ src: string; alt: string }>;
@@ -14,8 +16,8 @@ export type ProductPreview = Readonly<{
   slug: string;
   name: string;
   description: string;
-  price: number;
-  currency: ProductCurrency;
+  price: FormattableMoney;
+  currency?: ProductCurrency;
   image: string;
   imageAlt: string;
   newFrom?: string | null;

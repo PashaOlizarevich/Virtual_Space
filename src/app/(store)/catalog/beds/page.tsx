@@ -2,14 +2,15 @@ import type { Metadata } from "next";
 
 import { Container } from "@/components/layout/container";
 import { ProductPreview } from "@/modules/catalog/components/product-preview";
-import { bedCategoryProducts } from "@/modules/catalog/mock-data";
+import { getPublicCatalog } from "@/modules/catalog/server/service";
 
 export const metadata: Metadata = {
   title: "Кровати — Virtual Space",
   description: "Кровати для спокойного сна с продуманными конструкциями и тактильными материалами.",
 };
 
-export default function BedsPage() {
+export default async function BedsPage() {
+  const { products } = await getPublicCatalog({ categorySlug: "beds", pageSize: 100 });
   return (
     <main className="beds-page">
       <Container>
@@ -25,7 +26,7 @@ export default function BedsPage() {
         <section className="beds-page__collection" aria-labelledby="beds-title">
           <h2 id="beds-title">В коллекции</h2>
           <div className="beds-page__grid">
-            {bedCategoryProducts.map((product) => (
+            {products.map((product) => (
               <ProductPreview key={product.id} product={product} imageLoading="eager" />
             ))}
           </div>

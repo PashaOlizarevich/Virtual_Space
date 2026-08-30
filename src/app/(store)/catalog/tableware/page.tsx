@@ -2,14 +2,15 @@ import type { Metadata } from "next";
 
 import { Container } from "@/components/layout/container";
 import { ProductPreview } from "@/modules/catalog/components/product-preview";
-import { lumoTablewareProduct } from "@/modules/catalog/mock-data";
+import { getPublicCatalog } from "@/modules/catalog/server/service";
 
 export const metadata: Metadata = {
   title: "Посуда — Virtual Space",
   description: "Посуда для ежедневной сервировки и тёплых домашних встреч.",
 };
 
-export default function TablewarePage() {
+export default async function TablewarePage() {
+  const { products } = await getPublicCatalog({ categorySlug: "tableware", pageSize: 100 });
   return (
     <main className="tableware-page">
       <Container>
@@ -24,11 +25,14 @@ export default function TablewarePage() {
 
         <section className="tableware-page__collection" aria-labelledby="tableware-title">
           <h2 id="tableware-title">В коллекции</h2>
-          <ProductPreview
-            product={lumoTablewareProduct}
-            imageSizes="(max-width: 899px) 100vw, 60vw"
-            imageQuality={100}
-          />
+          {products.map((product) => (
+            <ProductPreview
+              key={product.id}
+              product={product}
+              imageSizes="(max-width: 899px) 100vw, 60vw"
+              imageQuality={100}
+            />
+          ))}
         </section>
       </Container>
     </main>

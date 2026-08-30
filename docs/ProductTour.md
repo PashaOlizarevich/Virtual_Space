@@ -130,10 +130,9 @@ mock-контракте хранятся как ISO 8601 UTC-строки; то�
 
 - Навигация «О компании» ведёт на существующие страницы `/about`, `/stores` и контактный раздел
   страницы «О нас»; покупательские разделы отображаются как готовящиеся и не создают битые маршруты.
-- Телефон, часы работы, почта и адрес берутся из `storeProfile` в
-  `src/modules/settings/mock-data.ts`.
-- Социальные кнопки Telegram, ВКонтакте и Instagram пока используют безопасные внешние
-  ссылки-заглушки.
+- Название, телефон, часы работы, почта и адрес загружаются из основной записи `StoreSettings`
+  через `src/modules/settings/server/service.ts`.
+- Социальные кнопки и их безопасные HTTPS-ссылки берутся из основной записи `StoreSettings`.
 - Кнопка «Наверх» плавно прокручивает страницу к началу и отключает плавность при
   `prefers-reduced-motion`.
 - Разметка, категории и focus-management панели каталога находятся в
@@ -197,8 +196,8 @@ mock-контракте хранятся как ISO 8601 UTC-строки; то�
 - Композицию, заголовки, преимущества и hero: `src/app/(store)/page.tsx`.
 - Hero-изображение: `public/images/home/hero-v2.png`; его путь также задан в `page.tsx`.
 - Карточку товара и быстрый просмотр: `src/modules/catalog/components/product-preview.tsx`.
-- Товары на главной: `featuredProducts` в `src/modules/catalog/mock-data.ts`.
-- Описание магазина: `src/modules/settings/mock-data.ts`.
+- Первые четыре товара и описание магазина: server-only services в
+  `src/modules/catalog/server/service.ts` и `src/modules/settings/server/service.ts`.
 - Стили: `.home-*` и `.product-preview*` в `src/styles/globals.css`.
 
 ### Каталог — `/catalog`
@@ -207,8 +206,8 @@ mock-контракте хранятся как ISO 8601 UTC-строки; то�
 
 На странице находятся вводный заголовок, редакционная мозаика десяти категорий и раздел «Все
 предметы». Каждая атмосферная обложка целиком ведёт на существующую страницу категории; отдельные
-изображения хранятся вне товарных папок. Полная сетка строится из `allProducts`, а загрузка,
-состояние ошибки, повторный запрос и пустой результат управляются компонентом `CatalogQueryGrid`.
+изображения хранятся вне товарных папок. Категории и полная сетка загружаются из PostgreSQL в
+Server Component, а пустой результат и клиентская пагинация управляются `CatalogQueryGridView`.
 Товары выводятся постранично: по 12 карточек на desktop/tablet и по 5 на экранах уже 600 пикселей.
 Стрелки, индикаторы и мобильный горизонтальный свайп переключают страницы без autoplay; текущая
 страница хранится в `?page=`, поддерживает Back/Forward и пересчитывается при смене breakpoint с
@@ -221,14 +220,13 @@ mock-контракте хранятся как ISO 8601 UTC-строки; то�
   `src/modules/catalog/components/catalog-category-showcase.tsx`.
 - Атмосферные изображения категорий: `public/images/catalog-categories/`.
 - Получение и состояния списка: `src/modules/catalog/components/catalog-query-grid.tsx`.
-- Источник полного ассортимента: `allProducts` в `src/modules/catalog/mock-data.ts`, подключённый
-  через `src/modules/catalog/queries.ts`.
+- Источник ассортимента и категорий: `src/modules/catalog/server/service.ts`; Prisma-запросы и
+  безопасные DTO находятся в `src/modules/catalog/server/`.
 - Вид карточки, кнопки «Подробнее», «В корзину» и быстрый просмотр:
   `src/modules/catalog/components/product-preview.tsx`.
 - На desktop быстрый просмотр открывается при наведении мыши с короткой задержкой или сразу при
   фокусе с клавиатуры на карточках общего каталога и отдельных категорий.
-- Список товаров, цены, изображения и slug: `src/modules/catalog/mock-data.ts`.
-- Настройку клиентского запроса: `src/modules/catalog/queries.ts`.
+- Список товаров, цены, изображения и slug: PostgreSQL-модели каталога через публичный service DTO.
 - Структуру товара: `src/modules/catalog/types.ts`.
 - Стили: `.catalog-page*` и `.product-preview*` в `src/styles/globals.css`.
 
@@ -241,7 +239,7 @@ mock-контракте хранятся как ISO 8601 UTC-строки; то�
 Где править:
 
 - Заголовок, описание и композицию: `src/app/(store)/catalog/sofas/page.tsx`.
-- Состав категории и данные товаров: `sofaCategoryProducts` в `src/modules/catalog/mock-data.ts`.
+- Состав категории и данные товаров: PostgreSQL-выборка по slug `sofas`.
 - Изображения новых товаров: `public/images/sofas/`; изображение Modul: `public/images/home/modul.png`.
 - Стили: `.sofas-page*` в `src/styles/globals.css`.
 
@@ -256,7 +254,7 @@ mock-контракте хранятся как ISO 8601 UTC-строки; то�
 Где править:
 
 - Заголовок, описание и композицию: `src/app/(store)/catalog/tableware/page.tsx`.
-- Данные товара: `lumoTablewareProduct` в `src/modules/catalog/mock-data.ts`.
+- Данные товаров: PostgreSQL-выборка по slug категории `tableware`.
 - Изображение: `public/images/tableware/lumo-plates.png`.
 - Стили: `.tableware-page*` в `src/styles/globals.css`.
 
@@ -271,15 +269,14 @@ mock-контракте хранятся как ISO 8601 UTC-строки; то�
 Где править:
 
 - Заголовок, описание и композицию: `src/app/(store)/catalog/chairs/page.tsx`.
-- Состав категории и данные товаров: `chairCategoryProducts` в
-  `src/modules/catalog/mock-data.ts`.
+- Состав категории и данные товаров: PostgreSQL-выборка по slug `chairs`.
 - Изображения новых товаров: `public/images/chairs/`.
 - Стили: `.chairs-page*` в `src/styles/globals.css`.
 
 ### Страница товара — `/product/<slug>`
 
 Файл: `src/app/(store)/product/[id]/page.tsx`. Пример адреса: `/product/forma-armchair`. Значение
-`<slug>` берётся из поля `slug` товара в `src/modules/catalog/mock-data.ts`.
+`<slug>` валидируется server service и сопоставляется с активным товаром в PostgreSQL.
 
 На странице находятся хлебные крошки, слайдер галереи с кнопкой-сердцем поверх фотографии, название
 и описание, выбор конфигурации, добавление в корзину и характеристики. При нескольких изображениях
@@ -295,9 +292,9 @@ mock-контракте хранятся как ISO 8601 UTC-строки; то�
   `src/modules/catalog/components/product-configurator.tsx`.
 - Галерея и кнопка добавления в избранное поверх фотографии:
   `src/modules/catalog/components/product-gallery.tsx`.
-- Контент конкретного товара: `src/modules/catalog/mock-data.ts`.
+- Контент конкретного товара: `src/modules/catalog/server/service.ts` и PostgreSQL.
 - Изображения товаров: `public/images/<category-slug>/<product-slug>/`; порядок и alt-тексты
-  задаются в `gallery` соответствующего товара в `mock-data.ts`.
+  задаются записями `ProductImage`, упорядоченными полем `position`.
 - Стили: `.product-detail*`, `.product-gallery*`, `.product-configurator*` в
   `src/styles/globals.css`.
 
@@ -310,7 +307,8 @@ mock-контракте хранятся как ISO 8601 UTC-строки; то�
 Где править:
 
 - Тексты истории и структуру секций: `src/app/(store)/about/page.tsx`.
-- Общее описание, контакты и ссылки соцсетей: `src/modules/settings/mock-data.ts`.
+- Общее описание, контакты и ссылки соцсетей: основная запись `StoreSettings` через
+  `src/modules/settings/server/service.ts`.
 - Изображение: `public/images/about/about-interior.png`.
 - Стили: `.about-*` в `src/styles/globals.css`.
 
@@ -409,7 +407,8 @@ mock-контракте хранятся как ISO 8601 UTC-строки; то�
 - Стили: классы `.admin-*` в `src/styles/globals.css`.
 
 Изменения в административных настройках пока хранятся только в preview-слое и не обновляют
-публичные страницы. Реальные Auth.js, API и PostgreSQL ещё не подключены к этим сценариям.
+PostgreSQL. Публичные страницы читают основную запись настроек из БД, а запись из админки относится
+к следующему интеграционному этапу.
 
 ## Карта данных и контента
 
@@ -417,10 +416,10 @@ mock-контракте хранятся как ISO 8601 UTC-строки; то�
 | ---------------------------------------------------------- | -------------------------------------------------------------- |
 | Пункты desktop-меню                                        | `src/components/layout/header.tsx`                             |
 | Пункты мобильного меню                                     | `src/components/layout/mobile-navigation.tsx`                  |
-| Название, описание, контакты и соцсети магазина            | `src/modules/settings/mock-data.ts`                            |
-| Товары, цены, slug, изображения, варианты и характеристики | `src/modules/catalog/mock-data.ts`                             |
+| Название, описание, контакты и соцсети магазина            | `StoreSettings`, `src/modules/settings/server/`                |
+| Товары, цены, slug, изображения, варианты и характеристики | Prisma catalog, `src/modules/catalog/server/`                  |
 | Периоды и вычисление активных новинок                      | `mock-data.ts`, `src/modules/catalog/new-arrivals.ts`          |
-| Какие товары показаны на главной                           | `featuredProducts` в `src/modules/catalog/mock-data.ts`        |
+| Какие товары показаны на главной                           | Первые четыре позиции `getPublicCatalog`                       |
 | Три преимущества на главной                                | `advantages` в `src/app/(store)/page.tsx`                      |
 | Демо-профиль и история заказов                             | `src/modules/users/mock-data.ts`                               |
 | Демо-данные админ-панели                                   | `src/modules/admin/mock-data.ts`                               |
@@ -446,13 +445,13 @@ mock-контракте хранятся как ISO 8601 UTC-строки; то�
 
 ## Важные ограничения текущей версии
 
-- Каталог, авторизация, профиль, checkout и админ-панель используют демонстрационные данные или
-  mock-transport; это ещё не полноценные production API и база данных.
+- Главная, каталог, страницы категорий, товара, «О нас» и футер читают PostgreSQL. Новинки, акции,
+  избранное, корзина, авторизация, профиль, checkout и админ-панель пока частично используют
+  демонстрационные данные или mock-transport.
 - Поиск в шапке формирует ссылочный запрос `/catalog?search=...`; фильтрация товаров каталога по
   параметру `search` пока не реализована.
 - У корзины нет отдельной страницы: она открывается поверх текущего экрана.
 - Публичная и мобильная навигация пока содержат отдельные копии списка ссылок.
-- Footer в фактически реализованной публичной оболочке отсутствует.
 
 При расхождении этого документа с кодом источником истины является текущая реализация в `src/app`,
 `src/components` и `src/modules`. После добавления нового маршрута или крупного раздела эту карту

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 import { Container } from "@/components/layout/container";
 import { ProductPreview } from "@/modules/catalog/components/product-preview";
-import { poufCategoryProducts } from "@/modules/catalog/mock-data";
+import { getPublicCatalog } from "@/modules/catalog/server/service";
 
 export const metadata: Metadata = {
   title: "Пуфики — Virtual Space",
@@ -10,7 +10,8 @@ export const metadata: Metadata = {
     "Пуфики с выразительными формами и тактильными материалами для отдыха и уютных акцентов в интерьере.",
 };
 
-export default function PoufsPage() {
+export default async function PoufsPage() {
+  const { products } = await getPublicCatalog({ categorySlug: "poufs", pageSize: 100 });
   return (
     <main className="poufs-page">
       <Container>
@@ -27,7 +28,7 @@ export default function PoufsPage() {
         <section className="poufs-page__collection" aria-labelledby="poufs-title">
           <h2 id="poufs-title">В коллекции</h2>
           <div className="poufs-page__grid">
-            {poufCategoryProducts.map((product) => (
+            {products.map((product) => (
               <ProductPreview key={product.id} product={product} imageLoading="eager" />
             ))}
           </div>

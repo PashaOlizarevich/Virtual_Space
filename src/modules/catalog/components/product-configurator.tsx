@@ -6,7 +6,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useCartStore } from "@/modules/cart/store";
 import type { Product } from "@/modules/catalog/types";
-import { formatMoney } from "@/shared/money";
+import { formatMoney, moneyToNumber } from "@/shared/money";
 
 export function ProductConfigurator({ product }: Readonly<{ product: Product }>) {
   const addItem = useCartStore((state) => state.addItem);
@@ -54,7 +54,7 @@ export function ProductConfigurator({ product }: Readonly<{ product: Product }>)
               groupId: group.id,
               optionId: selection[group.id] ?? "",
             })),
-            observedPrice: product.price,
+            observedPrice: moneyToNumber(product.price),
           });
           setConfirmation(
             added

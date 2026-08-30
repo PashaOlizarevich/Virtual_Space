@@ -5,8 +5,8 @@ import Link from "next/link";
 import { Container } from "@/components/layout/container";
 import { Section } from "@/components/layout/section";
 import { ProductPreview } from "@/modules/catalog/components/product-preview";
-import { featuredProducts } from "@/modules/catalog/mock-data";
-import { storeProfile } from "@/modules/settings/mock-data";
+import { getPublicCatalog } from "@/modules/catalog/server/service";
+import { getPublicStoreSettings } from "@/modules/settings/server/service";
 
 const advantages = [
   {
@@ -26,7 +26,14 @@ const advantages = [
   },
 ] as const;
 
-export default function HomePage() {
+export default async function HomePage() {
+  const [catalog, storeProfile] = await Promise.all([
+    getPublicCatalog({ pageSize: 4 }),
+    getPublicStoreSettings(),
+  ]);
+
+  if (!storeProfile) throw new Error("Primary public store settings are not configured");
+
   return (
     <main>
       <section className="home-hero" aria-labelledby="home-title">
@@ -61,7 +68,7 @@ export default function HomePage() {
             </h2>
           </div>
           <div className="home-showcase__grid">
-            {featuredProducts.map((product) => (
+            {catalog.products.map((product) => (
               <ProductPreview key={product.id} product={product} />
             ))}
           </div>

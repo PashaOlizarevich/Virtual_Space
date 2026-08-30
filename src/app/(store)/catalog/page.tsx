@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Container } from "@/components/layout/container";
 import { CatalogCategoryShowcase } from "@/modules/catalog/components/catalog-category-showcase";
-import { CatalogQueryGrid } from "@/modules/catalog/components/catalog-query-grid";
+import { CatalogQueryGridView } from "@/modules/catalog/components/catalog-query-grid";
+import { getPublicCatalog } from "@/modules/catalog/server/service";
 
 export const metadata: Metadata = { title: "Каталог — Virtual Space" };
 
@@ -12,6 +13,7 @@ type CatalogPageProps = Readonly<{
 export default async function CatalogPage({ searchParams }: CatalogPageProps = {}) {
   const pageParam = (await searchParams)?.page;
   const initialPageParam = Array.isArray(pageParam) ? pageParam[0] : pageParam;
+  const catalog = await getPublicCatalog({ pageSize: 100 });
 
   return (
     <main className="catalog-page">
@@ -24,8 +26,8 @@ export default async function CatalogPage({ searchParams }: CatalogPageProps = {
             котором всё на своём месте.
           </p>
         </header>
-        <CatalogCategoryShowcase />
-        <CatalogQueryGrid initialPageParam={initialPageParam} />
+        <CatalogCategoryShowcase categories={catalog.categories} />
+        <CatalogQueryGridView products={catalog.products} initialPageParam={initialPageParam} />
       </Container>
     </main>
   );

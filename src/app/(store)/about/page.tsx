@@ -2,14 +2,18 @@ import type { Metadata } from "next";
 import Image from "next/image";
 
 import { Container } from "@/components/layout/container";
-import { storeProfile } from "@/modules/settings/mock-data";
+import { getPublicStoreSettings } from "@/modules/settings/server/service";
 
 export const metadata: Metadata = {
   title: "О нас — Virtual Space",
   description: "О Virtual Space, нашем подходе к мебели, шоуруме и способах связаться с нами.",
 };
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const storeProfile = await getPublicStoreSettings();
+
+  if (!storeProfile) throw new Error("Primary public store settings are not configured");
+
   return (
     <main className="about-page">
       <Container className="about-hero">
