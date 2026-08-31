@@ -2099,3 +2099,28 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 - Ограничения: создание первого администратора относится к пункту 45, массовое подключение
   `requireAdmin()` к будущим мутациям — к пункту 44; живая PostgreSQL не проверялась. До публичного
   production-доступа login требует платформенного rate limiting против credential stuffing.
+
+## Task 131 — Авторизация административных операций
+
+- Результат: добавлен единый server-only wrapper защищённых Route Handlers, Server Actions и
+  административных мутаций с обязательной повторной проверкой session и актуальной роли `ADMIN` до
+  вызова операции; публичные auth/profile схемы стали строгими и отклоняют `role`, `passwordHash` и
+  другие неизвестные поля.
+- Файлы: `src/server/admin-access.ts`, `src/server/admin-auth.ts`,
+  `src/server/admin-authorization.test.ts`, `src/modules/auth/schemas.ts`,
+  `src/modules/auth/public-input-security.test.ts`, `src/modules/users/schemas.ts`,
+  `docs/architecture.md`, `docs/first-db-release-decisions.md`, `docs/progress.md`.
+- Проверки: 5 целевых Jest suites / 14 tests, Prisma validate/generate и ESLint прошли; полный Jest:
+  39 suites / 127 tests прошли, 12 suites остались красными из-за известных 11 jsdom/Prisma ошибок
+  `TextEncoder` и одного устаревшего ожидания маршрута `/catalog` вместо `/sale`. TypeScript и build
+  дошли до пяти существующих ошибок сигнатур Jest-моков в старых tests; production-код скомпилирован,
+  новые файлы ошибок не дали. Read-only security review не выявил подтверждённых findings.
+- Переменные окружения: новых нет; для Prisma CLI использованы только одноразовые placeholder
+  `DATABASE_URL` и `DATABASE_URL_UNPOOLED`.
+- Архитектура: закреплён единый wrapper на каждой экспортируемой административной server-границе;
+  актуальная роль по-прежнему перечитывается из PostgreSQL.
+- Product Tour: без изменений — production CRUD transports и интеграция административного UI
+  относятся к следующим пунктам.
+- Ограничения: production CRUD Route Handlers/Server Actions пока отсутствуют и будут подключать
+  wrapper при реализации пунктов 46–48; создание первого администратора относится к пункту 45;
+  живая PostgreSQL не проверялась.

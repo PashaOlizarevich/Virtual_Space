@@ -20,6 +20,11 @@ export interface AdminPrincipal {
   role: "ADMIN";
 }
 
+export type AdminOperation<Arguments extends readonly unknown[], Result> = (
+  principal: AdminPrincipal,
+  ...args: Arguments
+) => Promise<Result> | Result;
+
 interface SessionIdentity {
   user?: { id?: string };
 }
@@ -38,4 +43,13 @@ export async function resolveAdminPrincipal(
   const user = await findUser(session.user.id);
   if (!user || user.role !== "ADMIN") throw new AdminAccessRequiredError();
   return { id: user.id, email: user.email, role: "ADMIN" };
+}
+
+export async function authorizeAdminOperation<Arguments extends readonly unknown[], Result>(
+  getPrincipal: () => Promise<AdminPrincipal>,
+  operation: AdminOperation<Arguments, Result>,
+  ...args: Arguments
+): Promise<Result> {
+  const principal = await getPrincipal();
+  return operation(principal, ...args);
 }
