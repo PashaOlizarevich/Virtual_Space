@@ -2124,3 +2124,27 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 - Ограничения: production CRUD Route Handlers/Server Actions пока отсутствуют и будут подключать
   wrapper при реализации пунктов 46–48; создание первого администратора относится к пункту 45;
   живая PostgreSQL не проверялась.
+
+## Task 132 — Контролируемое создание первого администратора
+
+- Результат: добавлена отдельная server-only CLI-команда первого `ADMIN` с Zod-валидацией защищённых
+  переменных процесса, нормализацией email, текущим salted `scrypt`, PostgreSQL transaction advisory
+  lock и безопасным no-op после появления администратора; существующий `USER` не повышается автоматически.
+- Файлы: `package.json`, `scripts/create-first-admin.ts`,
+  `src/modules/auth/server/first-admin.ts`, `src/modules/auth/server/first-admin.test.ts`,
+  `docs/architecture.md`, `docs/first-db-release-decisions.md`, `docs/progress.md`.
+- Проверки: 1 целевой Jest suite / 4 tests, Prisma validate, ESLint и `git diff --check` прошли. Полный
+  Jest: 40 suites / 131 tests прошли, 12 suites остались красными из-за известных 11 jsdom/Prisma
+  ошибок `TextEncoder` и одного устаревшего ожидания маршрута `/catalog` вместо `/sale`. TypeScript и
+  production build дошли до пяти ранее существовавших ошибок сигнатур Jest mock в
+  credentials/catalog/settings tests; production-код скомпилирован, новые файлы ошибок typecheck не
+  добавляют. CLI launcher в текущем Windows sandbox остановился до загрузки команды на системном
+  `uv_os_get_passwd ... ENOMEM`; доменная логика проверена unit-тестами, реальная БД не вызывалась.
+- Переменные окружения: команда требует direct `DATABASE_URL_UNPOOLED`, `FIRST_ADMIN_EMAIL`,
+  `FIRST_ADMIN_PASSWORD` и optional `FIRST_ADMIN_NAME`; значения не создавались, не читались и не
+  добавлялись в `.env.example` или Git.
+- Архитектура: bootstrap отделён от публичных transports, seed и миграций; конкурентные запуски
+  сериализуются DB-lock, а роль назначается только внутри server-owned операции.
+- Product Tour: без изменений — пользовательские маршруты и административный preview UI не менялись.
+- Ограничения: команда намеренно не запускалась против реальной PostgreSQL, администратор не создавался;
+  до появления доменной audit-модели execution audit обеспечивает защищённый job платформы.

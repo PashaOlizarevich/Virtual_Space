@@ -368,6 +368,11 @@ PostgreSQL — источник истины для товаров, актуал
   безопасным default `USER`; optional `passwordHash` хранится только для Credentials identity, а
   optional `phone` не участвует в идентификации. Канонический `User.email` сохраняется после
   server-side `trim` и lowercase и остаётся уникальным; клиент не может назначать роль или hash.
+  Первый администратор создаётся только явной server-only командой `npm run admin:create-first` через
+  direct `DATABASE_URL_UNPOOLED` и защищённые `FIRST_ADMIN_*` переменные процесса. Команда берёт
+  PostgreSQL transaction-level advisory lock, создаёт `ADMIN` только при полном отсутствии
+  администраторов и безопасно завершается без изменений при повторном запуске; существующий `USER`
+  никогда не повышается автоматически.
   Миграция Auth.js создаёт unique/primary индексы для поиска по email, provider account и session
   token, а также отдельные индексы внешних ключей `Account.userId` и `Session.userId` для relation
   lookup и каскадного удаления.
