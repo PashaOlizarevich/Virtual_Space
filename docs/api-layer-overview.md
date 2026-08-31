@@ -3,6 +3,57 @@
 Документ перечисляет реализованные серверные механизмы проекта по четырём направлениям: валидация
 данных, авторизация, интеграции со сторонними сервисами и бизнес-логика.
 
+## Основные файлы выполненного API-задания
+
+### Аутентификация и контроль доступа
+
+- [src/server/auth.ts](../src/server/auth.ts) — конфигурация Auth.js, Credentials provider,
+  JWT-сессия и callbacks пользователя.
+- [src/app/api/auth/[...nextauth]/route.ts](../src/app/api/auth/[...nextauth]/route.ts) — `GET` и `POST`
+  endpoint Auth.js.
+- [src/server/admin-auth.ts](../src/server/admin-auth.ts) — получение сессии и повторная проверка
+  актуальной роли администратора в БД.
+- [src/server/admin-access.ts](../src/server/admin-access.ts) — общий контракт разрешения
+  административного доступа и безопасные ошибки доступа.
+- [src/modules/auth/server/credentials.ts](../src/modules/auth/server/credentials.ts) — серверная
+  валидация и проверка административных credentials.
+- [src/modules/auth/server/password.ts](../src/modules/auth/server/password.ts) — хеширование и
+  проверка паролей через `scrypt`.
+- [src/modules/auth/server/first-admin.ts](../src/modules/auth/server/first-admin.ts) — безопасная
+  доменная операция создания первого администратора.
+- [scripts/create-first-admin.ts](../scripts/create-first-admin.ts) — отдельная CLI-команда bootstrap
+  администратора без хранения пароля в Git.
+
+### API и административные операции
+
+- [src/modules/admin/server/actions.ts](../src/modules/admin/server/actions.ts) — защищённые Server
+  Actions административного интерфейса.
+- [src/app/api/admin/uploads/signature/route.ts](../src/app/api/admin/uploads/signature/route.ts) —
+  Route Handler подписанного контракта загрузки Cloudinary.
+- [src/modules/catalog/server/admin.ts](../src/modules/catalog/server/admin.ts) — авторизованная
+  серверная граница операций каталога.
+- [src/modules/catalog/server/admin-service.ts](../src/modules/catalog/server/admin-service.ts) —
+  реализация CRUD категорий, товаров, характеристик, опций и metadata изображений.
+- [src/modules/catalog/server/admin-schemas.ts](../src/modules/catalog/server/admin-schemas.ts) —
+  строгие Zod-схемы административного каталога.
+- [src/modules/settings/server/admin.ts](../src/modules/settings/server/admin.ts) — авторизованная
+  серверная граница управления настройками.
+- [src/modules/settings/server/admin-service.ts](../src/modules/settings/server/admin-service.ts) —
+  чтение и изменение основной записи настроек магазина.
+- [src/modules/settings/server/admin-schemas.ts](../src/modules/settings/server/admin-schemas.ts) —
+  строгая allowlist-валидация настроек.
+- [src/server/integrations/cloudinary.ts](../src/server/integrations/cloudinary.ts) — server-only
+  адаптер внешнего сервиса Cloudinary.
+
+### Документация реализации
+
+- [docs/implementation-plan.md](implementation-plan.md) — последовательность реализации API- и
+  DB-слоя.
+- [docs/first-db-release-decisions.md](first-db-release-decisions.md) — фактически принятые решения по
+  выполненным пунктам плана.
+- [docs/progress.md](progress.md) — журнал завершённых задач и выполненных проверок.
+- [docs/architecture.md](architecture.md) — архитектурные границы и потоки данных проекта.
+
 ## Валидация данных
 
 - [Валидация административных credentials](../src/modules/auth/server/credentials.ts) — строгая
