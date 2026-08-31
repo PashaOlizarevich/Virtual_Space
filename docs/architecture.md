@@ -369,6 +369,15 @@ timezone-aware время и nullable-ссылку на изменившего �
 отвязывает actor через `SetNull`, не уничтожая историю. Общая SQL-миграция order-среза остаётся
 пункту 57; Prisma-модель не является публичным DTO.
 
+Числовые инварианты order-среза определены на уровне PostgreSQL: `Product.stock >= 0`, денежные поля
+`Product.price`, `Order.total`, `OrderItem.snapshotPrice` и `OrderItem.lineTotal` неотрицательны,
+`OrderItem.quantity > 0`, а сумма строки равна `snapshotPrice * quantity`. Денежные значения имеют
+тип `Decimal(12, 2)`, поэтому хранятся без ошибок двоичного floating point. Prisma schema документирует
+невыразимые в ней `CHECK`, а единая SQL-миграция пункта 57 обязана создать именованные ограничения
+`products_stock_nonnegative`, `products_price_nonnegative`, `orders_total_nonnegative`,
+`order_items_snapshot_price_nonnegative`, `order_items_quantity_positive`,
+`order_items_line_total_nonnegative` и `order_items_line_total_matches_quantity`.
+
 - Основные настройки адресуются стабильным уникальным ключом `primary`; каталог индексируется под
   активную общую выборку, выборку категории и период новинки, а дочерние данные товара имеют
   уникальные позиции внутри родителя и составные области уникальности стабильных ключей.
