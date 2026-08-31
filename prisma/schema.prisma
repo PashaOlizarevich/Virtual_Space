@@ -10,12 +10,20 @@ enum Currency {
   BYN
 }
 
+enum UserRole {
+  USER
+  ADMIN
+}
+
 model User {
   id            String    @id @default(cuid())
   name          String?
   email         String    @unique
   emailVerified DateTime? @db.Timestamptz(3)
   image         String?
+  phone         String?
+  passwordHash  String?
+  role          UserRole  @default(USER)
   accounts      Account[]
   sessions      Session[]
 }

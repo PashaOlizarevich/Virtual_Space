@@ -362,7 +362,10 @@ PostgreSQL — источник истины для товаров, актуал
 - таблицы Auth.js `User`, `Account`, `Session`, `VerificationToken` и `User.role` для административной
   авторизации. Auth identity использует строковый `cuid`, database sessions хранят только уникальный
   случайный `sessionToken`, срок действия и ссылку на пользователя; OAuth-токены остаются внутри
-  `Account` и не пересекают публичные DTO.
+  `Account` и не пересекают публичные DTO. `User.role` использует закрытый enum `USER | ADMIN` с
+  безопасным default `USER`; optional `passwordHash` хранится только для Credentials identity, а
+  optional `phone` не участвует в идентификации. Канонический `User.email` сохраняется после
+  server-side `trim` и lowercase и остаётся уникальным; клиент не может назначать роль или hash.
 
 Этап 2 добавляет `Cart`, `CartItem` и пользовательские сценарии. Не нужно создавать их для гостевой корзины MVP, если пользовательская авторизация ещё не реализована.
 

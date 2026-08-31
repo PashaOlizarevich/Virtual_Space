@@ -2036,3 +2036,23 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
   серверная нормализация email — к пункту 41; Prisma Adapter и Auth.js backend ещё не подключены.
   Полный Jest сохраняет известные 11 jsdom/Prisma suites с ошибкой `TextEncoder` и один устаревший тест
   навигации `/new`; существующие тесты не изменялись без разрешения.
+
+## Task 128 — Роли и credentials-поля пользователя
+
+- Результат: Prisma-модель пользователя расширена закрытым enum ролей `USER | ADMIN` с безопасным
+  default `USER`, optional телефоном и nullable `passwordHash` для Credentials identity; уникальный
+  `User.email` закреплён как единственное каноническое поле с обязательной будущей server-side
+  нормализацией `trim + lowercase`.
+- Файлы: `prisma/schema.prisma`, `docs/architecture.md`, `docs/first-db-release-decisions.md`,
+  `docs/progress.md`.
+- Проверки: `prisma validate`, `prisma generate`, ESLint, TypeScript, production build и
+  `git diff --check` прошли; read-only security review не выявил подтверждённых findings. Полный Jest:
+  34 suites / 112 tests прошли, 12 suites остались красными из-за известных 11 jsdom/Prisma ошибок
+  `TextEncoder` и одного устаревшего ожидания маршрута акции `/catalog` вместо `/sale`.
+- Переменные окружения: нет; для Prisma CLI и build использованы только одноразовые placeholder URL.
+- Архитектура: уточнены роли, назначение nullable credentials-поля и канонизация email на серверной
+  write-границе.
+- Product Tour: без изменений.
+- Ограничения: SQL-миграция и индексы относятся к пункту 42; Auth.js/Credentials write-граница,
+  хеширование пароля и фактическая нормализация email относятся к следующим backend-пунктам; реальная
+  PostgreSQL не подключалась, миграции и `db push` не выполнялись.
