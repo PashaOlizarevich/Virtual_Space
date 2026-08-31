@@ -890,3 +890,21 @@ Credentials identity и пользователей без локального �
 Изменение классифицировано как совместимое `schema-only`: существующие строки при будущей миграции
 получат `USER`, nullable-поля не требуют backfill, данные не удаляются и типы не сужаются. SQL-миграция
 и индексы остаются пунктом 42; реальная PostgreSQL не подключалась, `db push` и migrate не запускались.
+
+## Пункт 42 — миграция Auth.js и поисковые индексы
+
+Создана версионируемая additive-миграция для enum `UserRole` и таблиц `User`, `Account`, `Session`,
+`VerificationToken`. Миграция не изменяет существующие таблицы каталога и настроек, не требует
+backfill и не содержит `DROP`, сужения типов или преобразования существующих строк.
+
+Пути Auth.js закреплены индексами по фактическим lookup: unique `User.email`, составной primary key
+`Account(provider, providerAccountId)`, unique `Session.sessionToken` и unique
+`VerificationToken.token`. Для внешних ключей дополнительно добавлены `Account.userId` и
+`Session.userId`, чтобы relation lookup и каскадное удаление пользователя не требовали полного
+сканирования дочерних таблиц. Отдельные дублирующие индексы по `provider`, `identifier`, `expires` или
+`role` не добавлены без связанного запроса.
+
+Prisma schema успешно прошла validate/generate, а полный DDL, сгенерированный Prisma из schema,
+подтвердил совпадение типов, ключей, индексов и FK с миграцией. Реальная PostgreSQL не была доступна,
+поэтому миграция не применялась; перед общим или production deploy остаётся обязательным migration
+job через direct `DATABASE_URL_UNPOOLED` с предварительным просмотром SQL.

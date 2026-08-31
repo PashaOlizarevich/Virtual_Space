@@ -366,6 +366,9 @@ PostgreSQL — источник истины для товаров, актуал
   безопасным default `USER`; optional `passwordHash` хранится только для Credentials identity, а
   optional `phone` не участвует в идентификации. Канонический `User.email` сохраняется после
   server-side `trim` и lowercase и остаётся уникальным; клиент не может назначать роль или hash.
+  Миграция Auth.js создаёт unique/primary индексы для поиска по email, provider account и session
+  token, а также отдельные индексы внешних ключей `Account.userId` и `Session.userId` для relation
+  lookup и каскадного удаления.
 
 Этап 2 добавляет `Cart`, `CartItem` и пользовательские сценарии. Не нужно создавать их для гостевой корзины MVP, если пользовательская авторизация ещё не реализована.
 

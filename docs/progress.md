@@ -2056,3 +2056,24 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 - Ограничения: SQL-миграция и индексы относятся к пункту 42; Auth.js/Credentials write-граница,
   хеширование пароля и фактическая нормализация email относятся к следующим backend-пунктам; реальная
   PostgreSQL не подключалась, миграции и `db push` не выполнялись.
+
+## Task 129 — Миграция Auth.js-моделей
+
+- Результат: создана additive SQL-миграция enum `UserRole` и Auth.js-таблиц `User`, `Account`,
+  `Session`, `VerificationToken`; schema дополнена FK-индексами `Account.userId` и `Session.userId`,
+  а пути поиска пользователя, provider account, сессии и verification token закреплены
+  unique/primary индексами.
+- Файлы: `prisma/schema.prisma`,
+  `prisma/migrations/20260831120000_create_auth_models/migration.sql`, `docs/architecture.md`,
+  `docs/first-db-release-decisions.md`, `docs/progress.md`.
+- Проверки: `prisma validate`, `prisma generate`, Prisma DDL diff от empty schema, проверка SQL на
+  обязательные объекты и destructive statements, ESLint, TypeScript, production build и
+  `git diff --check` прошли; read-only security review не выявил подтверждённых findings. Полный Jest:
+  34 suites / 112 tests прошли, 12 suites остались красными из-за известных 11 jsdom/Prisma ошибок
+  `TextEncoder` и одного устаревшего ожидания маршрута акции `/catalog` вместо `/sale`.
+- Переменные окружения: нет; для Prisma CLI и build использованы только одноразовые placeholder URL.
+- Архитектура: зафиксированы фактические Auth.js lookup- и FK-индексы.
+- Product Tour: без изменений.
+- Ограничения: реальная PostgreSQL не подключалась, поэтому migration replay и фактический план
+  индексов не проверялись; миграция не применялась, `db push` и seed не запускались. Auth.js backend и
+  серверная нормализация email остаются следующими пунктами плана.
