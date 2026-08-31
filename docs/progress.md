@@ -2020,3 +2020,19 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 - Product Tour: без изменений.
 - Ограничения: проверка выполнена без живой PostgreSQL; миграция и seed не применялись; полный Jest
   остаётся красным из-за существующих page-тестов пункта 38.
+
+## Task 127 — Prisma-модели Auth.js
+
+- Результат: добавлены совместимые с Prisma Adapter модели `User`, `Account`, `Session` и
+  `VerificationToken` для выбранной database session strategy с каскадным отзывом аккаунтов и сессий.
+- Файлы: `prisma/schema.prisma`, `docs/architecture.md`, `docs/first-db-release-decisions.md`,
+  `docs/progress.md`.
+- Проверки: `prisma validate`, `prisma generate`, ESLint, TypeScript и production build прошли;
+  полный Jest выполнил 113 тестов, из которых 112 прошли, при 12 известных падающих suites.
+- Переменные окружения: нет.
+- Архитектура: `docs/architecture.md` дополнен фактическим Auth.js schema-контрактом и границей токенов.
+- Product Tour: без изменений.
+- Ограничения: SQL-миграция и дополнительные индексы относятся к пункту 42; роли, credentials-поля и
+  серверная нормализация email — к пункту 41; Prisma Adapter и Auth.js backend ещё не подключены.
+  Полный Jest сохраняет известные 11 jsdom/Prisma suites с ошибкой `TextEncoder` и один устаревший тест
+  навигации `/new`; существующие тесты не изменялись без разрешения.
