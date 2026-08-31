@@ -99,6 +99,7 @@ model Product {
   images         ProductImage[]
   specifications ProductSpecification[]
   optionGroups   ProductOptionGroup[]
+  orderItems     OrderItem[]
 
   @@index([categoryId, isActive, createdAt(sort: Desc), id(sort: Desc)])
   @@index([isActive, createdAt(sort: Desc), id(sort: Desc)])
@@ -189,6 +190,7 @@ model Order {
 model OrderItem {
   id              BigInt   @id @default(autoincrement())
   orderId         BigInt
+  productId       BigInt?
   snapshotName    String
   snapshotOptions Json
   snapshotPrice   Decimal  @db.Decimal(12, 2)
@@ -197,7 +199,10 @@ model OrderItem {
   createdAt       DateTime @default(now()) @db.Timestamptz(3)
   updatedAt       DateTime @updatedAt @db.Timestamptz(3)
 
-  order Order @relation(fields: [orderId], references: [id], onDelete: Restrict)
+  order   Order    @relation(fields: [orderId], references: [id], onDelete: Restrict)
+  product Product? @relation(fields: [productId], references: [id], onDelete: Restrict)
+
+  @@index([productId])
 }
 
 model OrderStatusHistory {

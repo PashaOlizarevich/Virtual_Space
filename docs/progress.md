@@ -2315,3 +2315,24 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
   товар, PostgreSQL `CHECK`, индексы и типизированная история статусов остаются пунктам 53–56.
   Строгая Zod-схема содержимого `snapshotOptions`, server-side пересчёт денег и лимиты позиций
   должны быть реализованы на границе создания заказа в пунктах 58–60 и проверены пунктом 66.
+
+## Task 143 — Сохранение использованного товара
+
+- Результат: `OrderItem` получил nullable-ссылку на исходный `Product` с `onDelete: Restrict` и
+  индексом FK; административное удаление транзакционно деактивирует товар с историей заказа и
+  физически удаляет только неиспользованный товар, явно возвращая выполненное действие.
+- Файлы: `prisma/schema.prisma`, `src/modules/catalog/server/admin-service.ts`,
+  `src/modules/catalog/server/product-retention.test.ts`, `docs/architecture.md`,
+  `docs/api-layer-overview.md`, `docs/first-db-release-decisions.md`, `docs/progress.md`.
+- Проверки: `npm run prisma:validate`, `npm run prisma:generate`, targeted Jest (2 теста),
+  `npm run lint`, `npm run typecheck`, `npm test -- --runInBand` (61 suite, 175 тестов),
+  `npm run build`, `git diff --check`; security review связи и delete-сценария — подтверждённых
+  findings нет.
+- Переменные окружения: новых нет; для офлайн-команд Prisma и build использованы только одноразовые
+  безопасные placeholder URL и build-only `AUTH_SECRET` без подключения к PostgreSQL.
+- Архитектура: актуализирована политика retention товара и фактическая optional FK позиции заказа.
+- Product Tour: без изменений — маршруты и пользовательский сценарий админки не менялись.
+- API overview: обновлено поведение административного удаления товара и его результата.
+- Ограничения: SQL-миграция и подключение к PostgreSQL относятся к пункту 57; при конкурентной
+  вставке `OrderItem` после проверки использования FK безопасно отклонит физическое удаление, а
+  администратору потребуется повторить операцию для деактивации.

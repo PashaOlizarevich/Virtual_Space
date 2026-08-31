@@ -262,19 +262,38 @@ export async function updateProduct(
 }
 
 export async function deleteProduct(productId: string, database: CatalogDatabase = db) {
-  const record = await database.product.delete({
-    where: { id: id(productId) },
-    select: {
-      ...productDtoSelect,
-      images: { select: { cloudinaryPublicId: true } },
-    },
+  const result = await database.$transaction(async (client) => {
+    const productIdValue = id(productId);
+    const orderItemCount = await client.orderItem.count({ where: { productId: productIdValue } });
+    if (orderItemCount > 0) {
+      return {
+        action: "deactivated" as const,
+        record: await client.product.update({
+          where: { id: productIdValue },
+          data: { isActive: false },
+          select: productDtoSelect,
+        }),
+        imagePublicIds: [],
+      };
+    }
+    const record = await client.product.delete({
+      where: { id: productIdValue },
+      select: {
+        ...productDtoSelect,
+        images: { select: { cloudinaryPublicId: true } },
+      },
+    });
+    const { images, ...product } = record;
+    return {
+      action: "deleted" as const,
+      record: product,
+      imagePublicIds: images.map((image) => image.cloudinaryPublicId),
+    };
   });
-  const { images, ...product } = record;
-  const cleanup = await imageLifecycle.deleteProductImageResources(
-    images.map((image) => image.cloudinaryPublicId),
-  );
+  const cleanup = await imageLifecycle.deleteProductImageResources(result.imagePublicIds);
   return {
-    ...serializeProduct(product),
+    ...serializeProduct(result.record),
+    action: result.action,
     cleanupPending: cleanup.cleanupPending,
     cleanupPublicIds: cleanup.failedPublicIds,
   };
