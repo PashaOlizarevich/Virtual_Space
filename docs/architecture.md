@@ -357,7 +357,7 @@ PostgreSQL — источник истины для товаров, актуал
 - `OrderStatusHistory`: orderId, previousStatus, newStatus, changedByUserId, createdAt.
 - `StoreSettings`: singleton/именованные настройки магазина и контакты.
 
-Первый schema-only шаг заказов реализует `Order` с уникальным публичным номером, nullable-связью с
+Версионируемая миграция order-среза реализует `Order` с уникальным публичным номером, nullable-связью с
 `User`, контактным снимком покупателя, optional комментарием, точным `Decimal(12, 2)` total, валютой
 `BYN`, статусом и timezone-aware timestamps. `OrderItem` хранит обязательные независимые снимки
 названия и выбранных опций, точную цену единицы `Decimal(12, 2)`, количество и точную сумму строки
@@ -366,14 +366,13 @@ PostgreSQL — источник истины для товаров, актуал
 `isActive = false`; физически удаляется только товар без позиций заказа. `Order.status`, предыдущий и
 новый статусы каждой записи истории используют закрытый enum `OrderStatus`; история также хранит
 timezone-aware время и nullable-ссылку на изменившего статус администратора. Удаление его аккаунта
-отвязывает actor через `SetNull`, не уничтожая историю. Общая SQL-миграция order-среза остаётся
-пункту 57; Prisma-модель не является публичным DTO.
+отвязывает actor через `SetNull`, не уничтожая историю. Prisma-модель не является публичным DTO.
 
 Числовые инварианты order-среза определены на уровне PostgreSQL: `Product.stock >= 0`, денежные поля
 `Product.price`, `Order.total`, `OrderItem.snapshotPrice` и `OrderItem.lineTotal` неотрицательны,
 `OrderItem.quantity > 0`, а сумма строки равна `snapshotPrice * quantity`. Денежные значения имеют
 тип `Decimal(12, 2)`, поэтому хранятся без ошибок двоичного floating point. Prisma schema документирует
-невыразимые в ней `CHECK`, а единая SQL-миграция пункта 57 обязана создать именованные ограничения
+невыразимые в ней `CHECK`, а единая SQL-миграция создаёт именованные ограничения
 `products_stock_nonnegative`, `products_price_nonnegative`, `orders_total_nonnegative`,
 `order_items_snapshot_price_nonnegative`, `order_items_quantity_positive`,
 `order_items_line_total_nonnegative` и `order_items_line_total_matches_quantity`.
@@ -383,7 +382,9 @@ timezone-aware время и nullable-ссылку на изменившего �
 и времени (`status`, затем обратная хронология), а также общий административный диапазон и сортировку
 по времени. `OrderStatusHistory` индексируется по `orderId`, времени и стабильному `id` в обратном
 порядке. Завершающий `id` сохраняет детерминированную keyset-пагинацию при одинаковых timestamps;
-SQL этих индексов создаётся вместе со всем order-срезом в пункте 57.
+`OrderItem.orderId`, `OrderItem.productId` и `OrderStatusHistory.changedByUserId` имеют отдельные
+индексы для загрузки состава и обслуживания FK-проверок. SQL этих индексов создаётся вместе со всем
+order-срезом миграцией `20260901120000_create_orders`.
 
 - Основные настройки адресуются стабильным уникальным ключом `primary`; каталог индексируется под
   активную общую выборку, выборку категории и период новинки, а дочерние данные товара имеют

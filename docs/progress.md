@@ -2398,3 +2398,26 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 - Ограничения: изменение остаётся schema-only; SQL-миграция, применение индексов и проверка на
   PostgreSQL относятся к пункту 57. Общий `format:check` сохраняет существующий formatting debt
   репозитория и не использовался как успешная проверка этой задачи.
+
+## Task 147 — Миграция заказов и ограничений
+
+- Результат: создана единая версионируемая SQL-миграция order-среза с enum статусов, таблицами
+  заказа, снимков позиций и истории, внешними ключами, индексами чтения/FK и семью именованными
+  числовыми `CHECK`; в Prisma schema добавлены отсутствовавшие индексы `OrderItem.orderId` и
+  `OrderStatusHistory.changedByUserId`.
+- Файлы: `prisma/schema.prisma`, `prisma/migrations/20260901120000_create_orders/migration.sql`,
+  `docs/architecture.md`, `docs/first-db-release-decisions.md`, `docs/progress.md`.
+- Проверки: статическая проверка 24 обязательных SQL-элементов и отсутствия
+  `DROP`/`TRUNCATE`/`DELETE`/`UPDATE`; `npm run prisma:validate`, `npm run prisma:generate`, Prisma
+  diff от пустой schema (подтверждены восемь order-индексов), `npm run lint`, `npm run typecheck`,
+  `npm test -- --runInBand` (61 suite, 175 тестов), `npm run build`, `git diff --check`; security
+  review миграции — подтверждённых findings нет, два недостающих FK-индекса исправлены до завершения.
+- Переменные окружения: новых нет; для офлайн-команд Prisma и build использованы только одноразовые
+  безопасные placeholder URL и build-only `AUTH_SECRET` без подключения к PostgreSQL.
+- Архитектура: зафиксированы фактическая миграция order-среза, полный набор индексов и release-риск
+  проверки существующих строк `Product`.
+- Product Tour: без изменений — маршруты и пользовательские сценарии не менялись.
+- API overview: без изменений — публичные server entry points, DTO и Prisma-запросы не менялись.
+- Ограничения: локальные PostgreSQL, `psql` и Docker недоступны, поэтому миграция не применялась к
+  live-БД; перед preview/production deploy нужен read-only preflight отрицательных `Product.stock` и
+  `Product.price`, затем отдельный release-шаг миграции.
