@@ -2441,3 +2441,29 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 - API overview: добавлены входная схема, Prisma-query и результат проверки гостевой корзины.
 - Ограничения: сервис не резервирует остаток и не создаёт заказ; атомарная повторная проверка и запись
   относятся к пункту 60, публичный конфликт цены и подтверждение — к пункту 59.
+
+## Task 149 — Контролируемый конфликт цены checkout
+
+- Результат: добавлены checkout-preflight контракт `READY | CONFLICT` и публичный
+  `POST /api/orders/preflight`; изменение цены возвращает HTTP `409` с актуальным money DTO, а
+  готовность достигается только повторной отправкой подтверждённой цены.
+- Файлы: `src/modules/orders/server/checkout-preflight.ts`,
+  `src/app/api/orders/preflight/route.ts`, тесты контракта и transport,
+  `docs/architecture.md`, `docs/api-layer-overview.md`,
+  `docs/first-db-release-decisions.md`, `docs/progress.md`.
+- Проверки: targeted Jest (2 suite, 7 тестов), `npm run lint`, `npm run typecheck`,
+  `npm test -- --runInBand` (65 suite, 191 тест), `npm run build`, `git diff --check`; read-only
+  security review публичного JSON-входа, Prisma-пути, ответов и повторного подтверждения —
+  подтверждённых findings нет.
+- Переменные окружения: новых нет; успешная сборка использовала только одноразовые безопасные
+  placeholder `DATABASE_URL`, `DATABASE_URL_UNPOOLED` и build-only `AUTH_SECRET` без подключения к
+  PostgreSQL. Первый запуск build без placeholder ожидаемо остановился на обязательном
+  `DATABASE_URL`, после чего повторный запуск завершился успешно.
+- Архитектура: добавлены публичный read-only transport и preflight-граница, запрещающая использовать
+  частично проверенную корзину как готовую к заказу; schema и DB-запрос пункта 58 не менялись.
+- Product Tour: без изменений — UI и пользовательские маршруты не менялись.
+- API overview: документированы endpoint, HTTP-статусы и протокол повторного подтверждения цены.
+- Ограничения: preflight не резервирует остаток и не закрывает гонку до записи; пункт 60 обязан
+  повторить проверку и создать заказ с изменением остатков в одной транзакции. Отдельный
+  инфраструктурный rate limit не добавлялся: запрос read-only, а payload и объём Prisma-выборки
+  жёстко ограничены существующей Zod-схемой.
