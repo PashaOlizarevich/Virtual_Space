@@ -2377,3 +2377,24 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 - Ограничения: Prisma 7 не выражает PostgreSQL `CHECK`, а order-таблицы ещё не существуют в
   миграциях; пункт 57 должен материализовать перечисленные именованные ограничения в единой
   версионируемой SQL-миграции. PostgreSQL и существующие данные не изменялись.
+
+## Task 146 — Индексы заказов и истории статусов
+
+- Результат: уникальный индекс публичного номера подтверждён через `@unique`; добавлены составные
+  индексы пользовательской истории, административных выборок по статусу и времени, общего диапазона
+  дат и истории статусов с обратной хронологией и стабильным `id` для keyset-пагинации.
+- Файлы: `prisma/schema.prisma`, `docs/architecture.md`,
+  `docs/first-db-release-decisions.md`, `docs/progress.md`.
+- Проверки: `npm run prisma:validate`, `npm run prisma:generate`, `prisma migrate diff --from-empty
+  --to-schema prisma/schema.prisma --script` (подтверждены пять ожидаемых `CREATE INDEX`),
+  `npm run lint`, `npm run typecheck`, `npm test -- --runInBand` (61 suite, 175 тестов),
+  `npm run build`, `git diff --check`; security review индексов заказа — подтверждённых findings нет.
+- Переменные окружения: новых нет; для офлайн-команд Prisma и build использованы только одноразовые
+  безопасные placeholder URL и build-only `AUTH_SECRET` без подключения к PostgreSQL.
+- Архитектура: документированы индексируемые пути чтения заказов и стабильный порядок пагинации;
+  границы модулей и поток данных не менялись.
+- Product Tour: без изменений — маршруты и пользовательские сценарии не менялись.
+- API overview: без изменений — публичные server entry points, Prisma-запросы и DTO не менялись.
+- Ограничения: изменение остаётся schema-only; SQL-миграция, применение индексов и проверка на
+  PostgreSQL относятся к пункту 57. Общий `format:check` сохраняет существующий formatting debt
+  репозитория и не использовался как успешная проверка этой задачи.

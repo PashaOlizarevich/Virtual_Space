@@ -197,6 +197,10 @@ model Order {
   user          User?                @relation(fields: [userId], references: [id], onDelete: SetNull)
   items         OrderItem[]
   statusHistory OrderStatusHistory[]
+
+  @@index([userId, createdAt(sort: Desc), id(sort: Desc)])
+  @@index([status, createdAt(sort: Desc), id(sort: Desc)])
+  @@index([createdAt(sort: Desc), id(sort: Desc)])
 }
 
 model OrderItem {
@@ -230,6 +234,8 @@ model OrderStatusHistory {
 
   order     Order @relation(fields: [orderId], references: [id], onDelete: Restrict)
   changedBy User? @relation("OrderStatusChangedBy", fields: [changedByUserId], references: [id], onDelete: SetNull)
+
+  @@index([orderId, createdAt(sort: Desc), id(sort: Desc)])
 }
 
 model StoreSettings {
