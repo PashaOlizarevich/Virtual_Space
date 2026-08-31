@@ -29,6 +29,6 @@ describe("new arrivals page", () => {
     const html = renderToStaticMarkup(<Header />);
 
     expect(html.match(/href="\/new"/g)).toHaveLength(2);
-    expect(html).toContain('href="/catalog">Акции</a>');
+    expect(html.match(/href="\/sale">Акции<\/a>/g)).toHaveLength(2);
   });
 });

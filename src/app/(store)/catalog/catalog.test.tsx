@@ -1,16 +1,35 @@
-import { describe, expect, it } from "@jest/globals";
+import { beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderToStaticMarkup } from "react-dom/server";
 
-import CatalogPage from "@/app/(store)/catalog/page";
-import SofasPage from "@/app/(store)/catalog/sofas/page";
-import ProductPage from "@/app/(store)/product/[id]/page";
 import { CatalogQueryGridView } from "@/modules/catalog/components/catalog-query-grid";
-import { products } from "@/modules/catalog/mock-data";
+import { allProducts, products, sofaCategoryProducts } from "@/modules/catalog/mock-data";
+import { catalogResult, toProductDto } from "@/test/catalog-service-fixtures";
+
+jest.mock("@/modules/catalog/server/service", () => ({
+  getPublicCatalog: jest.fn(),
+  getPublicProductBySlug: jest.fn(),
+}));
+
+beforeEach(async () => {
+  const { getPublicCatalog, getPublicProductBySlug } =
+    await import("@/modules/catalog/server/service");
+
+  jest
+    .mocked(getPublicCatalog)
+    .mockImplementation(async (input = {}) =>
+      catalogResult(input.categorySlug === "sofas" ? sofaCategoryProducts : products),
+    );
+  jest.mocked(getPublicProductBySlug).mockImplementation(async (slug) => {
+    const product = allProducts.find((item) => item.slug === slug);
+    return product ? toProductDto(product) : null;
+  });
+});
 
 describe("catalog routes", () => {
-  it("renders the sofas category with five products", () => {
-    const html = renderToStaticMarkup(<SofasPage />);
+  it("renders the sofas category with five products", async () => {
+    const { default: SofasPage } = await import("@/app/(store)/catalog/sofas/page");
+    const html = renderToStaticMarkup(await SofasPage());
 
     expect(html).toContain("Диваны для долгих разговоров");
     expect(html.match(/class="product-preview"/g)).toHaveLength(5);
@@ -18,14 +37,16 @@ describe("catalog routes", () => {
     expect(html).toContain("Диван Aura");
   });
 
-  it("renders the asynchronous catalog loading state", async () => {
+  it("renders the server-loaded catalog collection", async () => {
+    const { default: CatalogPage } = await import("@/app/(store)/catalog/page");
     const queryClient = new QueryClient();
     const page = await CatalogPage();
     const html = renderToStaticMarkup(
       <QueryClientProvider client={queryClient}>{page}</QueryClientProvider>,
     );
     expect(html).toContain("Мебель и детали для отдыха");
-    expect(html).toContain("Загрузка товара 1");
+    expect(html.match(/class="product-preview"/g)).toHaveLength(4);
+    expect(html).toContain("В коллекции: 4");
   });
 
   it("renders loaded products without navigation below the desktop limit", () => {
@@ -45,6 +66,7 @@ describe("catalog routes", () => {
   });
 
   it("renders product data, options and specifications", async () => {
+    const { default: ProductPage } = await import("@/app/(store)/product/[id]/page");
     const page = await ProductPage({ params: Promise.resolve({ id: "forma-armchair" }) });
     const html = renderToStaticMarkup(page);
     expect(html).toContain("Кресло Forma");

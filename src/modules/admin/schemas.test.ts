@@ -3,20 +3,24 @@ import { describe, expect, it } from "@jest/globals";
 import {
   adminLoginSchema,
   adminOrderStatusUpdateSchema,
+  adminProductEditorSchema,
   adminProductImagesSchema,
   adminProductSchema,
   adminStoreSettingsSchema,
 } from "@/modules/admin/schemas";
 
 describe("adminLoginSchema", () => {
-  it("accepts the configured preview credentials", () => {
-    expect(adminLoginSchema.safeParse({ login: "admin", password: "123" }).success).toBe(true);
+  it("accepts an administrator email and non-empty password", () => {
+    expect(
+      adminLoginSchema.safeParse({ login: "admin@example.com", password: "strong-password" })
+        .success,
+    ).toBe(true);
   });
 
   it.each([
-    { login: "user", password: "123" },
-    { login: "admin", password: "wrong" },
-  ])("rejects invalid preview credentials", (credentials) => {
+    { login: "admin", password: "strong-password" },
+    { login: "admin@example.com", password: "" },
+  ])("rejects malformed credentials", (credentials) => {
     expect(adminLoginSchema.safeParse(credentials).success).toBe(false);
   });
 });
@@ -80,6 +84,18 @@ describe("adminProductSchema", () => {
 
   it("accepts a valid product draft", () => {
     expect(adminProductSchema.safeParse(product).success).toBe(true);
+  });
+
+  it("accepts the database-backed product editor fields", () => {
+    expect(
+      adminProductEditorSchema.safeParse({
+        ...product,
+        categoryId: "42",
+        material: "Дуб",
+        style: "Современный",
+        dimensions: "120 × 80 × 75 см",
+      }).success,
+    ).toBe(true);
   });
 
   it("rejects unsafe slugs and negative stock", () => {

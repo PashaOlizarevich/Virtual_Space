@@ -6,7 +6,10 @@ describe("catalog server queries", () => {
   it("selects and orders only public category fields", async () => {
     const { categorySelect, findPublicCategories } =
       await import("@/modules/catalog/server/queries");
-    const findMany = jest.fn(async () => []);
+    const findMany = jest.fn(async (query: unknown) => {
+      void query;
+      return [];
+    });
 
     await findPublicCategories({ category: { findMany }, product: {} } as never);
 
@@ -19,7 +22,10 @@ describe("catalog server queries", () => {
   it("lists active products with a stable category cursor", async () => {
     const { findPublicProductPage, productPreviewSelect } =
       await import("@/modules/catalog/server/queries");
-    const findMany = jest.fn(async () => []);
+    const findMany = jest.fn(async (query: unknown) => {
+      void query;
+      return [];
+    });
     const cursor = { id: BigInt(42), createdAt: new Date("2026-08-30T12:00:00.000Z") };
 
     await findPublicProductPage({ categorySlug: "sofas", cursor, take: 25 }, {
@@ -45,7 +51,10 @@ describe("catalog server queries", () => {
   it("does not return inactive product details", async () => {
     const { findPublicProductBySlug, productDetailSelect } =
       await import("@/modules/catalog/server/queries");
-    const findFirst = jest.fn(async () => null);
+    const findFirst = jest.fn(async (query: unknown) => {
+      void query;
+      return null;
+    });
 
     await findPublicProductBySlug("cloud-sofa", {
       category: {},

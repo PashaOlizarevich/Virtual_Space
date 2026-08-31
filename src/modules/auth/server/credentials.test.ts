@@ -8,14 +8,17 @@ describe("admin credentials", () => {
     const { authorizeAdminCredentials } = await import("@/modules/auth/server/credentials");
     const { db } = await import("@/server/db");
     const { verifyPassword } = await import("@/modules/auth/server/password");
-    const findUnique = jest.fn(async () => ({
-      id: "admin-1",
-      email: "admin@example.com",
-      name: "Admin",
-      image: null,
-      passwordHash: "stored-hash",
-      role: "ADMIN" as const,
-    }));
+    const findUnique = jest.fn(async (query: unknown) => {
+      void query;
+      return {
+        id: "admin-1",
+        email: "admin@example.com",
+        name: "Admin",
+        image: null,
+        passwordHash: "stored-hash",
+        role: "ADMIN" as const,
+      };
+    });
     Object.assign(db, { user: { findUnique } });
     jest.mocked(verifyPassword).mockResolvedValue(true);
 
@@ -36,7 +39,10 @@ describe("admin credentials", () => {
   it("rejects invalid input before querying the database", async () => {
     const { authorizeAdminCredentials } = await import("@/modules/auth/server/credentials");
     const { db } = await import("@/server/db");
-    const findUnique = jest.fn();
+    const findUnique = jest.fn((query: unknown) => {
+      void query;
+      return undefined;
+    });
     Object.assign(db, { user: { findUnique } });
 
     await expect(
@@ -55,14 +61,17 @@ describe("admin credentials", () => {
     const { verifyPassword } = await import("@/modules/auth/server/password");
     Object.assign(db, {
       user: {
-        findUnique: jest.fn(async () => ({
-          id: "user-1",
-          email: "user@example.com",
-          name: null,
-          image: null,
-          passwordHash: "stored-hash",
-          role: "USER",
-        })),
+        findUnique: jest.fn(async (query: unknown) => {
+          void query;
+          return {
+            id: "user-1",
+            email: "user@example.com",
+            name: null,
+            image: null,
+            passwordHash: "stored-hash",
+            role: "USER",
+          };
+        }),
       },
     });
     jest.mocked(verifyPassword).mockResolvedValue(true);

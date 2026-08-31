@@ -1,12 +1,24 @@
-import { describe, expect, it } from "@jest/globals";
+import { beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { renderToStaticMarkup } from "react-dom/server";
 
-import { SiteFooter } from "@/components/layout/site-footer";
 import { storeProfile } from "@/modules/settings/mock-data";
 
+jest.mock("@/modules/settings/server/service", () => ({ getPublicStoreSettings: jest.fn() }));
+
+beforeEach(async () => {
+  const { getPublicStoreSettings } = await import("@/modules/settings/server/service");
+
+  jest.mocked(getPublicStoreSettings).mockResolvedValue({
+    ...storeProfile,
+    contacts: storeProfile.contacts.map((contact) => ({ ...contact })),
+    socials: storeProfile.socials.map((social) => ({ ...social })),
+  });
+});
+
 describe("SiteFooter", () => {
-  it("renders public navigation, store profile contacts and accessible controls", () => {
-    const markup = renderToStaticMarkup(<SiteFooter />);
+  it("renders public navigation, store profile contacts and accessible controls", async () => {
+    const { SiteFooter } = await import("@/components/layout/site-footer");
+    const markup = renderToStaticMarkup(await SiteFooter());
 
     expect(markup).toContain("<footer");
     expect(markup).toContain('aria-labelledby="footer-company-heading"');
@@ -18,9 +30,9 @@ describe("SiteFooter", () => {
       expect(markup).toContain(contact.value);
     }
 
-    expect(markup).toContain('href="https://t.me/"');
-    expect(markup).toContain('href="https://vk.com/"');
-    expect(markup).toContain('href="https://www.instagram.com/"');
+    for (const social of storeProfile.socials) {
+      expect(markup).toContain(`href="${social.href}"`);
+    }
     expect(markup).toContain("Virtual Space в Instagram — откроется в новой вкладке");
     expect(markup.match(/rel="noopener noreferrer"/g)).toHaveLength(3);
     expect(markup).toContain('aria-label="Прокрутить страницу наверх"');

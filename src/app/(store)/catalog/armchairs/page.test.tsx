@@ -1,11 +1,20 @@
-import { describe, expect, it } from "@jest/globals";
+import { beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { renderToStaticMarkup } from "react-dom/server";
 
-import ArmchairsPage from "@/app/(store)/catalog/armchairs/page";
+import { armchairCategoryProducts } from "@/modules/catalog/mock-data";
+import { catalogResult } from "@/test/catalog-service-fixtures";
+
+jest.mock("@/modules/catalog/server/service", () => ({ getPublicCatalog: jest.fn() }));
+
+beforeEach(async () => {
+  const { getPublicCatalog } = await import("@/modules/catalog/server/service");
+  jest.mocked(getPublicCatalog).mockResolvedValue(catalogResult(armchairCategoryProducts));
+});
 
 describe("armchairs category", () => {
-  it("renders the category description and four linked products", () => {
-    const html = renderToStaticMarkup(<ArmchairsPage />);
+  it("renders the category description and four linked products", async () => {
+    const { default: ArmchairsPage } = await import("@/app/(store)/catalog/armchairs/page");
+    const html = renderToStaticMarkup(await ArmchairsPage());
 
     expect(html).toContain("Кресло создаёт личное пространство для чтения");
     expect(html.match(/class="product-preview"/g)).toHaveLength(4);

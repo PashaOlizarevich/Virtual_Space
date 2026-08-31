@@ -2226,3 +2226,18 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 - Product Tour: обновлены карта и фактический статус `/admin`, `/admin/products`, `/admin/settings`.
 - Ограничения: экран заказов остаётся preview до следующих пунктов; live PostgreSQL и Cloudinary в
   текущей среде не проверялись из-за отсутствующей конфигурации.
+
+## Task 137 — Актуализация тестов после DB-интеграции
+
+- Результат: устаревшие unit- и component/integration-тесты приведены к фактическим контрактам
+  Auth.js, Prisma-backed сервисов и async Server Components; ожидание маршрута акций обновлено на
+  `/sale`, а серверные страницы изолированы от реальной БД через типизированные DTO-фабрики.
+- Файлы: тесты страниц главной, About, каталога и категорий, footer, admin/auth/catalog/settings
+  schemas и queries, `src/test/catalog-service-fixtures.ts`, `docs/progress.md`.
+- Проверки: полный Jest — 60 suites / 173 tests, ESLint, TypeScript и `git diff --check` прошли.
+- Переменные окружения: новых нет.
+- Архитектура: production-код и границы модулей не изменялись; общая тестовая фабрика повторяет
+  публичные catalog DTO без импорта Prisma runtime.
+- Product Tour: без изменений — маршруты и пользовательские сценарии не менялись.
+- Ограничения: production build повторно не запускался; предыдущая проверка компилировала код, но
+  останавливалась при сборе данных `/product/[id]` из-за отсутствующего `DATABASE_URL`.

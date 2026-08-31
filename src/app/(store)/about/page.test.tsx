@@ -1,11 +1,24 @@
-import { describe, expect, it } from "@jest/globals";
+import { beforeEach, describe, expect, it, jest } from "@jest/globals";
 import { renderToStaticMarkup } from "react-dom/server";
 
-import AboutPage from "@/app/(store)/about/page";
+import { storeProfile } from "@/modules/settings/mock-data";
+
+jest.mock("@/modules/settings/server/service", () => ({ getPublicStoreSettings: jest.fn() }));
+
+beforeEach(async () => {
+  const { getPublicStoreSettings } = await import("@/modules/settings/server/service");
+
+  jest.mocked(getPublicStoreSettings).mockResolvedValue({
+    ...storeProfile,
+    contacts: storeProfile.contacts.map((contact) => ({ ...contact })),
+    socials: storeProfile.socials.map((social) => ({ ...social })),
+  });
+});
 
 describe("AboutPage", () => {
-  it("renders the story, current contacts, and social links", () => {
-    const html = renderToStaticMarkup(<AboutPage />);
+  it("renders the story, current contacts, and social links", async () => {
+    const { default: AboutPage } = await import("@/app/(store)/about/page");
+    const html = renderToStaticMarkup(await AboutPage());
 
     expect(html).toContain("Пространство для жизни");
     expect(html).toContain("Мебель, которая остаётся с вами");
