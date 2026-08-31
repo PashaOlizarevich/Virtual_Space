@@ -23,7 +23,7 @@
 | Корзина          | Zustand, localStorage и mock-сверка                               | Zustand для гостевого UX и обязательная серверная сверка цены/доступности         |
 | Избранное        | Zustand и localStorage со списком ID товаров                      | Гостевой Zustand плюс PostgreSQL-список пользователя с объединением после входа   |
 | Авторизация      | Preview-сессии пользователя и администратора в sessionStorage     | Auth.js, серверная сессия и проверка роли на каждой защищённой операции           |
-| Админка          | Клиентские preview-gates и mock transport                         | Защищённые Server Actions/Route Handlers и серверные сервисы                      |
+| Админка          | Клиентский preview UI; защищённый server-only CRUD каталога       | Server Actions/Route Handlers и Prisma-сервисы для всех административных функций  |
 | Заказы           | Валидация формы и mock submit                                     | Транзакционный order service, Prisma и уведомление Telegram после commit          |
 | API и интеграции | Production endpoints и адаптеры не созданы                        | Route Handlers/Server Actions, Cloudinary и Telegram по соответствующим сценариям |
 

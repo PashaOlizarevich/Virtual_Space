@@ -2148,3 +2148,26 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 - Product Tour: без изменений — пользовательские маршруты и административный preview UI не менялись.
 - Ограничения: команда намеренно не запускалась против реальной PostgreSQL, администратор не создавался;
   до появления доменной audit-модели execution audit обеспечивает защищённый job платформы.
+
+## Task 133 — Административный CRUD каталога
+
+- Результат: создан server-only CRUD категорий, товаров, характеристик, групп и значений опций и
+  metadata изображений со строгими Zod allowlist-схемами, точными decimal-ценами, проверкой связанных
+  записей в транзакциях и запретом удаления непустой категории; каждая публичная операция повторно
+  проверяет текущую роль `ADMIN` до передачи DTO внутреннему Prisma-сервису.
+- Файлы: `src/modules/catalog/server/admin-schemas.ts`,
+  `src/modules/catalog/server/admin-service.ts`, `src/modules/catalog/server/admin.ts`, целевые unit-тесты,
+  `docs/architecture.md`, `docs/first-db-release-decisions.md`, `docs/progress.md`.
+- Проверки: Prisma validate/generate, 3 целевых Jest suites / 8 tests и целевой ESLint прошли;
+  production build компилирует код, но общий TypeScript-этап останавливается на пяти прежних ошибках
+  Jest-моков. Полный Jest: 43 suites / 139 tests прошли, 12 suites остались красными из-за известных
+  11 jsdom/Prisma ошибок `TextEncoder` и одного устаревшего ожидания `/catalog` вместо `/sale`.
+  Read-only security review подтвердил и после исправления перепроверил отсутствие служебной
+  DB-инъекции в публичной admin-сигнатуре; других подтверждённых findings не найдено.
+- Переменные окружения: новых нет.
+- Архитектура: административный catalog write/read contract переведён из целевого состояния в
+  server-only реализацию; HTTP/Server Action transport и подключение UI остаются пункту 49.
+- Product Tour: без изменений — маршруты, навигация и preview UI не менялись.
+- Ограничения: Cloudinary lifecycle относится к пункту 47; живая PostgreSQL не подключалась. Общий
+  TypeScript остаётся красным на пяти существующих сигнатурах Jest-моков в старых tests, изменение
+  которых требует отдельного разрешения.
