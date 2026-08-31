@@ -2277,3 +2277,20 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 - Product Tour: без изменений.
 - API overview: без изменений — содержимое обзора актуально, добавлено правило его сопровождения.
 - Ограничения: нет.
+
+## Task 141 — Основные модели заказа
+
+- Результат: Prisma schema расширена моделью `Order` с публичным номером, optional пользователем,
+  контактным снимком покупателя, точным итогом, валютой, статусом и timestamps; добавлены валидные
+  дочерние каркасы `OrderItem` и `OrderStatusHistory` для следующих пунктов плана.
+- Файлы: `prisma/schema.prisma`, `docs/architecture.md`,
+  `docs/first-db-release-decisions.md`, `docs/progress.md`.
+- Проверки: `npm run prisma:validate`, `npm run prisma:generate`, `npm run lint`,
+  `npm run typecheck`, `npm test -- --runInBand`, `npm run build`, `git diff --check`.
+- Переменные окружения: нет.
+- Архитектура: обновлён DB-раздел `docs/architecture.md` с фактическим промежуточным состоянием
+  моделей заказа и границами пунктов 52–57.
+- Product Tour: без изменений — маршруты и пользовательские сценарии не менялись.
+- API overview: без изменений — публичные серверные контракты и Prisma-запросы не добавлялись.
+- Ограничения: SQL-миграция и подключение к PostgreSQL относятся к пункту 57; снимки позиции,
+  nullable-ссылка на товар и типизированная история статусов относятся к пунктам 52–54.

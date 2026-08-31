@@ -26,6 +26,7 @@ model User {
   role          UserRole  @default(USER)
   accounts      Account[]
   sessions      Session[]
+  orders        Order[]
 }
 
 model Account {
@@ -164,6 +165,42 @@ model ProductOption {
 
   @@unique([groupId, key])
   @@unique([groupId, position])
+}
+
+model Order {
+  id           BigInt   @id @default(autoincrement())
+  publicNumber String   @unique
+  userId       String?
+  customerName String
+  phone        String
+  email        String
+  comment      String?
+  currency     Currency @default(BYN)
+  total        Decimal  @db.Decimal(12, 2)
+  status       String   @default("NEW")
+  createdAt    DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt    DateTime @updatedAt @db.Timestamptz(3)
+
+  user          User?                @relation(fields: [userId], references: [id], onDelete: SetNull)
+  items         OrderItem[]
+  statusHistory OrderStatusHistory[]
+}
+
+model OrderItem {
+  id        BigInt   @id @default(autoincrement())
+  orderId   BigInt
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Restrict)
+}
+
+model OrderStatusHistory {
+  id        BigInt   @id @default(autoincrement())
+  orderId   BigInt
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Restrict)
 }
 
 model StoreSettings {
