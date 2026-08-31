@@ -2336,3 +2336,23 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 - Ограничения: SQL-миграция и подключение к PostgreSQL относятся к пункту 57; при конкурентной
   вставке `OrderItem` после проверки использования FK безопасно отклонит физическое удаление, а
   администратору потребуется повторить операцию для деактивации.
+
+## Task 144 — Типизированная история статусов заказа
+
+- Результат: добавлен закрытый Prisma enum статусов заказа; текущий, предыдущий и новый статусы
+  используют единый тип, а история перехода хранит timezone-aware время и optional ссылку на
+  изменившего статус пользователя с сохранением записи при удалении actor.
+- Файлы: `prisma/schema.prisma`, `docs/architecture.md`,
+  `docs/first-db-release-decisions.md`, `docs/progress.md`.
+- Проверки: `npm run prisma:validate`, `npm run prisma:generate`, `npm run lint`,
+  `npm run typecheck`, `npm test -- --runInBand` (61 suite, 175 тестов), `npm run build`,
+  `git diff --check`; security review order status schema — подтверждённых findings нет.
+- Переменные окружения: новых нет; для офлайн-команд Prisma и build использованы только одноразовые
+  безопасные placeholder URL и build-only `AUTH_SECRET` без подключения к PostgreSQL.
+- Архитектура: актуализировано фактическое типизированное состояние заказа и истории переходов;
+  границы модулей не менялись.
+- Product Tour: без изменений — маршруты и пользовательские сценарии не менялись.
+- API overview: без изменений — публичные server entry points, Prisma-запросы и DTO не менялись.
+- Ограничения: SQL-миграция и подключение к PostgreSQL относятся к пункту 57; индексы и DB-level
+  ограничения переходов относятся к пунктам 55–56, а проверка роли `ADMIN`, разрешённого перехода и
+  атомарное обновление заказа с историей — к пункту 64.
