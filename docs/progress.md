@@ -2077,3 +2077,25 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 - Ограничения: реальная PostgreSQL не подключалась, поэтому migration replay и фактический план
   индексов не проверялись; миграция не применялась, `db push` и seed не запускались. Auth.js backend и
   серверная нормализация email остаются следующими пунктами плана.
+
+## Task 130 — Административная авторизация Auth.js
+
+- Результат: подключены Auth.js 5 Credentials endpoint, server-side нормализация email и проверка
+  администратора в PostgreSQL, versioned salted `scrypt` для паролей, типизированная 8-часовая JWT
+  session и общий `requireAdmin()` с повторной проверкой актуальной роли в БД.
+- Файлы: `src/app/api/auth/[...nextauth]/route.ts`, `src/modules/auth/server/**`,
+  `src/server/auth.ts`, `src/server/admin-access.ts`, `src/server/admin-auth.ts`,
+  `src/types/next-auth.d.ts`, `docs/architecture.md`, `docs/first-db-release-decisions.md`,
+  `docs/progress.md`.
+- Проверки: 3 целевых Jest suites / 8 tests, ESLint, TypeScript, production build и
+  `git diff --check` прошли; read-only security review не выявил подтверждённых findings. Полный Jest:
+  37 suites / 120 tests прошли, 12 suites остались красными из-за известных 11 jsdom/Prisma ошибок
+  `TextEncoder` и одного устаревшего ожидания маршрута акции `/catalog` вместо `/sale`.
+- Переменные окружения: новых нет; runtime использует ранее предусмотренные `DATABASE_URL` и
+  `AUTH_SECRET`, build проверен только с одноразовыми безопасными placeholder-значениями.
+- Архитектура: для Credentials зафиксирована обязательная в Auth.js 5 JWT strategy; JWT не считается
+  источником прав, поскольку `requireAdmin()` перечитывает роль из PostgreSQL на каждой границе.
+- Product Tour: без изменений — административный UI остаётся preview до интеграционного пункта 49.
+- Ограничения: создание первого администратора относится к пункту 45, массовое подключение
+  `requireAdmin()` к будущим мутациям — к пункту 44; живая PostgreSQL не проверялась. До публичного
+  production-доступа login требует платформенного rate limiting против credential stuffing.
