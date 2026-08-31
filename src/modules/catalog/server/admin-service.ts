@@ -6,8 +6,6 @@ import {
   catalogEntityIdSchema,
   categoryCreateSchema,
   categoryUpdateSchema,
-  imageCreateSchema,
-  imageUpdateSchema,
   optionCreateSchema,
   optionGroupCreateSchema,
   optionGroupUpdateSchema,
@@ -18,8 +16,6 @@ import {
   specificationUpdateSchema,
   type CategoryCreateInput,
   type CategoryUpdateInput,
-  type ImageCreateInput,
-  type ImageUpdateInput,
   type OptionCreateInput,
   type OptionGroupCreateInput,
   type OptionGroupUpdateInput,
@@ -29,6 +25,11 @@ import {
   type SpecificationCreateInput,
   type SpecificationUpdateInput,
 } from "@/modules/catalog/server/admin-schemas";
+import * as imageLifecycle from "@/modules/catalog/server/image-lifecycle";
+import type {
+  FinalizeImageUploadInput,
+  ReplaceImageInput,
+} from "@/modules/catalog/server/image-lifecycle";
 import { db } from "@/server/db";
 
 export class CatalogRelationNotFoundError extends Error {
@@ -263,10 +264,29 @@ export async function updateProduct(
 export async function deleteProduct(productId: string, database: CatalogDatabase = db) {
   const record = await database.product.delete({
     where: { id: id(productId) },
-    select: productDtoSelect,
+    select: {
+      ...productDtoSelect,
+      images: { select: { cloudinaryPublicId: true } },
+    },
   });
-  return serializeProduct(record);
+  const { images, ...product } = record;
+  const cleanup = await imageLifecycle.deleteProductImageResources(
+    images.map((image) => image.cloudinaryPublicId),
+  );
+  return {
+    ...serializeProduct(product),
+    cleanupPending: cleanup.cleanupPending,
+    cleanupPublicIds: cleanup.failedPublicIds,
+  };
 }
+
+export const createImageUploadSignature = (productId: string) =>
+  imageLifecycle.createImageUploadSignature(productId);
+export const finalizeImageUpload = (input: FinalizeImageUploadInput) =>
+  imageLifecycle.finalizeImageUpload(input);
+export const replaceManagedImage = (imageId: string, input: ReplaceImageInput) =>
+  imageLifecycle.replaceImage(imageId, input);
+export const deleteManagedImage = (imageId: string) => imageLifecycle.deleteImage(imageId);
 
 export async function createSpecification(
   input: SpecificationCreateInput,
@@ -384,46 +404,5 @@ export async function deleteOption(optionId: string, database: CatalogDatabase =
   return serializeChild(
     await database.productOption.delete({ where: { id: id(optionId) }, select: optionDtoSelect }),
     "groupId",
-  );
-}
-
-export async function createImage(input: ImageCreateInput, database: CatalogDatabase = db) {
-  const value = imageCreateSchema.parse(input);
-  return database.$transaction(async (client) => {
-    const productId = id(value.productId);
-    await requireRelation(client, "product", productId);
-    return serializeChild(
-      await client.productImage.create({
-        data: {
-          cloudinaryPublicId: value.cloudinaryPublicId,
-          secureUrl: value.secureUrl,
-          alt: value.alt,
-          position: value.position,
-          productId,
-        },
-        select: imageDtoSelect,
-      }),
-      "productId",
-    );
-  });
-}
-export async function updateImage(
-  imageId: string,
-  input: ImageUpdateInput,
-  database: CatalogDatabase = db,
-) {
-  return serializeChild(
-    await database.productImage.update({
-      where: { id: id(imageId) },
-      data: imageUpdateSchema.parse(input),
-      select: imageDtoSelect,
-    }),
-    "productId",
-  );
-}
-export async function deleteImage(imageId: string, database: CatalogDatabase = db) {
-  return serializeChild(
-    await database.productImage.delete({ where: { id: id(imageId) }, select: imageDtoSelect }),
-    "productId",
   );
 }

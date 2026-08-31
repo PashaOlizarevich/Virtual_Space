@@ -4,8 +4,6 @@ import * as service from "@/modules/catalog/server/admin-service";
 import type {
   CategoryCreateInput,
   CategoryUpdateInput,
-  ImageCreateInput,
-  ImageUpdateInput,
   OptionCreateInput,
   OptionGroupCreateInput,
   OptionGroupUpdateInput,
@@ -15,6 +13,10 @@ import type {
   SpecificationCreateInput,
   SpecificationUpdateInput,
 } from "@/modules/catalog/server/admin-schemas";
+import type {
+  FinalizeImageUploadInput,
+  ReplaceImageInput,
+} from "@/modules/catalog/server/image-lifecycle";
 import { requireAdmin } from "@/server/admin-auth";
 
 function protectedOperation<Arguments extends readonly unknown[], Result>(
@@ -70,10 +72,13 @@ export const updateOption = protectedOperation((id: string, input: OptionUpdateI
 );
 export const deleteOption = protectedOperation((id: string) => service.deleteOption(id));
 
-export const createImage = protectedOperation((input: ImageCreateInput) =>
-  service.createImage(input),
+export const createImageUploadSignature = protectedOperation((productId: string) =>
+  service.createImageUploadSignature(productId),
 );
-export const updateImage = protectedOperation((id: string, input: ImageUpdateInput) =>
-  service.updateImage(id, input),
+export const finalizeImageUpload = protectedOperation((input: FinalizeImageUploadInput) =>
+  service.finalizeImageUpload(input),
 );
-export const deleteImage = protectedOperation((id: string) => service.deleteImage(id));
+export const replaceImage = protectedOperation((id: string, input: ReplaceImageInput) =>
+  service.replaceManagedImage(id, input),
+);
+export const deleteImage = protectedOperation((id: string) => service.deleteManagedImage(id));

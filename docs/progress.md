@@ -2171,3 +2171,24 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 - Ограничения: Cloudinary lifecycle относится к пункту 47; живая PostgreSQL не подключалась. Общий
   TypeScript остаётся красным на пяти существующих сигнатурах Jest-моков в старых tests, изменение
   которых требует отдельного разрешения.
+
+## Task 134 — Подписанные загрузки и lifecycle Cloudinary
+
+- Результат: добавлены защищённая выдача подписей прямой загрузки, server-generated product-scoped
+  public ID, повторная проверка ресурса через Cloudinary Admin API и согласованное создание, замена и
+  удаление metadata с очисткой бинарных ресурсов, включая каскадное удаление товара.
+- Файлы: `src/server/integrations/cloudinary.ts`,
+  `src/modules/catalog/server/image-lifecycle.ts`, `src/modules/catalog/server/admin*.ts`,
+  `src/app/api/admin/uploads/signature/route.ts`, целевые unit-тесты, `docs/architecture.md`,
+  `docs/first-db-release-decisions.md`, `docs/progress.md`.
+- Проверки: 2 новых Jest suites / 8 tests и ESLint прошли; общий TypeScript не содержит новых ошибок,
+  но остаётся красным на пяти ранее зафиксированных сигнатурах Jest-моков в старых tests. Остальные
+  итоговые проверки указаны в отчёте задачи.
+- Переменные окружения: используются ранее предусмотренные `CLOUDINARY_CLOUD_NAME`,
+  `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`; значения не читались и не изменялись.
+- Архитектура: Cloudinary изолирован server-only адаптером; metadata внешнего ответа не доверяется,
+  а частичная ошибка внешней очистки явно возвращается как `cleanupPending`.
+- Product Tour: без изменений — административный UI остаётся preview до пункта 49.
+- Ограничения: реальный Cloudinary и PostgreSQL не вызывались; гарантированный retry очистки требует
+  будущего durable outbox/job, а endpoint подписи до публичного production-доступа требует
+  платформенного rate limiting.
