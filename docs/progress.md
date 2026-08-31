@@ -2421,3 +2421,23 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 - Ограничения: локальные PostgreSQL, `psql` и Docker недоступны, поэтому миграция не применялась к
   live-БД; перед preview/production deploy нужен read-only preflight отрицательных `Product.stock` и
   `Product.price`, затем отдельный release-шаг миграции.
+
+## Task 148 — Серверная проверка гостевой корзины
+
+- Результат: добавлен server-only сервис строгой проверки гостевой корзины по актуальным товарам
+  PostgreSQL; он проверяет активность, суммарный остаток, полноту выбранной конфигурации и цену,
+  возвращая серверные снимки либо типизированные причины конфликта.
+- Файлы: `src/modules/orders/server/schemas.ts`, `src/modules/orders/server/queries.ts`,
+  `src/modules/orders/server/cart-validation.ts`, тесты модуля, `docs/architecture.md`,
+  `docs/api-layer-overview.md`, `docs/first-db-release-decisions.md`, `docs/progress.md`.
+- Проверки: `npm run prisma:validate`, `npm run prisma:generate`, `npm run lint`,
+  `npm run typecheck`, `npm test -- --runInBand` (63 suite, 184 теста), `npm run build`,
+  `git diff --check`; read-only security review входа, Prisma-запроса и DTO — подтверждённых findings
+  нет.
+- Переменные окружения: новых нет.
+- Архитектура: зафиксирована внутренняя read-only граница order-модуля и один allowlisted
+  Prisma-запрос; схема данных и границы слоёв не менялись.
+- Product Tour: без изменений — маршруты и доступные пользователю сценарии не менялись.
+- API overview: добавлены входная схема, Prisma-query и результат проверки гостевой корзины.
+- Ограничения: сервис не резервирует остаток и не создаёт заказ; атомарная повторная проверка и запись
+  относятся к пункту 60, публичный конфликт цены и подтверждение — к пункту 59.
