@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Pencil, Plus, Search, Trash2, X } from "lucide-react";
+import { ImagePlus, Pencil, Plus, Search, Trash2, X } from "lucide-react";
 import Image from "next/image";
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -11,11 +11,19 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { AdminShell } from "@/modules/admin/components/admin-shell";
 import {
+  createAdminImageSignatureAction,
+  deleteAdminImageAction,
   deleteAdminProductAction,
+  finalizeAdminImageAction,
   loadAdminCatalog,
   saveAdminProductAction,
 } from "@/modules/admin/server/actions";
-import { adminProductEditorSchema, type AdminProductValues } from "@/modules/admin/schemas";
+import {
+  ADMIN_PRODUCT_IMAGE_LIMIT,
+  adminProductEditorSchema,
+  adminProductImagesSchema,
+  type AdminProductValues,
+} from "@/modules/admin/schemas";
 import type { AdminProduct } from "@/modules/admin/types";
 import { formatMoney } from "@/shared/money";
 
@@ -23,7 +31,6 @@ type CatalogData = Awaited<ReturnType<typeof loadAdminCatalog>>;
 const EMPTY_VALUES: AdminProductValues = {
   name: "",
   slug: "",
-  category: "",
   categoryId: "",
   description: "",
   price: 0,
@@ -33,6 +40,41 @@ const EMPTY_VALUES: AdminProductValues = {
   style: "",
   dimensions: "",
 };
+
+type EditorImage = AdminProduct["images"][number] & { file?: File };
+
+function readImage(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result));
+    reader.onerror = () => reject(new Error("Не удалось прочитать изображение."));
+    reader.readAsDataURL(file);
+  });
+}
+
+async function uploadProductImage(productId: string, image: EditorImage, position: number) {
+  if (!image.file) return;
+  const signed = await createAdminImageSignatureAction(productId);
+  const body = new FormData();
+  body.set("file", image.file);
+  body.set("api_key", signed.apiKey);
+  body.set("timestamp", String(signed.timestamp));
+  body.set("signature", signed.signature);
+  body.set("public_id", signed.publicId);
+  body.set("allowed_formats", signed.allowed_formats);
+  body.set("transformation", signed.transformation);
+  const response = await fetch(
+    `https://api.cloudinary.com/v1_1/${encodeURIComponent(signed.cloudName)}/image/upload`,
+    { method: "POST", body },
+  );
+  if (!response.ok) throw new Error("Cloudinary не принял изображение.");
+  await finalizeAdminImageAction({
+    productId,
+    publicId: signed.publicId,
+    alt: image.alt,
+    position,
+  });
+}
 
 function toProduct(
   product: CatalogData["products"][number],
@@ -53,11 +95,14 @@ function toProduct(
     material: product.material,
     style: product.style,
     dimensions: product.dimensions,
+    newFrom: product.newFrom,
+    newUntil: product.newUntil,
     images: product.images.map((image) => ({
       id: image.id,
       src: image.secureUrl,
       alt: image.alt,
       name: image.alt,
+      position: image.position,
     })),
   };
 }
@@ -75,32 +120,83 @@ function ProductDialog({
 }) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [submitError, setSubmitError] = useState("");
+  const [galleryError, setGalleryError] = useState("");
+  const [images, setImages] = useState<EditorImage[]>(product?.images ?? []);
   const form = useForm<AdminProductValues>({
     resolver: zodResolver(adminProductEditorSchema),
     defaultValues: product ? { ...product } : EMPTY_VALUES,
   });
   const submit = form.handleSubmit(async (values) => {
     setSubmitError("");
+    setGalleryError("");
+    if (images.length === 0) {
+      setGalleryError("Добавьте хотя бы одно изображение.");
+      return;
+    }
     try {
-      await saveAdminProductAction(product?.id ?? null, {
+      const productInput = {
         categoryId: values.categoryId,
         slug: values.slug,
         name: values.name,
         description: values.description,
         price: values.price.toFixed(2),
         stock: values.stock,
-        isActive: values.published,
-        newFrom: null,
-        newUntil: null,
+        isActive: product ? values.published : false,
+        newFrom: product?.newFrom ?? null,
+        newUntil: product?.newUntil ?? null,
         material: values.material,
         style: values.style,
         dimensions: values.dimensions,
-      });
+      };
+      const saved = await saveAdminProductAction(product?.id ?? null, productInput);
+      const retainedIds = new Set(images.filter((image) => !image.file).map((image) => image.id));
+      const removedImages = (product?.images ?? []).filter((image) => !retainedIds.has(image.id));
+      const firstNewPosition =
+        Math.max(-1, ...(product?.images ?? []).map((image) => image.position)) + 1;
+      const pendingImages = images.filter((image) => image.file);
+      for (const [index, image] of pendingImages.entries()) {
+        await uploadProductImage(saved.id, image, firstNewPosition + index);
+      }
+      await Promise.all(removedImages.map((image) => deleteAdminImageAction(image.id)));
+      if (!product && values.published) {
+        await saveAdminProductAction(saved.id, { ...productInput, isActive: true });
+      }
       await onSaved();
     } catch (error) {
       setSubmitError(error instanceof Error ? error.message : "Не удалось сохранить товар.");
     }
   });
+
+  async function addImages(files: FileList | null) {
+    setGalleryError("");
+    if (!files?.length) return;
+    const selected = Array.from(files);
+    if (images.length + selected.length > ADMIN_PRODUCT_IMAGE_LIMIT) {
+      setGalleryError(`В галерее может быть не более ${ADMIN_PRODUCT_IMAGE_LIMIT} изображений.`);
+      return;
+    }
+    const parsed = adminProductImagesSchema.safeParse(selected);
+    if (!parsed.success) {
+      setGalleryError(parsed.error.issues[0]?.message ?? "Проверьте выбранные файлы.");
+      return;
+    }
+    try {
+      const sources = await Promise.all(selected.map(readImage));
+      setImages((current) => [
+        ...current,
+        ...selected.map((file, index) => ({
+          id: crypto.randomUUID(),
+          src: sources[index] ?? "",
+          alt: `Изображение товара ${form.getValues("name") || file.name}`,
+          name: file.name,
+          position: -1,
+          file,
+        })),
+      ]);
+    } catch (error) {
+      setGalleryError(error instanceof Error ? error.message : "Не удалось добавить изображения.");
+    }
+  }
   const error = form.formState.errors;
   return (
     <dialog
@@ -162,7 +258,6 @@ function ProductDialog({
                 </option>
               ))}
             </select>
-            <input type="hidden" {...form.register("category")} />
             {error.categoryId ? <FieldError>{error.categoryId.message}</FieldError> : null}
           </Field>
           <Field data-invalid={Boolean(error.description)}>
@@ -233,8 +328,44 @@ function ProductDialog({
             <input id="product-published" type="checkbox" {...form.register("published")} />
             <FieldLabel htmlFor="product-published">Опубликован в каталоге</FieldLabel>
           </Field>
+          <Field data-invalid={Boolean(galleryError)}>
+            <FieldLabel htmlFor="product-gallery">Галерея</FieldLabel>
+            <label className="admin-product-upload" htmlFor="product-gallery">
+              <ImagePlus aria-hidden="true" />
+              <span>Добавить изображения</span>
+            </label>
+            <input
+              className="sr-only"
+              id="product-gallery"
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              multiple
+              onChange={(event) => void addImages(event.target.files)}
+            />
+            {galleryError ? <FieldError>{galleryError}</FieldError> : null}
+            {images.length ? (
+              <ul className="admin-product-gallery" aria-label="Изображения товара">
+                {images.map((image) => (
+                  <li key={image.id}>
+                    <Image src={image.src} alt={image.alt} width={144} height={108} unoptimized />
+                    <span>{image.name}</span>
+                    <Button
+                      type="button"
+                      aria-label={`Удалить ${image.name}`}
+                      size="icon"
+                      variant="ghost"
+                      onClick={() =>
+                        setImages((current) => current.filter((item) => item.id !== image.id))
+                      }
+                    >
+                      <X aria-hidden="true" />
+                    </Button>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+          </Field>
         </FieldGroup>
-        {product?.images.length ? <p>Галерея: {product.images.length} изображений.</p> : null}
         {submitError ? (
           <p className="admin-product-form__error" role="alert">
             {submitError}

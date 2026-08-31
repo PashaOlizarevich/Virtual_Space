@@ -2224,5 +2224,5 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 - Архитектура: чтение начинается в Server Components, каждая мутация повторно авторизуется на
   server-only границе; Prisma-модели и секреты клиенту не передаются.
 - Product Tour: обновлены карта и фактический статус `/admin`, `/admin/products`, `/admin/settings`.
-- Ограничения: экран заказов остаётся preview до следующих пунктов; UI загрузки/замены галереи не
-  подключён, хотя защищённый Cloudinary lifecycle уже реализован.
+- Ограничения: экран заказов остаётся preview до следующих пунктов; live PostgreSQL и Cloudinary в
+  текущей среде не проверялись из-за отсутствующей конфигурации.

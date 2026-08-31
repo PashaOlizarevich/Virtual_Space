@@ -22,7 +22,7 @@ export type AdminProductImage = {
   src: string;
   alt: string;
   name: string;
-  file?: File;
+  position: number;
 };
 
 export type AdminProduct = {
@@ -38,6 +38,8 @@ export type AdminProduct = {
   material: string;
   style: string;
   dimensions: string;
+  newFrom: string | null;
+  newUntil: string | null;
   images: AdminProductImage[];
 };
 

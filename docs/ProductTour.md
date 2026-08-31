@@ -377,7 +377,7 @@ Server Component, а пустой результат и клиентская п�
 ### Товары — `/admin/products`
 
 - Маршрут: `src/app/admin/products/page.tsx`.
-- Поиск, таблица, создание, редактирование и удаление:
+- Поиск, таблица, создание, редактирование, подписанная загрузка изображений и удаление:
   `src/modules/admin/components/admin-products-manager.tsx`.
 
 ### Заказы — `/admin/orders`

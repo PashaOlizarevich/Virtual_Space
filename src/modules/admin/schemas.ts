@@ -22,7 +22,7 @@ export const adminProductSchema = z.object({
   published: z.boolean(),
 });
 
-export const adminProductEditorSchema = adminProductSchema.extend({
+export const adminProductEditorSchema = adminProductSchema.omit({ category: true }).extend({
   categoryId: z.string().regex(/^[1-9]\d*$/, "Выберите категорию"),
   material: z.string().trim().min(1, "Введите материал").max(500),
   style: z.string().trim().min(1, "Введите стиль").max(500),

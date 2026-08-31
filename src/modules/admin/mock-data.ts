@@ -62,11 +62,14 @@ export const adminProductsPreview: AdminProduct[] = products.map((product, index
   material: "Не указан",
   style: "Современный",
   dimensions: "Не указаны",
+  newFrom: null,
+  newUntil: null,
   images: product.gallery.map((image, imageIndex) => ({
     id: `${product.id}-${imageIndex}`,
     src: image.src,
     alt: image.alt,
     name: image.src.split("/").at(-1) ?? "Изображение товара",
+    position: imageIndex,
   })),
 }));
 
