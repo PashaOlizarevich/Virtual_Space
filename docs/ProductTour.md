@@ -358,7 +358,13 @@ Server Component, а пустой результат и клиентская п�
 - Поля, итог заказа и успешное состояние: `src/modules/checkout/components/checkout-form.tsx`.
 - Валидацию: `src/modules/checkout/schemas.ts`.
 - Preview-отправку заказа: `src/modules/checkout/submit-order.ts`.
+- Реальный backend создания гостевого заказа: `src/app/api/orders/route.ts` и
+  `src/modules/orders/server/order-creation.ts`.
 - Стили: `.checkout-*` в `src/styles/globals.css`.
+
+Backend уже умеет атомарно создать гостевой заказ по актуальным данным PostgreSQL, но форма
+`/checkout` пока использует preview-transport. Переключение UI на `POST /api/orders` относится к
+интеграционному пункту 65.
 
 ## Административная часть
 

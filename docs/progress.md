@@ -2386,7 +2386,7 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 - Файлы: `prisma/schema.prisma`, `docs/architecture.md`,
   `docs/first-db-release-decisions.md`, `docs/progress.md`.
 - Проверки: `npm run prisma:validate`, `npm run prisma:generate`, `prisma migrate diff --from-empty
-  --to-schema prisma/schema.prisma --script` (подтверждены пять ожидаемых `CREATE INDEX`),
+--to-schema prisma/schema.prisma --script` (подтверждены пять ожидаемых `CREATE INDEX`),
   `npm run lint`, `npm run typecheck`, `npm test -- --runInBand` (61 suite, 175 тестов),
   `npm run build`, `git diff --check`; security review индексов заказа — подтверждённых findings нет.
 - Переменные окружения: новых нет; для офлайн-команд Prisma и build использованы только одноразовые
@@ -2467,3 +2467,28 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
   повторить проверку и создать заказ с изменением остатков в одной транзакции. Отдельный
   инфраструктурный rate limit не добавлялся: запрос read-only, а payload и объём Prisma-выборки
   жёстко ограничены существующей Zod-схемой.
+
+## Task 150 — Атомарное создание гостевого заказа
+
+- Результат: добавлены публичный `POST /api/orders` и server-only сервис, который повторно проверяет
+  корзину в serializable-транзакции, конкурентно безопасно уменьшает остатки, рассчитывает точный
+  серверный итог и атомарно создаёт заказ, все снимки позиций и начальную историю `NEW -> NEW`.
+- Файлы: `src/modules/orders/server/schemas.ts`,
+  `src/modules/orders/server/order-creation.ts`, `src/app/api/orders/route.ts`, новые unit/transport
+  тесты, `docs/architecture.md`, `docs/api-layer-overview.md`, `docs/ProductTour.md`,
+  `docs/first-db-release-decisions.md`, `docs/progress.md`.
+- Проверки: targeted Jest (2 suite, 6 тестов), `npm run prisma:validate`,
+  `npm run prisma:generate`, `npm run lint`, `npm run typecheck`, `npm test -- --runInBand` (67 suite,
+  197 тестов), `npm run build`, `git diff --check`; read-only security review подтвердил серверный
+  источник цен/снимков, атомарный rollback, безопасные DTO и отсутствие отрицательного остатка.
+- Переменные окружения: новых нет; Prisma-проверки и build использовали только одноразовые безопасные
+  placeholder `DATABASE_URL`, `DATABASE_URL_UNPOOLED` и build-only `AUTH_SECRET` без подключения к
+  PostgreSQL.
+- Архитектура: реализована write-граница заказа с условным уменьшением суммарного остатка и
+  ограниченным retry конфликтов `P2034`; schema и миграции не менялись.
+- Product Tour: раздел checkout дополнен фактическим backend-контрактом и сохранённым ограничением —
+  UI остаётся на preview-transport до пункта 65.
+- API overview: добавлены вход, write-service, transaction boundary, публичный DTO и HTTP-статусы
+  создания заказа.
+- Ограничения: PostgreSQL-интеграция и полный transaction/concurrency набор относятся к пунктам
+  66–67; persistent idempotency и инфраструктурный rate limit требуют отдельного release-hardening.

@@ -33,3 +33,26 @@ export const guestCartValidationSchema = z.strictObject({
 });
 
 export type GuestCartValidationInput = z.input<typeof guestCartValidationSchema>;
+
+const phoneCharacters = /^[+()\d\s-]+$/;
+
+export const createGuestOrderSchema = z.strictObject({
+  contact: z.strictObject({
+    name: z.string().trim().min(2).max(100),
+    phone: z
+      .string()
+      .trim()
+      .min(1)
+      .max(32)
+      .regex(phoneCharacters)
+      .refine((value) => {
+        const digitCount = value.replace(/\D/g, "").length;
+        return digitCount >= 7 && digitCount <= 15;
+      }),
+    email: z.string().trim().min(1).max(254).email(),
+    comment: z.string().trim().max(1000),
+  }),
+  cart: guestCartValidationSchema,
+});
+
+export type CreateGuestOrderInput = z.input<typeof createGuestOrderSchema>;
