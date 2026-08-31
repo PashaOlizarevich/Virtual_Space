@@ -2192,3 +2192,21 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 - Ограничения: реальный Cloudinary и PostgreSQL не вызывались; гарантированный retry очистки требует
   будущего durable outbox/job, а endpoint подписи до публичного production-доступа требует
   платформенного rate limiting.
+
+## Task 135 — Защищённое управление настройками магазина
+
+- Результат: добавлены server-only чтение и обновление основной записи `StoreSettings` с повторной
+  проверкой Auth.js session и актуальной роли `ADMIN`, строгим allowlist-вводом и безопасным DTO.
+- Файлы: `src/modules/settings/server/admin.ts`, `admin-service.ts`, `admin-schemas.ts`, целевые
+  unit-тесты, `docs/architecture.md`, `docs/ProductTour.md`,
+  `docs/first-db-release-decisions.md`, `docs/progress.md`.
+- Проверки: 3 новых Jest suites / 9 tests, целевой ESLint и форматирование прошли; общий TypeScript
+  не содержит новых ошибок, но остаётся красным на пяти ранее зафиксированных сигнатурах Jest-моков
+  в старых tests. Остальные итоговые проверки указаны в отчёте задачи.
+- Переменные окружения: новых нет.
+- Архитектура: модуль настроек получил защищённую административную границу над Prisma; ключ
+  `primary` и служебные поля остаются server-managed, Prisma-модель наружу не возвращается.
+- Product Tour: раздел `/admin/settings` и карта данных уточнены фактическим server-only контрактом;
+  UI остаётся preview до пункта 49.
+- Ограничения: живая PostgreSQL не вызывалась; transport и подключение административной формы
+  относятся к пункту 49. Read-only security-review подтверждённых findings не выявил.
