@@ -187,10 +187,15 @@ model Order {
 }
 
 model OrderItem {
-  id        BigInt   @id @default(autoincrement())
-  orderId   BigInt
-  createdAt DateTime @default(now()) @db.Timestamptz(3)
-  updatedAt DateTime @updatedAt @db.Timestamptz(3)
+  id              BigInt   @id @default(autoincrement())
+  orderId         BigInt
+  snapshotName    String
+  snapshotOptions Json
+  snapshotPrice   Decimal  @db.Decimal(12, 2)
+  quantity        Int
+  lineTotal       Decimal  @db.Decimal(12, 2)
+  createdAt       DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt       DateTime @updatedAt @db.Timestamptz(3)
 
   order Order @relation(fields: [orderId], references: [id], onDelete: Restrict)
 }
