@@ -1,11 +1,8 @@
 import { z } from "zod";
 
 export const adminLoginSchema = z.object({
-  login: z
-    .string()
-    .trim()
-    .refine((value): boolean => value === "admin", "Неверный логин"),
-  password: z.string().refine((value): boolean => value === "123", "Неверный пароль"),
+  login: z.string().trim().email("Введите корректную почту").max(320, "Не более 320 символов"),
+  password: z.string().min(1, "Введите пароль").max(128, "Не более 128 символов"),
 });
 
 export type AdminLoginValues = z.infer<typeof adminLoginSchema>;
@@ -23,6 +20,13 @@ export const adminProductSchema = z.object({
   price: z.number().positive("Цена должна быть больше нуля").max(1_000_000),
   stock: z.number().int("Введите целое число").min(0, "Не меньше нуля").max(100_000),
   published: z.boolean(),
+});
+
+export const adminProductEditorSchema = adminProductSchema.extend({
+  categoryId: z.string().regex(/^[1-9]\d*$/, "Выберите категорию"),
+  material: z.string().trim().min(1, "Введите материал").max(500),
+  style: z.string().trim().min(1, "Введите стиль").max(500),
+  dimensions: z.string().trim().min(1, "Введите размеры").max(500),
 });
 
 export const ADMIN_PRODUCT_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"] as const;
@@ -47,7 +51,7 @@ export const adminProductImagesSchema = z
   )
   .max(ADMIN_PRODUCT_IMAGE_LIMIT, `Не более ${ADMIN_PRODUCT_IMAGE_LIMIT} изображений`);
 
-export type AdminProductValues = z.infer<typeof adminProductSchema>;
+export type AdminProductValues = z.infer<typeof adminProductEditorSchema>;
 
 export const adminOrderStatusSchema = z.enum([
   "new",

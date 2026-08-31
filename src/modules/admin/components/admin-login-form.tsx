@@ -4,16 +4,16 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, LoaderCircle, LockKeyhole } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { submitAdminLoginPreview } from "@/modules/admin/mock-transport";
 import { adminLoginSchema, type AdminLoginValues } from "@/modules/admin/schemas";
-import { useAdminPreviewSession } from "@/modules/admin/session-provider";
 
 export function AdminLoginForm() {
-  const session = useAdminPreviewSession();
+  const router = useRouter();
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const form = useForm<AdminLoginValues>({
@@ -24,8 +24,13 @@ export function AdminLoginForm() {
   const onSubmit = form.handleSubmit(async (values) => {
     setSubmitError(null);
     try {
-      await submitAdminLoginPreview(values);
-      session.signIn();
+      const result = await signIn("credentials", {
+        email: values.login,
+        password: values.password,
+        redirect: false,
+      });
+      if (result?.error) throw new Error("Неверная почта или пароль.");
+      router.refresh();
     } catch (reason) {
       setSubmitError(reason instanceof Error ? reason.message : "Не удалось выполнить вход.");
     }
@@ -40,21 +45,18 @@ export function AdminLoginForm() {
         <div className="admin-login__heading">
           <p className="text-label-caps text-secondary">Панель управления</p>
           <h1 id="admin-login-title">Вход администратора</h1>
-          <p>
-            Используйте административную учётную запись. На текущем этапе форма работает только в
-            демонстрационном режиме.
-          </p>
+          <p>Используйте административную учётную запись.</p>
         </div>
 
         <form onSubmit={onSubmit} noValidate>
           <FieldGroup>
             <Field data-invalid={Boolean(form.formState.errors.login)}>
-              <FieldLabel htmlFor="admin-login">Логин</FieldLabel>
+              <FieldLabel htmlFor="admin-login">Email</FieldLabel>
               <Input
                 id="admin-login"
-                type="text"
+                type="email"
                 autoComplete="username"
-                placeholder="admin"
+                placeholder="admin@example.com"
                 aria-invalid={Boolean(form.formState.errors.login)}
                 aria-describedby={form.formState.errors.login ? "admin-login-error" : undefined}
                 {...form.register("login")}

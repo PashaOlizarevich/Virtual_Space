@@ -2210,3 +2210,19 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
   UI остаётся preview до пункта 49.
 - Ограничения: живая PostgreSQL не вызывалась; transport и подключение административной формы
   относятся к пункту 49. Read-only security-review подтверждённых findings не выявил.
+
+## Task 136 — Реальная интеграция административных страниц
+
+- Результат: `/admin`, `/admin/products` и `/admin/settings` используют Auth.js, защищённые Server
+  Actions и Prisma/PostgreSQL вместо preview-сессии и mock transport; подключены реальные вход,
+  выход, метрики каталога, CRUD основных полей товара и сохранение настроек.
+- Файлы: административные `page.tsx`, компоненты login/dashboard/products/settings/shell,
+  `src/modules/admin/server/actions.ts`, schemas/types и проектная документация.
+- Проверки: ESLint, форматирование, целевые Jest и build — см. итоговый отчёт; общий typecheck сохраняет
+  пять ранее зафиксированных ошибок сигнатур Jest-моков в старых tests.
+- Переменные окружения: новых нет.
+- Архитектура: чтение начинается в Server Components, каждая мутация повторно авторизуется на
+  server-only границе; Prisma-модели и секреты клиенту не передаются.
+- Product Tour: обновлены карта и фактический статус `/admin`, `/admin/products`, `/admin/settings`.
+- Ограничения: экран заказов остаётся preview до следующих пунктов; UI загрузки/замены галереи не
+  подключён, хотя защищённый Cloudinary lifecycle уже реализован.

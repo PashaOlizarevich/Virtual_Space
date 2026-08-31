@@ -22,6 +22,7 @@ export type AdminProductImage = {
   src: string;
   alt: string;
   name: string;
+  file?: File;
 };
 
 export type AdminProduct = {
@@ -29,10 +30,14 @@ export type AdminProduct = {
   name: string;
   slug: string;
   category: string;
+  categoryId: string;
   description: string;
   price: number;
   stock: number;
   published: boolean;
+  material: string;
+  style: string;
+  dimensions: string;
   images: AdminProductImage[];
 };
 

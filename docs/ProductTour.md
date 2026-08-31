@@ -34,10 +34,10 @@
 | `/login`              | Вход и регистрация   | `src/app/(store)/login/page.tsx`             | `AuthForms`                                          |
 | `/profile`            | Личный кабинет       | `src/app/(store)/profile/page.tsx`           | `ProfileDashboard`                                   |
 | `/checkout`           | Оформление заявки    | `src/app/(store)/checkout/page.tsx`          | `CheckoutForm`                                       |
-| `/admin`              | Обзор администратора | `src/app/admin/page.tsx`                     | `AdminGate`, `AdminDashboard`                        |
-| `/admin/products`     | Управление товарами  | `src/app/admin/products/page.tsx`            | `AdminProductsGate`, `AdminProductsManager`          |
+| `/admin`              | Обзор администратора | `src/app/admin/page.tsx`                     | `AdminDashboard`                                     |
+| `/admin/products`     | Управление товарами  | `src/app/admin/products/page.tsx`            | `AdminProductsManager`                               |
 | `/admin/orders`       | Управление заказами  | `src/app/admin/orders/page.tsx`              | `AdminOrdersGate`, `AdminOrdersManager`              |
-| `/admin/settings`     | Настройки магазина   | `src/app/admin/settings/page.tsx`            | `AdminSettingsGate`, `AdminSettingsManager`          |
+| `/admin/settings`     | Настройки магазина   | `src/app/admin/settings/page.tsx`            | `AdminSettingsManager`                               |
 | Любой неизвестный URL | Страница 404         | `src/app/not-found.tsx`                      | `FeedbackState`                                      |
 
 ## Общая оболочка публичного сайта
@@ -366,21 +366,18 @@ Server Component, а пустой результат и клиентская п�
 `src/modules/admin/components/admin-shell.tsx`: «Обзор», «Товары», «Заказы», «Настройки», ссылка
 логотипа на `/` и кнопка выхода.
 
-Перед содержимым каждого экрана стоит preview-gate. Сессия администратора находится в
-`src/modules/admin/session-provider.tsx`, форма входа — в
-`src/modules/admin/components/admin-login-form.tsx`.
+Маршруты обзора, товаров и настроек проверяют Auth.js session и актуальную роль `ADMIN` на сервере.
+Форма входа использует Credentials Auth.js; каждая Server Action повторно выполняет авторизацию.
 
 ### Обзор — `/admin`
 
 - Маршрут: `src/app/admin/page.tsx`.
-- Проверка preview-сессии: `src/modules/admin/components/admin-gate.tsx`.
-- Метрики и последняя активность: `src/modules/admin/components/admin-dashboard.tsx`.
+- Метрики PostgreSQL: `src/modules/admin/components/admin-dashboard.tsx`.
 
 ### Товары — `/admin/products`
 
 - Маршрут: `src/app/admin/products/page.tsx`.
-- Gate: `src/modules/admin/components/admin-products-gate.tsx`.
-- Поиск, таблица, создание, редактирование, изображения и удаление:
+- Поиск, таблица, создание, редактирование и удаление:
   `src/modules/admin/components/admin-products-manager.tsx`.
 
 ### Заказы — `/admin/orders`
@@ -394,7 +391,6 @@ Server Component, а пустой результат и клиентская п�
 ### Настройки — `/admin/settings`
 
 - Маршрут: `src/app/admin/settings/page.tsx`.
-- Gate: `src/modules/admin/components/admin-settings-gate.tsx`.
 - Название, описание, контакты, адрес и соцсети:
   `src/modules/admin/components/admin-settings-manager.tsx`.
 - Защищённый server-only контракт чтения и записи основной DB-записи:
@@ -402,15 +398,14 @@ Server Component, а пустой результат и клиентская п�
 
 Общие места административной части:
 
-- Демонстрационные данные: `src/modules/admin/mock-data.ts`.
+- Защищённые Server Actions товаров и настроек: `src/modules/admin/server/actions.ts`.
 - Типы и допустимые переходы статусов заказа: `src/modules/admin/types.ts`.
 - Валидация форм: `src/modules/admin/schemas.ts`.
-- Имитация загрузки и сохранения: `src/modules/admin/mock-transport.ts`.
+- Preview transport остаётся только для ещё не переведённого экрана заказов.
 - Стили: классы `.admin-*` в `src/styles/globals.css`.
 
-Текущий административный экран по-прежнему сохраняет изменения только в preview-слое. Защищённый
-PostgreSQL-контракт основной записи уже реализован, но его подключение к форме через Server Action
-относится к пункту 49. Публичные страницы продолжают читать основную запись настроек из БД.
+Обзор, товары и настройки работают через Auth.js, Prisma и PostgreSQL. Экран заказов остаётся
+preview до реализации моделей и backend-контракта заказов в следующих пунктах плана.
 
 ## Карта данных и контента
 
@@ -448,7 +443,7 @@ PostgreSQL-контракт основной записи уже реализо�
 ## Важные ограничения текущей версии
 
 - Главная, каталог, страницы категорий, товара, «О нас» и футер читают PostgreSQL. Новинки, акции,
-  избранное, корзина, авторизация, профиль, checkout и админ-панель пока частично используют
+  избранное, корзина, публичная авторизация, профиль, checkout и экран заказов админ-панели частично используют
   демонстрационные данные или mock-transport.
 - Поиск в шапке формирует ссылочный запрос `/catalog?search=...`; фильтрация товаров каталога по
   параметру `search` пока не реализована.

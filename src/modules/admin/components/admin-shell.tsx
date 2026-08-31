@@ -3,15 +3,14 @@
 import { Boxes, ClipboardList, LayoutDashboard, LogOut, Settings } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { signOut } from "next-auth/react";
 
 import { Button } from "@/components/ui/button";
-import { useAdminPreviewSession } from "@/modules/admin/session-provider";
 import { cn } from "@/shared/utils";
 
 type AdminSection = "dashboard" | "products" | "orders" | "settings";
 
 export function AdminShell({ active, children }: { active: AdminSection; children: ReactNode }) {
-  const session = useAdminPreviewSession();
   const links = [
     { href: "/admin", label: "Обзор", icon: LayoutDashboard, id: "dashboard" as const },
     { href: "/admin/products", label: "Товары", icon: Boxes, id: "products" as const },
@@ -44,7 +43,11 @@ export function AdminShell({ active, children }: { active: AdminSection; childre
             ))}
           </ul>
         </nav>
-        <Button className="admin-sidebar__logout" variant="ghost" onClick={session.signOut}>
+        <Button
+          className="admin-sidebar__logout"
+          variant="ghost"
+          onClick={() => void signOut({ callbackUrl: "/admin" })}
+        >
           <LogOut data-icon="inline-start" aria-hidden="true" />
           Выйти
         </Button>

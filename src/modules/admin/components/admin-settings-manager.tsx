@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 
 import { Button } from "@/components/ui/button";
@@ -9,26 +9,52 @@ import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from "@/c
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { AdminShell } from "@/modules/admin/components/admin-shell";
-import {
-  getAdminStoreSettingsPreview,
-  saveAdminStoreSettingsPreview,
-} from "@/modules/admin/mock-transport";
+import { loadAdminSettingsAction, saveAdminSettingsAction } from "@/modules/admin/server/actions";
 import { adminStoreSettingsSchema, type AdminStoreSettingsValues } from "@/modules/admin/schemas";
+import type { PublicStoreSettingsDto } from "@/modules/settings/server/dto";
 
-const EMPTY_SETTINGS: AdminStoreSettingsValues = {
-  name: "",
-  description: "",
-  phone: "",
-  email: "",
-  workingHours: "",
-  address: "",
-  instagram: "",
-  pinterest: "",
-  telegram: "",
-};
+function toFormValues(settings: PublicStoreSettingsDto): AdminStoreSettingsValues {
+  const contact = (label: string) =>
+    settings.contacts.find((item) => item.label === label)?.value ?? "";
+  const social = (label: string) =>
+    settings.socials.find((item) => item.label === label)?.href ?? "";
+  return {
+    name: settings.name,
+    description: settings.description,
+    phone: contact("Телефон"),
+    email: contact("Почта"),
+    workingHours: contact("Часы работы"),
+    address: contact("Шоурум"),
+    instagram: social("Instagram"),
+    pinterest: social("Pinterest"),
+    telegram: social("Telegram"),
+  };
+}
 
-export function AdminSettingsManager() {
-  const [loading, setLoading] = useState(true);
+function toSettingsDto(values: AdminStoreSettingsValues): PublicStoreSettingsDto {
+  return {
+    name: values.name,
+    description: values.description,
+    contacts: [
+      { label: "Шоурум", value: values.address },
+      { label: "Телефон", value: values.phone, href: `tel:${values.phone.replace(/[^+\d]/g, "")}` },
+      { label: "Почта", value: values.email, href: `mailto:${values.email}` },
+      { label: "Часы работы", value: values.workingHours },
+    ],
+    socials: [
+      ["Instagram", values.instagram],
+      ["Pinterest", values.pinterest],
+      ["Telegram", values.telegram],
+    ].flatMap(([label, href]) => (href ? [{ label, href }] : [])),
+  };
+}
+
+export function AdminSettingsManager({
+  initialSettings,
+}: {
+  initialSettings: PublicStoreSettingsDto;
+}) {
+  const [loading, setLoading] = useState(false);
   const [loadError, setLoadError] = useState("");
   const [submitError, setSubmitError] = useState("");
   const [saved, setSaved] = useState(false);
@@ -39,14 +65,14 @@ export function AdminSettingsManager() {
     formState: { errors, isSubmitting, isDirty },
   } = useForm<AdminStoreSettingsValues>({
     resolver: zodResolver(adminStoreSettingsSchema),
-    defaultValues: EMPTY_SETTINGS,
+    defaultValues: toFormValues(initialSettings),
   });
 
   async function loadSettings() {
     setLoading(true);
     setLoadError("");
     try {
-      reset(await getAdminStoreSettingsPreview());
+      reset(toFormValues(await loadAdminSettingsAction()));
     } catch (error) {
       setLoadError(error instanceof Error ? error.message : "Не удалось загрузить настройки.");
     } finally {
@@ -54,32 +80,11 @@ export function AdminSettingsManager() {
     }
   }
 
-  useEffect(() => {
-    let active = true;
-    getAdminStoreSettingsPreview().then(
-      (settings) => {
-        if (active) {
-          reset(settings);
-          setLoading(false);
-        }
-      },
-      (error: unknown) => {
-        if (active) {
-          setLoadError(error instanceof Error ? error.message : "Не удалось загрузить настройки.");
-          setLoading(false);
-        }
-      },
-    );
-    return () => {
-      active = false;
-    };
-  }, [reset]);
-
   const submit = handleSubmit(async (values) => {
     setSubmitError("");
     setSaved(false);
     try {
-      reset(await saveAdminStoreSettingsPreview(values));
+      reset(toFormValues(await saveAdminSettingsAction(toSettingsDto(values))));
       setSaved(true);
     } catch (error) {
       setSubmitError(error instanceof Error ? error.message : "Не удалось сохранить настройки.");
@@ -95,7 +100,6 @@ export function AdminSettingsManager() {
             <h1>Настройки</h1>
             <p>Редактируйте информацию, которую покупатели видят на публичных страницах.</p>
           </div>
-          <span className="admin-dashboard__preview">Демонстрационные данные</span>
         </header>
 
         {loading ? (

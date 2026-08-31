@@ -1,9 +1,30 @@
-"use client";
-
 import { AdminShell } from "@/modules/admin/components/admin-shell";
-import { adminDashboardPreview } from "@/modules/admin/mock-data";
 
-export function AdminDashboard() {
+export function AdminDashboard({
+  data,
+}: {
+  data: { products: number; activeProducts: number; outOfStock: number };
+}) {
+  const metrics = [
+    {
+      id: "products",
+      label: "Всего товаров",
+      value: data.products,
+      description: "Записей в PostgreSQL",
+    },
+    {
+      id: "active",
+      label: "Опубликовано",
+      value: data.activeProducts,
+      description: "Доступны в каталоге",
+    },
+    {
+      id: "stock",
+      label: "Нет в наличии",
+      value: data.outOfStock,
+      description: "Требуют пополнения",
+    },
+  ];
   return (
     <AdminShell active="dashboard">
       <main className="admin-dashboard">
@@ -13,14 +34,13 @@ export function AdminDashboard() {
             <h1>Добро пожаловать</h1>
             <p>Сводка по магазину и последним действиям.</p>
           </div>
-          <span className="admin-dashboard__preview">Демонстрационные данные</span>
         </header>
 
         <section className="admin-dashboard__metrics" aria-labelledby="admin-metrics-title">
           <h2 className="sr-only" id="admin-metrics-title">
             Основные показатели
           </h2>
-          {adminDashboardPreview.metrics.map((metric) => (
+          {metrics.map((metric) => (
             <article className="admin-metric" key={metric.id}>
               <p>{metric.label}</p>
               <strong>{metric.value}</strong>
@@ -32,22 +52,12 @@ export function AdminDashboard() {
         <section className="admin-activity" aria-labelledby="admin-activity-title">
           <div className="admin-activity__heading">
             <div>
-              <p className="text-label-caps text-secondary">Обновления</p>
-              <h2 id="admin-activity-title">Последняя активность</h2>
+              <p className="text-label-caps text-secondary">Состояние</p>
+              <h2 id="admin-activity-title">Каталог подключён</h2>
             </div>
-            <p>События показаны для предварительного просмотра интерфейса.</p>
+            <p>Показатели рассчитаны по актуальным данным PostgreSQL.</p>
           </div>
-          <ol className="admin-activity__list">
-            {adminDashboardPreview.activity.map((item) => (
-              <li key={item.id}>
-                <div>
-                  <strong>{item.title}</strong>
-                  <p>{item.description}</p>
-                </div>
-                <time>{item.time}</time>
-              </li>
-            ))}
-          </ol>
+          <p>Управление товарами и настройками доступно через навигацию.</p>
         </section>
       </main>
     </AdminShell>
