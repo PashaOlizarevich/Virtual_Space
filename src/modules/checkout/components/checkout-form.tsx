@@ -17,6 +17,7 @@ import {
   type CheckoutSubmissionResult,
 } from "@/modules/checkout/submit-order";
 import { useCartStore } from "@/modules/cart/store";
+import { formatMoney, moneyToNumber } from "@/shared/money";
 
 const defaultValues: CheckoutFormValues = {
   name: "",
@@ -28,7 +29,9 @@ const defaultValues: CheckoutFormValues = {
 export function CheckoutForm() {
   const items = useCartStore((state) => state.items);
   const clearCart = useCartStore((state) => state.clearCart);
+  const confirmItemPrice = useCartStore((state) => state.confirmItemPrice);
   const [submissionError, setSubmissionError] = useState<string | null>(null);
+  const [priceChanges, setPriceChanges] = useState<ReadonlyMap<string, number>>(new Map());
   const [result, setResult] = useState<CheckoutSubmissionResult | null>(null);
   const {
     register,
@@ -42,18 +45,39 @@ export function CheckoutForm() {
 
   async function handleValidSubmit(values: CheckoutFormValues) {
     setSubmissionError(null);
+    setPriceChanges(new Map());
 
     try {
       const submissionResult = await submitCheckoutOrder({ contact: values, items });
       clearCart();
       setResult(submissionResult);
     } catch (error) {
+      if (error instanceof CheckoutSubmissionError) {
+        setPriceChanges(
+          new Map(
+            error.issues.flatMap((issue) =>
+              issue.code === "PRICE_CHANGED" && issue.currentPrice
+                ? [[issue.productId, moneyToNumber(issue.currentPrice)] as const]
+                : [],
+            ),
+          ),
+        );
+      }
       setSubmissionError(
         error instanceof CheckoutSubmissionError
           ? error.message
           : "Не удалось оформить заявку. Попробуйте ещё раз.",
       );
     }
+  }
+
+  function confirmCurrentPrices() {
+    for (const item of items) {
+      const currentPrice = priceChanges.get(item.productId);
+      if (currentPrice !== undefined) confirmItemPrice(item, currentPrice);
+    }
+    setPriceChanges(new Map());
+    setSubmissionError(null);
   }
 
   if (result) {
@@ -70,6 +94,9 @@ export function CheckoutForm() {
         <p>
           Номер заказа: <strong>{result.orderNumber}</strong>. Мы свяжемся с вами, чтобы подтвердить
           состав, стоимость и доставку.
+        </p>
+        <p>
+          Итоговая стоимость: <strong>{formatMoney(result.total)}</strong>.
         </p>
         <Link className="button button--secondary button--default" href="/catalog">
           Вернуться в каталог
@@ -94,7 +121,12 @@ export function CheckoutForm() {
 
       {submissionError ? (
         <div className="checkout-form__error-summary" role="alert">
-          {submissionError}
+          <p>{submissionError}</p>
+          {priceChanges.size ? (
+            <Button type="button" variant="secondary" onClick={confirmCurrentPrices}>
+              Подтвердить актуальную стоимость
+            </Button>
+          ) : null}
         </div>
       ) : null}
 

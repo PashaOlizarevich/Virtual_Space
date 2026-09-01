@@ -2590,3 +2590,28 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
   best-effort семантика сервиса создания заказа.
 - Ограничения: без deployment credentials live-вызов Telegram не выполнялся; доставка не
   гарантируется и повторно не ставится в очередь.
+
+## Task 155 — Интеграция UI заказов с PostgreSQL
+
+- Результат: checkout переведён с preview-submit на `POST /api/orders`, сохраняет корзину при
+  конфликте и требует явного подтверждения новой server-owned цены; успешное состояние показывает
+  номер и итог ответа после commit. `/admin/orders` получает первую страницу после серверной
+  проверки Auth.js и использует реальные GET/PATCH-контракты для обновления списка и статуса.
+- Файлы: `src/modules/checkout/submit-order.ts`, checkout-компонент,
+  `src/modules/admin/orders-transport.ts`, admin orders page/manager, новые unit-тесты,
+  `docs/architecture.md`, `docs/ProductTour.md`, `docs/api-layer-overview.md`,
+  `docs/first-db-release-decisions.md`, `docs/progress.md`.
+- Проверки: targeted Jest (2 suite, 3 теста), полный `npm test -- --runInBand` (79 suite,
+  257 тестов) и `npm run lint` прошли; production compile прошёл, но `npm run typecheck` и стадия
+  TypeScript в build остановились на 10 существующих ошибках сигнатур Prisma-mock тестов вне diff.
+  Chrome DevTools открыл `/checkout`, однако без локальной PostgreSQL общий `SiteFooter` вернул
+  штатный error boundary `P1001`, поэтому живой success/conflict поток не выполнялся.
+- Переменные окружения: новых нет; build/dev использовали только одноразовые безопасные placeholder
+  `DATABASE_URL`, `DATABASE_URL_UNPOOLED` и `AUTH_SECRET` без подключения к PostgreSQL.
+- Архитектура: документирован переход checkout/admin orders с mock transport на allowlisted
+  server-контракты; Prisma schema и миграции не менялись.
+- Product Tour: обновлены `/checkout`, `/admin/orders`, карта ключевых файлов и ограничения mock-
+  этапа.
+- API overview: добавлены клиентские transport-границы создания, чтения и смены статуса заказа.
+- Ограничения: persistent idempotency и инфраструктурный rate limit остаются release-hardening;
+  без живой PostgreSQL интеграционный браузерный сценарий не проверен.

@@ -1,7 +1,7 @@
 "use client";
 
 import { Search, ShoppingBag } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,17 +11,14 @@ import {
   formatAdminOrderMoney,
 } from "@/modules/admin/components/admin-order-details";
 import { AdminShell } from "@/modules/admin/components/admin-shell";
-import {
-  getAdminOrdersPreview,
-  updateAdminOrderStatusPreview,
-} from "@/modules/admin/mock-transport";
+import { getAdminOrders, updateAdminOrderStatus } from "@/modules/admin/orders-transport";
 import type { AdminOrder, AdminOrderStatus } from "@/modules/admin/types";
 
-export function AdminOrdersManager() {
-  const [orders, setOrders] = useState<AdminOrder[]>([]);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+export function AdminOrdersManager({ initialOrders = [] }: { initialOrders?: AdminOrder[] }) {
+  const [orders, setOrders] = useState<AdminOrder[]>(initialOrders);
+  const [selectedId, setSelectedId] = useState<string | null>(initialOrders[0]?.id ?? null);
   const [query, setQuery] = useState("");
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [savingStatus, setSavingStatus] = useState<AdminOrderStatus | null>(null);
   const [statusError, setStatusError] = useState("");
@@ -30,7 +27,7 @@ export function AdminOrdersManager() {
     setLoading(true);
     setError("");
     try {
-      const result = await getAdminOrdersPreview();
+      const result = await getAdminOrders();
       setOrders(result);
       setSelectedId((current) => current ?? result[0]?.id ?? null);
     } catch (loadError) {
@@ -41,28 +38,6 @@ export function AdminOrdersManager() {
       setLoading(false);
     }
   }
-
-  useEffect(() => {
-    let active = true;
-    getAdminOrdersPreview().then(
-      (result) => {
-        if (!active) return;
-        setOrders(result);
-        setSelectedId(result[0]?.id ?? null);
-        setLoading(false);
-      },
-      (loadError: unknown) => {
-        if (!active) return;
-        setError(
-          loadError instanceof Error ? loadError.message : "Не удалось загрузить список заказов.",
-        );
-        setLoading(false);
-      },
-    );
-    return () => {
-      active = false;
-    };
-  }, []);
 
   const normalizedQuery = query.trim().toLocaleLowerCase("ru");
   const visibleOrders = orders.filter((order) =>
@@ -78,12 +53,14 @@ export function AdminOrdersManager() {
     setSavingStatus(status);
     setStatusError("");
     try {
-      const updatedOrder = await updateAdminOrderStatusPreview({
+      const updatedOrder = await updateAdminOrderStatus({
         orderId: selectedOrder.id,
         status,
       });
       setOrders((current) =>
-        current.map((order) => (order.id === updatedOrder.id ? updatedOrder : order)),
+        current.map((order) =>
+          order.id === updatedOrder.orderNumber ? { ...order, status: updatedOrder.status } : order,
+        ),
       );
     } catch (saveError) {
       setStatusError(
@@ -103,7 +80,7 @@ export function AdminOrdersManager() {
             <h1>Заказы</h1>
             <p>Просматривайте новые заявки, покупателей и состав каждого заказа.</p>
           </div>
-          <span className="admin-dashboard__preview">Демонстрационные данные</span>
+          <span className="admin-dashboard__preview">Данные PostgreSQL</span>
         </header>
 
         <div className="admin-products__toolbar">

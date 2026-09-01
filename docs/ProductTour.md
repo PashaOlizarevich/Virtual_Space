@@ -36,7 +36,7 @@
 | `/checkout`           | Оформление заявки    | `src/app/(store)/checkout/page.tsx`          | `CheckoutForm`                                       |
 | `/admin`              | Обзор администратора | `src/app/admin/page.tsx`                     | `AdminDashboard`                                     |
 | `/admin/products`     | Управление товарами  | `src/app/admin/products/page.tsx`            | `AdminProductsManager`                               |
-| `/admin/orders`       | Управление заказами  | `src/app/admin/orders/page.tsx`              | `AdminOrdersGate`, `AdminOrdersManager`              |
+| `/admin/orders`       | Управление заказами  | `src/app/admin/orders/page.tsx`              | `AdminOrdersManager`                                 |
 | `/admin/settings`     | Настройки магазина   | `src/app/admin/settings/page.tsx`            | `AdminSettingsManager`                               |
 | Любой неизвестный URL | Страница 404         | `src/app/not-found.tsx`                      | `FeedbackState`                                      |
 
@@ -357,14 +357,14 @@ Server Component, а пустой результат и клиентская п�
 - Заголовки и общую компоновку: `src/app/(store)/checkout/page.tsx`.
 - Поля, итог заказа и успешное состояние: `src/modules/checkout/components/checkout-form.tsx`.
 - Валидацию: `src/modules/checkout/schemas.ts`.
-- Preview-отправку заказа: `src/modules/checkout/submit-order.ts`.
+- Клиентский transport создания заказа: `src/modules/checkout/submit-order.ts`.
 - Реальный backend создания гостевого заказа: `src/app/api/orders/route.ts` и
   `src/modules/orders/server/order-creation.ts`.
 - Стили: `.checkout-*` в `src/styles/globals.css`.
 
-Backend уже умеет атомарно создать гостевой заказ по актуальным данным PostgreSQL, но форма
-`/checkout` пока использует preview-transport. Переключение UI на `POST /api/orders` относится к
-интеграционному пункту 65.
+Форма отправляет корзину в `POST /api/orders`, показывает серверный номер и итог только после
+успешного commit и очищает корзину только после HTTP `201`. При `409` корзина сохраняется; новую
+server-owned цену пользователь должен явно подтвердить перед повторной отправкой.
 
 ## Административная часть
 
@@ -389,8 +389,8 @@ Backend уже умеет атомарно создать гостевой за�
 ### Заказы — `/admin/orders`
 
 - Маршрут: `src/app/admin/orders/page.tsx`.
-- Gate: `src/modules/admin/components/admin-orders-gate.tsx`.
 - Поиск и список: `src/modules/admin/components/admin-orders-manager.tsx`.
+- Преобразование DTO и клиентские GET/PATCH-вызовы: `src/modules/admin/orders-transport.ts`.
 - Покупатель, состав заказа и смена статуса:
   `src/modules/admin/components/admin-order-details.tsx`.
 
@@ -407,14 +407,12 @@ Backend уже умеет атомарно создать гостевой за�
 - Защищённые Server Actions товаров и настроек: `src/modules/admin/server/actions.ts`.
 - Типы и допустимые переходы статусов заказа: `src/modules/admin/types.ts`.
 - Валидация форм: `src/modules/admin/schemas.ts`.
-- Preview transport остаётся только для ещё не переведённого экрана заказов; защищённые
-  `GET /api/admin/orders` и `PATCH /api/admin/orders/[orderNumber]/status` уже доступны для
-  интеграции в пункте 65.
+- Экран заказов получает первую страницу после серверной проверки Auth.js, а повторную загрузку и
+  смену статуса выполняет через защищённые `GET /api/admin/orders` и
+  `PATCH /api/admin/orders/[orderNumber]/status`.
 - Стили: классы `.admin-*` в `src/styles/globals.css`.
 
-Обзор, товары и настройки работают через Auth.js, Prisma и PostgreSQL. Backend чтения и смены
-статуса заказов уже реализован, но сам экран заказов остаётся preview до переключения transport в
-пункте 65.
+Обзор, товары, заказы и настройки работают через Auth.js, Prisma и PostgreSQL.
 
 ## Карта данных и контента
 
@@ -451,9 +449,9 @@ Backend уже умеет атомарно создать гостевой за�
 
 ## Важные ограничения текущей версии
 
-- Главная, каталог, страницы категорий, товара, «О нас» и футер читают PostgreSQL. Новинки, акции,
-  избранное, корзина, публичная авторизация, профиль, checkout и экран заказов админ-панели частично используют
-  демонстрационные данные или mock-transport.
+- Главная, каталог, страницы категорий, товара, «О нас», футер, checkout и экран заказов
+  админ-панели используют серверные контракты PostgreSQL. Новинки, акции, избранное, корзина,
+  публичная авторизация и профиль частично используют демонстрационные данные или mock-transport.
 - Поиск в шапке формирует ссылочный запрос `/catalog?search=...`; фильтрация товаров каталога по
   параметру `search` пока не реализована.
 - У корзины нет отдельной страницы: она открывается поверх текущего экрана.

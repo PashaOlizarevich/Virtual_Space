@@ -45,7 +45,12 @@ type OrderReadDatabase = Pick<PrismaClient, "order">;
 export type OrderItemDto = Readonly<{
   id: string;
   name: string;
-  selectedOptions: readonly Readonly<{ groupId: string; optionId: string }>[];
+  selectedOptions: readonly Readonly<{
+    groupId: string;
+    groupLabel: string;
+    optionId: string;
+    optionLabel: string;
+  }>[];
   unitPrice: MoneyDto;
   quantity: number;
   lineTotal: MoneyDto;
@@ -96,7 +101,12 @@ function mapSelectedOptions(value: Prisma.JsonValue): OrderItemDto["selectedOpti
       throw new Error("Invalid stored order options");
     }
 
-    return { groupId: option.groupId, optionId: option.optionId };
+    return {
+      groupId: option.groupId,
+      groupLabel: typeof option.groupLabel === "string" ? option.groupLabel : option.groupId,
+      optionId: option.optionId,
+      optionLabel: typeof option.optionLabel === "string" ? option.optionLabel : option.optionId,
+    };
   });
 }
 

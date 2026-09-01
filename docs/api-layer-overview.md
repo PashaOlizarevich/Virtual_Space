@@ -207,6 +207,10 @@ Auth.js, Prisma/PostgreSQL, Cloudinary и Telegram; наличие имени `O
 остаток никогда не копируются из клиента. Условное `updateMany` не допускает отрицательного остатка,
 а любая ошибка до commit откатывает уже выполненные уменьшения вместе со всем графом заказа.
 
+Клиентская граница [src/modules/checkout/submit-order.ts](../src/modules/checkout/submit-order.ts)
+строго проверяет DTO ответа. Она не отправляет итог заказа, не очищает корзину при `409` и требует
+отдельного пользовательского подтверждения `currentPrice` перед повторной отправкой.
+
 ## Чтение заказов
 
 - [src/modules/orders/server/read-schemas.ts](../src/modules/orders/server/read-schemas.ts) — строгие
@@ -225,3 +229,8 @@ Auth.js, Prisma/PostgreSQL, Cloudinary и Telegram; наличие имени `O
 контактный снимок, необходимый для обработки заявки, но не возвращает Prisma-модель. Сортировка
 административной страницы стабильна: `createdAt DESC, id DESC`; наружу cursor передаётся как
 уникальный `publicNumber`.
+
+Первая страница `/admin/orders` загружается через server-only `getAdminOrders` после проверки Auth.js.
+[src/modules/admin/orders-transport.ts](../src/modules/admin/orders-transport.ts) валидирует
+allowlisted DTO для клиентского повторного GET и отправляет PATCH только с новым enum-статусом;
+текущая роль и допустимость перехода по-прежнему повторно проверяются сервером.
