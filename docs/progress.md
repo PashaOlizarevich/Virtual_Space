@@ -2657,3 +2657,24 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 - API overview: без изменений.
 - Ограничения: тесты используют управляемый in-memory transaction harness и не подключаются к живой
   PostgreSQL; конкурентное оформление последней единицы остаётся пунктом 67.
+
+## Task 158 — Конкурентное оформление последней единицы
+
+- Результат: пункт 67 закрыт отдельным конкурентным transaction harness. Две операции одновременно
+  читают остаток `1`; атомарный условный `updateMany` позволяет создать ровно один заказ, вторая
+  операция получает `INSUFFICIENT_STOCK`, итоговый остаток равен `0`.
+- Файлы: `src/modules/orders/server/order-stock-concurrency.test.ts`,
+  `docs/first-db-release-decisions.md`, `docs/progress.md`.
+- Проверки: targeted Jest, `npm run prisma:validate`, `npm run prisma:generate`, `npm run lint`,
+  `npm run typecheck`, полный `npm test -- --runInBand` (81 suite, 261 тест) и `npm run build` —
+  успешно. Read-only `security-review` проверил серверный пересчёт, условное списание, serializable
+  transaction, retry `P2034`, DB `CHECK (stock >= 0)` и безопасный конфликт — подтверждённых
+  findings нет.
+- Переменные окружения: новых нет; подключение к PostgreSQL не выполнялось.
+- Архитектура: production-код, Prisma schema и миграции без изменений; тест закрепляет существующий
+  двухуровневый инвариант приложения и PostgreSQL.
+- Product Tour: без изменений.
+- API overview: без изменений.
+- Ограничения: harness воспроизводит критическое чередование операций in-memory, но не проверяет
+  реальные блокировки и уровень изоляции живого PostgreSQL; это остаётся release-интеграционной
+  проверкой в disposable test DB.
