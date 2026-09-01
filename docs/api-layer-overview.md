@@ -166,6 +166,19 @@ Prisma/PostgreSQL и Cloudinary.
 изменяет остаток. Клиентские цена, количество, доступность и подписи опций не используются как
 источник истины: все значения повторно проверяются по PostgreSQL.
 
+## Переходы статуса заказа
+
+- [src/modules/orders/server/status-transitions.ts](../src/modules/orders/server/status-transitions.ts) —
+  server-only доменный инвариант с закрытой матрицей переходов Prisma `OrderStatus`.
+- Разрешены только `NEW -> CONFIRMED`, `NEW -> CANCELLED`, `CONFIRMED -> IN_PROGRESS`,
+  `CONFIRMED -> CANCELLED`, `IN_PROGRESS -> COMPLETED` и `IN_PROGRESS -> CANCELLED`.
+- `assertOrderStatusTransition` выбрасывает контролируемую `InvalidOrderStatusTransitionError` до
+  выполнения вызывающим write-service любых мутаций. Повтор текущего статуса, выход из финальных
+  состояний и остальные пары запрещены.
+
+Этот пункт не добавляет transport и не изменяет PostgreSQL. Административная авторизация, повторное
+чтение текущего статуса и атомарная запись статуса вместе с историей относятся к пункту 63.
+
 ## Создание гостевого заказа
 
 - [src/modules/orders/server/order-creation.ts](../src/modules/orders/server/order-creation.ts) —

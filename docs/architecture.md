@@ -544,6 +544,10 @@ Admin form -> Server Action -> auth() + role ADMIN -> Zod
 Разрешены `NEW -> CONFIRMED -> IN_PROGRESS -> COMPLETED`, а также переходы в `CANCELLED` из
 `NEW`, `CONFIRMED` и `IN_PROGRESS`. Остальные переходы отклоняются сервером.
 
+> Реализация пункта 61: закрытая матрица переходов и контролируемая доменная ошибка
+> централизованы в `src/modules/orders/server/status-transitions.ts`. Write-service обязан проверить
+> переход до первой мутации; атомарная запись статуса и истории относится к пункту 63.
+
 ### Загрузка изображения
 
 ```text

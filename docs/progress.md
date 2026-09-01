@@ -2492,3 +2492,26 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
   создания заказа.
 - Ограничения: PostgreSQL-интеграция и полный transaction/concurrency набор относятся к пунктам
   66–67; persistent idempotency и инфраструктурный rate limit требуют отдельного release-hardening.
+
+## Task 151 — Закрытая матрица переходов статуса заказа
+
+- Результат: добавлен server-only доменный инвариант, разрешающий ровно шесть переходов статуса
+  заказа и отклоняющий все остальные контролируемой ошибкой до выполнения мутаций.
+- Файлы: `src/modules/orders/server/status-transitions.ts`, новый unit-тест,
+  `docs/architecture.md`, `docs/api-layer-overview.md`, `docs/first-db-release-decisions.md`,
+  `docs/progress.md`.
+- Проверки: targeted Jest (1 suite, 27 тестов), `npm run prisma:validate`,
+  `npm run prisma:generate`, `npm run lint`, `npm run typecheck`, `npm test -- --runInBand`
+  (68 suite, 224 теста), `npm run build`, `git diff --check`; read-only security review доменного
+  инварианта — подтверждённых findings нет.
+- Переменные окружения: новых нет; Prisma-проверки и build использовали только одноразовые безопасные
+  placeholder `DATABASE_URL`, `DATABASE_URL_UNPOOLED` и build-only `AUTH_SECRET` без подключения к
+  PostgreSQL.
+- Архитектура: матрица переходов централизована в orders-модуле; schema, миграции, transport и данные
+  не менялись.
+- Product Tour: без изменений — пользовательские и административные маршруты пока не переведены на
+  новый backend-инвариант.
+- API overview: добавлена server-only граница проверки переходов и зафиксирована контролируемая
+  ошибка для будущего write-service.
+- Ограничения: административная авторизация, повторное чтение текущего статуса и атомарная запись
+  `Order.status` вместе с `OrderStatusHistory` относятся к пункту 63.
