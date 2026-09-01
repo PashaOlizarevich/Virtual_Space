@@ -2928,3 +2928,27 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 - API overview: без изменений — серверные entry points и контракты не менялись.
 - Ограничения: проверка структуры не заменяет ручной review SQL и replay на preview; отдельный
   `prisma migrate deploy` release-job остаётся пункту 80, production pipeline — пункту 82.
+
+## Task 170 — Отдельный release-шаг миграций
+
+- Результат: пункт 80 добавляет release-only `prisma migrate deploy` с проверкой чистого immutable
+  Git artifact, migration history и полного commit SHA; production требует подтверждение preview-
+  проверки того же SHA, а runtime/build/cold start команду не вызывают.
+- Файлы: `scripts/deploy-prisma-migrations.mjs`, `package.json`, `docs/database-migrations.md`,
+  `docs/architecture.md`, `docs/first-db-release-decisions.md`.
+- Проверки: `node --check scripts/deploy-prisma-migrations.mjs`, negative CLI guard для несовпадающего
+  SHA, `npm run prisma:check-migrations`, `npm run prisma:validate`, `npm run prisma:generate`,
+  `npm run lint`, `npm run typecheck`, `npm test -- --runInBand` (94 suites, 290 tests),
+  `npm run build`, Prettier для изменённых файлов и `git diff --check`.
+- Переменные окружения: новых нет; release job использует существующую server-only
+  `DATABASE_URL_UNPOOLED`, а локальные Prisma/build-проверки — только одноразовые placeholder URL и
+  `AUTH_SECRET` без подключения к БД.
+- Архитектура: release-only CLI отделён от Next.js runtime и связывает preview/production с одним
+  immutable commit; production pipeline, protected environment и concurrency остаются пункту 82.
+- Product Tour: без изменений — маршруты и пользовательские сценарии не менялись.
+- API overview: без изменений — серверные entry points и публичные контракты не менялись.
+- Security review: подтверждённых findings нет; секрет не принимается аргументом и не логируется,
+  команды запускаются без shell, runtime-ссылок нет. Остаточный риск: до пункта 82 preview evidence
+  является операторским подтверждением, а не автоматически защищённым CI artifact.
+- Ограничения: live PostgreSQL не подключалась, поэтому `migrate deploy` не выполнялся; успешный
+  preview replay и production orchestration требуют настроенных Neon/Vercel окружений.

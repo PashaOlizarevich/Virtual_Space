@@ -58,3 +58,32 @@
 Проверка структуры не доказывает безопасность SQL. Миграция считается готовой только после ручного
 review SQL и последующей проверки на изолированной preview или восстановленной непроизводственной
 копии согласно пункту 80 плана.
+
+## Отдельный release-шаг
+
+Миграции применяет только release-only команда, запущенная из чистого immutable Git checkout после
+`npm ci`:
+
+```text
+npm run prisma:migrate:deploy -- --environment=preview --artifact-sha=<full-git-sha>
+npm run prisma:migrate:deploy -- --environment=production --artifact-sha=<full-git-sha> --preview-verified-sha=<full-git-sha>
+```
+
+Команда требует direct `DATABASE_URL_UNPOOLED`, сначала запускает проверку migration history и
+отказывается работать при dirty tree или несовпадении SHA. Production допускается только при явном
+подтверждении, что на preview или восстановленной непроизводственной копии был проверен тот же commit;
+SHA в обоих аргументах должен совпадать. Для проверки guard-условий без подключения и изменения БД
+используется `--dry-run`, но переменная подключения всё равно обязательна, чтобы preflight повторял
+контракт настоящего release job.
+
+Порядок релиза:
+
+1. Вручную проверить SQL, восстановление/forward-fix и совместимость со старой и новой версией кода.
+2. Применить immutable artifact к изолированной preview-БД и выполнить тесты приложения.
+3. Сохранить проверенный full SHA как release evidence; изменение commit аннулирует проверку.
+4. Для production передать тот же SHA в `--artifact-sha` и `--preview-verified-sha`, применить
+   миграции до rollout приложения и затем выполнить smoke-проверку.
+
+Скрипт не импортируется приложением и не включён в `build`, `start`, Server Action или Route Handler,
+поэтому миграции не запускаются при build, старте процесса или serverless cold start. Автоматический
+production pipeline, protected environment и сериализация jobs относятся к пункту 82.

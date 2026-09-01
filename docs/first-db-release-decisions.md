@@ -1595,3 +1595,21 @@ timestamped-директорией `prisma/migrations`; уже зафиксир�
 Пункт не изменяет Prisma schema, SQL-историю или данные и не запускает миграции. Автоматизация
 отдельного `prisma migrate deploy` release-job и проверка на preview относятся к пункту 80;
 production pipeline и platform concurrency — к пункту 82.
+
+## Пункт 80 — отдельный release-шаг миграций
+
+Добавлена release-only команда `npm run prisma:migrate:deploy`, которая применяет версионированную
+историю через Prisma CLI и direct `DATABASE_URL_UNPOOLED`. Она принимает только целевую среду и
+полный SHA immutable artifact, требует чистый Git checkout и перед deploy повторно выполняет
+`prisma:check-migrations`. Ни `build`, ни `start`, ни runtime entry points команду не вызывают, поэтому
+serverless cold start не может запустить миграцию.
+
+Preview сначала получает тот же commit, который планируется выпустить. Production-команда требует
+`--preview-verified-sha`, полностью совпадающий с `--artifact-sha`; изменение commit после проверки
+аннулирует evidence и требует нового preview-прогона. Изолированная preview Neon-ветка или
+восстановленная непроизводственная копия не должна содержать немаскированные production-данные.
+
+Пункт классифицирован как release/configuration change: Prisma schema, SQL-история и данные не
+менялись, live-БД не подключалась и `migrate deploy` фактически не выполнялся. Guard-условия можно
+проверить через `--dry-run`; production pipeline, protected environment и concurrency lock остаются
+пункту 82.
