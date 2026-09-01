@@ -36,6 +36,7 @@ model User {
   accounts            Account[]
   sessions            Session[]
   passwordResetTokens PasswordResetToken[]
+  cart                Cart?
   orders              Order[]
   statusChanges       OrderStatusHistory[] @relation("OrderStatusChangedBy")
 }
@@ -125,6 +126,7 @@ model Product {
   images         ProductImage[]
   specifications ProductSpecification[]
   optionGroups   ProductOptionGroup[]
+  cartItems      CartItem[]
   orderItems     OrderItem[]
 
   @@index([categoryId, isActive, createdAt(sort: Desc), id(sort: Desc)])
@@ -192,6 +194,33 @@ model ProductOption {
 
   @@unique([groupId, key])
   @@unique([groupId, position])
+}
+
+model Cart {
+  id        BigInt   @id @default(autoincrement())
+  userId    String   @unique
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
+
+  user  User       @relation(fields: [userId], references: [id])
+  items CartItem[]
+}
+
+model CartItem {
+  id              BigInt   @id @default(autoincrement())
+  cartId          BigInt
+  productId       BigInt
+  selectedOptions Json
+  optionsKey      String
+  quantity        Int
+  observedPrice   Decimal  @db.Decimal(12, 2)
+  createdAt       DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt       DateTime @updatedAt @db.Timestamptz(3)
+
+  cart    Cart    @relation(fields: [cartId], references: [id])
+  product Product @relation(fields: [productId], references: [id])
+
+  @@unique([cartId, productId, optionsKey])
 }
 
 model Order {

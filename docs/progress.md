@@ -2705,3 +2705,22 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
   реализуются пунктами 72 и 76.
 - Ограничения: runtime генерации/отправки/потребления reset-токена и сверки версии JWT ещё нет и
   намеренно оставлен пункту 72.
+
+## Task 160 — Модели активной пользовательской корзины
+
+- Результат: пункт 69 добавляет `Cart` как единственную текущую корзину пользователя и `CartItem`
+  с товаром, количеством, наблюдаемой точной ценой, JSON выбранных опций и server-managed
+  каноническим `optionsKey`; unique-ограничения исключают вторую корзину пользователя и дубль одной
+  конфигурации товара внутри корзины.
+- Файлы: `prisma/schema.prisma`, `docs/architecture.md`,
+  `docs/first-db-release-decisions.md`, `docs/progress.md`.
+- Проверки: `npm run prisma:validate`, `npm run prisma:generate`, `npm run lint`,
+  `npm run typecheck`, полный `npm test -- --runInBand`, `npm run build`, `git diff --check` и
+  read-only `security-review`.
+- Переменные окружения: новых нет; подключение к PostgreSQL не выполнялось.
+- Архитектура: persistent-корзина остаётся частью домена `cart`; Prisma-модели не являются DTO,
+  канонический ключ формируется только после серверной проверки опций.
+- Product Tour и API overview: без изменений — пользовательский transport корзины ещё не реализован.
+- Ограничения: явные `onDelete`, дополнительные индексы, SQL `CHECK` и миграция оставлены пунктам
+  70–71 согласно порядку implementation plan; backend и синхронизация гостевой корзины — пунктам
+  73–74.
