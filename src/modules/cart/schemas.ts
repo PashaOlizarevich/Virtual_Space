@@ -17,6 +17,24 @@ export const cartItemSchema = z
       )
       .max(20),
     observedPrice: z.number().finite().nonnegative().max(100_000_000),
+    productSnapshot: z
+      .strictObject({
+        slug: identifierSchema,
+        name: z.string().trim().min(1).max(160),
+        description: z.string().trim().max(5_000),
+        image: z.string().trim().min(1).max(2_048),
+        imageAlt: z.string().trim().max(300),
+        optionGroups: z.array(
+          z.strictObject({
+            id: identifierSchema,
+            label: z.string().trim().min(1).max(160),
+            options: z.array(
+              z.strictObject({ id: identifierSchema, label: z.string().trim().min(1).max(160) }),
+            ),
+          }),
+        ),
+      })
+      .optional(),
   })
   .strict();
 

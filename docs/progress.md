@@ -2857,3 +2857,25 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
   preview до пункта 76.
 - API overview: добавлены собственная история заказов, её Server Action, pagination и ownership.
 - Ограничения: живая PostgreSQL и E2E не использовались; UI-интеграция относится к пункту 76.
+
+## Task 167 — Интеграция пользовательского UI с Auth.js и PostgreSQL
+
+- Результат: пункт 76 переводит `/login`, `/profile` и синхронизацию корзины с preview/sessionStorage
+  на Credentials Auth.js, защищённые Server Actions и persistent PostgreSQL-корзину. Регистрация
+  создаёт пользователя и выполняет вход; профиль и собственная история загружаются после проверки
+  сессии; гостевая корзина атомарно объединяется и затем синхронизируется последовательной очередью.
+- Файлы: `src/app/providers.tsx`, `src/app/(store)/profile/page.tsx`, auth/user/cart/catalog/checkout
+  компоненты и адаптеры, новый unit-тест, документация архитектуры, Product Tour, API-слоя и решений.
+- Безопасность: localStorage остаётся недоверенным presentation-cache; merge принимает только
+  productId/quantity/options, цены и доступность берутся с сервера, ownership определяется Auth.js,
+  reset-token не пересекает server boundary. Read-only `security-review`: подтверждённых findings нет.
+- Проверки: `npm run typecheck`, `npm run lint`, полный `npm test -- --runInBand` (91 suite,
+  285 тестов), `npm run prisma:validate`, `npm run prisma:generate`, `npm run build` и
+  `git diff --check` прошли. Browser plugin отсутствовал; Playwright fallback подтвердил только
+  ожидаемый DB error-state, потому что placeholder PostgreSQL недоступен, поэтому интерактивный
+  browser QA `/login` и authenticated `/profile` требует локальной test DB.
+- Product Tour: обновлены `/login`, `/profile` и синхронизация корзины.
+- API overview: уточнён клиентский вызов существующих auth/profile/cart/order Actions и presentation-
+  поля server cart DTO.
+- Ограничения: email-провайдер восстановления ещё не выбран, поэтому письмо не доставляется; live DB
+  и новый E2E не запускались. Новые E2E не создавались без отдельного разрешения пользователя.

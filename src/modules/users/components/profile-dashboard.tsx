@@ -3,18 +3,17 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LoaderCircle, PackageCheck, ShoppingBag } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
 import { Button } from "@/components/ui/button";
-import { usePreviewSession } from "@/modules/auth/session-provider";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { useUserSession } from "@/modules/auth/session-context";
 import { useCartStore } from "@/modules/cart/store";
 import { validateCartItem } from "@/modules/cart/validation";
-import { updateProfilePreview } from "@/modules/users/mock-transport";
+import type { CustomerOrderDto } from "@/modules/orders/server/order-read";
 import { profileDetailsSchema, type ProfileDetailsValues } from "@/modules/users/schemas";
-import type { ProfileDetails, ProfileOrder, OrderStatus } from "@/modules/users/types";
 import { formatMoney } from "@/shared/money";
 
 const dateFormatter = new Intl.DateTimeFormat("ru-BY", {
@@ -24,15 +23,15 @@ const dateFormatter = new Intl.DateTimeFormat("ru-BY", {
   timeZone: "UTC",
 });
 
-const statusLabels: Record<OrderStatus, string> = {
-  new: "Новый",
-  confirmed: "Подтверждён",
-  "in-progress": "В работе",
-  completed: "Завершён",
-  cancelled: "Отменён",
+const statusLabels: Record<CustomerOrderDto["status"], string> = {
+  NEW: "Новый",
+  CONFIRMED: "Подтверждён",
+  IN_PROGRESS: "В работе",
+  COMPLETED: "Завершён",
+  CANCELLED: "Отменён",
 };
 
-function ProfileForm({ profile }: Readonly<{ profile: ProfileDetails }>) {
+function ProfileForm({ profile }: Readonly<{ profile: ProfileDetailsValues }>) {
   const [status, setStatus] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const form = useForm<ProfileDetailsValues>({
@@ -52,14 +51,20 @@ function ProfileForm({ profile }: Readonly<{ profile: ProfileDetails }>) {
         onSubmit={form.handleSubmit(async (values) => {
           setError(null);
           setStatus(null);
-          try {
-            await updateProfilePreview(values);
-            setStatus(
-              "Данные проверены. Сохранение на сервере будет доступно после подключения Auth.js.",
+          const { updateOwnProfileAction } = await import("@/modules/users/server/actions");
+          const result = await updateOwnProfileAction(values);
+          if (!result.ok) {
+            setError(
+              result.code === "EMAIL_CONFLICT"
+                ? "Этот email уже используется другим аккаунтом."
+                : result.code === "UNAUTHENTICATED"
+                  ? "Сессия завершилась. Войдите снова."
+                  : "Не удалось обновить профиль.",
             );
-          } catch (reason) {
-            setError(reason instanceof Error ? reason.message : "Не удалось обновить профиль.");
+            return;
           }
+          form.reset(result.profile);
+          setStatus("Контактные данные сохранены.");
         })}
       >
         <FieldGroup>
@@ -117,8 +122,7 @@ function ProfileForm({ profile }: Readonly<{ profile: ProfileDetails }>) {
 
 function CurrentCart() {
   const items = useCartStore((state) => state.items);
-  const validatedItems = items.map(validateCartItem);
-  const activeItems = validatedItems.filter((entry) => entry.status !== "unavailable");
+  const activeItems = items.map(validateCartItem).filter((entry) => entry.status !== "unavailable");
   const itemCount = activeItems.reduce((sum, { item }) => sum + item.quantity, 0);
   const total = activeItems.reduce(
     (sum, entry) => sum + entry.currentPrice * entry.item.quantity,
@@ -163,33 +167,33 @@ function CurrentCart() {
   );
 }
 
-function OrderHistory({ orders }: Readonly<{ orders: readonly ProfileOrder[] }>) {
+function OrderHistory({ orders }: Readonly<{ orders: readonly CustomerOrderDto[] }>) {
   return (
     <section className="profile-card profile-card--orders" aria-labelledby="profile-orders-title">
       <header className="profile-card__header">
         <p className="text-label-caps text-secondary">История</p>
         <h2 id="profile-orders-title">Заказы</h2>
-        <p>Демонстрационные данные интерфейса до подключения серверной истории.</p>
+        <p>Показываем только заказы текущего аккаунта.</p>
       </header>
       {orders.length > 0 ? (
         <ul className="profile-orders">
           {orders.map((order) => (
-            <li key={order.id}>
+            <li key={order.orderNumber}>
               <div className="profile-order__heading">
                 <div>
-                  <p className="profile-order__number">Заказ {order.id}</p>
+                  <p className="profile-order__number">Заказ {order.orderNumber}</p>
                   <time dateTime={order.createdAt}>
-                    {dateFormatter.format(new Date(`${order.createdAt}T00:00:00Z`))}
+                    {dateFormatter.format(new Date(order.createdAt))}
                   </time>
                 </div>
-                <span className="profile-order__status" data-status={order.status}>
+                <span className="profile-order__status" data-status={order.status.toLowerCase()}>
                   {statusLabels[order.status]}
                 </span>
               </div>
               <dl className="profile-order__summary">
                 <div>
                   <dt>Товаров</dt>
-                  <dd>{order.itemCount}</dd>
+                  <dd>{order.items.reduce((sum, item) => sum + item.quantity, 0)}</dd>
                 </div>
                 <div>
                   <dt>Сумма</dt>
@@ -209,40 +213,91 @@ function OrderHistory({ orders }: Readonly<{ orders: readonly ProfileOrder[] }>)
   );
 }
 
-export function ProfileDashboard({
-  profile,
-  orders,
-}: Readonly<{ profile: ProfileDetails; orders: readonly ProfileOrder[] }>) {
-  const session = usePreviewSession();
+export function ProfileDashboard() {
+  const session = useUserSession();
+  const [profile, setProfile] = useState<ProfileDetailsValues | null>(null);
+  const [orders, setOrders] = useState<readonly CustomerOrderDto[] | null>(null);
+  const [loadError, setLoadError] = useState(false);
+
+  useEffect(() => {
+    if (!session.authenticated) return;
+    let active = true;
+    async function loadDashboard() {
+      const [{ getOwnProfileAction }, { listOwnOrdersAction }] = await Promise.all([
+        import("@/modules/users/server/actions"),
+        import("@/modules/orders/server/own-orders-action"),
+      ]);
+      const [profileResult, ordersResult] = await Promise.all([
+        getOwnProfileAction(),
+        listOwnOrdersAction({ limit: 20 }),
+      ]);
+      if (!active) return;
+      if (!profileResult.ok || !ordersResult.ok) {
+        setLoadError(true);
+        return;
+      }
+      setProfile(profileResult.profile);
+      setOrders(ordersResult.page.orders);
+    }
+    void loadDashboard().catch(() => {
+      if (active) setLoadError(true);
+    });
+    return () => {
+      active = false;
+    };
+  }, [session.authenticated]);
+
+  if (session.pending)
+    return (
+      <p className="profile-message" role="status">
+        Проверяем сессию и синхронизируем корзину…
+      </p>
+    );
+  if (!session.authenticated) {
+    return (
+      <section className="profile-card" aria-labelledby="profile-session-title">
+        <header className="profile-card__header">
+          <p className="text-label-caps text-secondary">Сессия</p>
+          <h2 id="profile-session-title">Войдите в аккаунт</h2>
+          <p>Профиль, сохранённая корзина и история заказов доступны после входа.</p>
+        </header>
+        <Link className="button button--secondary button--default" href="/login">
+          Войти
+        </Link>
+      </section>
+    );
+  }
+
+  if (!profile || !orders) {
+    return (
+      <div className="profile-dashboard">
+        <p
+          className={loadError ? "profile-message profile-message--error" : "profile-message"}
+          role={loadError ? "alert" : "status"}
+        >
+          {loadError
+            ? "Не удалось загрузить личный кабинет. Попробуйте обновить страницу."
+            : "Загружаем контактную информацию, корзину и заказы, включая заказы со статусом «В работе»…"}
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="profile-dashboard">
       <section className="profile-card" aria-labelledby="profile-session-title">
         <header className="profile-card__header">
           <p className="text-label-caps text-secondary">Сессия</p>
-          <h2 id="profile-session-title">
-            {session.authenticated ? "Демонстрационный вход выполнен" : "Гостевой режим"}
-          </h2>
-          <p>
-            {session.authenticated
-              ? "Изменения корзины сохраняются через серверный transport-прототип."
-              : "Войдите, чтобы восстановить сохранённую корзину."}
-          </p>
+          <h2 id="profile-session-title">Вход выполнен</h2>
+          <p>Корзина синхронизируется с аккаунтом и хранится в PostgreSQL.</p>
         </header>
-        {session.authenticated ? (
-          <Button
-            variant="secondary"
-            disabled={session.pending}
-            onClick={async () => {
-              await session.signOut();
-            }}
-          >
-            {session.pending ? "Выход…" : "Выйти из аккаунта"}
-          </Button>
-        ) : (
-          <Link className="button button--secondary button--default" href="/login">
-            Войти
-          </Link>
-        )}
+        <Button
+          variant="secondary"
+          disabled={session.pending}
+          onClick={() => void session.signOut()}
+        >
+          {session.pending ? "Выход…" : "Выйти из аккаунта"}
+        </Button>
         {session.error ? <p role="alert">{session.error}</p> : null}
       </section>
       <ProfileForm profile={profile} />

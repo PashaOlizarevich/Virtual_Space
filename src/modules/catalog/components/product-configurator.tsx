@@ -55,6 +55,18 @@ export function ProductConfigurator({ product }: Readonly<{ product: Product }>)
               optionId: selection[group.id] ?? "",
             })),
             observedPrice: moneyToNumber(product.price),
+            ...(/^[1-9]\d*$/.test(product.id)
+              ? {
+                  productSnapshot: {
+                    slug: product.slug,
+                    name: product.name,
+                    description: product.description,
+                    image: product.image,
+                    imageAlt: product.imageAlt,
+                    optionGroups: product.optionGroups,
+                  },
+                }
+              : {}),
           });
           setConfirmation(
             added

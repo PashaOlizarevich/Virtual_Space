@@ -1,101 +1,170 @@
 "use client";
 
-import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
+import { signOut as authSignOut, useSession } from "next-auth/react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 
-import { saveServerCartPreview, synchronizeCartPreview } from "@/modules/cart/mock-transport";
+import { UserSessionContext } from "@/modules/auth/session-context";
+import {
+  removeServerCartItemAction,
+  updateServerCartItemQuantityAction,
+} from "@/modules/cart/server/actions";
+import { mergeGuestCartAction } from "@/modules/cart/server/merge-action";
+import { cartItemKey, mapServerCartToLocal } from "@/modules/cart/server-cart-adapter";
 import { useCartStore } from "@/modules/cart/store";
+import type { CartItem } from "@/modules/cart/types";
 
-const PREVIEW_SESSION_KEY = "virtual-space:preview-session:v1";
+function actionError(code: string) {
+  if (code === "UNAUTHENTICATED") return "Сессия завершилась. Войдите снова.";
+  if (code === "CART_CONFLICT") return "Не удалось объединить корзины: проверьте наличие товаров.";
+  return "Не удалось синхронизировать корзину с сервером.";
+}
 
-type PreviewSession = {
-  authenticated: boolean;
-  pending: boolean;
-  error: string | null;
-  signIn: () => Promise<void>;
-  signOut: () => Promise<void>;
-};
-
-const previewSessionFallback: PreviewSession = {
-  authenticated: false,
-  pending: false,
-  error: null,
-  signIn: async () => undefined,
-  signOut: async () => undefined,
-};
-
-const SessionContext = createContext<PreviewSession>(previewSessionFallback);
-
-export function PreviewSessionProvider({ children }: Readonly<{ children: ReactNode }>) {
-  const [authenticated, setAuthenticated] = useState(false);
-  const [pending, setPending] = useState(true);
+export function UserSessionProvider({ children }: Readonly<{ children: ReactNode }>) {
+  const session = useSession();
+  const [syncing, setSyncing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const suppressNextSync = useRef(false);
+  const serverItems = useRef<readonly CartItem[]>([]);
+  const suppressSubscription = useRef(false);
+  const readyToSync = useRef(false);
+  const syncQueue = useRef(Promise.resolve());
 
-  async function restoreOrSignIn() {
-    setPending(true);
-    setError(null);
-    try {
-      const merged = await synchronizeCartPreview(useCartStore.getState().items);
-      useCartStore.getState().replaceItems(merged);
-      window.sessionStorage.setItem(PREVIEW_SESSION_KEY, "authenticated");
-      setAuthenticated(true);
-    } catch (reason) {
-      setError(reason instanceof Error ? reason.message : "Не удалось синхронизировать корзину.");
-      throw reason;
-    } finally {
-      setPending(false);
+  useEffect(() => {
+    if (session.status !== "authenticated") return;
+
+    let active = true;
+    async function synchronizeInitialCart() {
+      setSyncing(true);
+      setError(null);
+      readyToSync.current = false;
+      const guestItems = useCartStore
+        .getState()
+        .items.filter(({ productId }) => /^[1-9]\d*$/.test(productId));
+
+      try {
+        const result = await mergeGuestCartAction({
+          items: guestItems.map(({ productId, quantity, selectedOptions }) => ({
+            productId,
+            quantity,
+            selectedOptions,
+          })),
+        });
+        if (!active) return;
+        if (!result.ok) {
+          setError(actionError(result.code));
+          return;
+        }
+
+        const merged = mapServerCartToLocal(result.cart);
+        serverItems.current = merged;
+        suppressSubscription.current = true;
+        useCartStore.getState().replaceItems(merged);
+        readyToSync.current = true;
+      } catch {
+        if (active) setError(actionError("INTERNAL_ERROR"));
+      } finally {
+        if (active) setSyncing(false);
+      }
     }
-  }
+
+    void synchronizeInitialCart();
+
+    return () => {
+      active = false;
+    };
+  }, [session.status]);
+
+  useEffect(() => {
+    if (session.status !== "authenticated") return;
+
+    return useCartStore.subscribe((state) => {
+      if (!readyToSync.current) return;
+      if (suppressSubscription.current) {
+        suppressSubscription.current = false;
+        return;
+      }
+
+      const desired = state.items;
+      syncQueue.current = syncQueue.current.then(async () => {
+        setSyncing(true);
+        setError(null);
+        try {
+          let current = serverItems.current;
+          const desiredByKey = new Map(desired.map((item) => [cartItemKey(item), item]));
+
+          for (const item of current) {
+            if (desiredByKey.has(cartItemKey(item))) continue;
+            const result = await removeServerCartItemAction({
+              productId: item.productId,
+              selectedOptions: item.selectedOptions,
+            });
+            if (!result.ok) throw new Error(actionError(result.code));
+            current = mapServerCartToLocal(result.cart);
+          }
+
+          for (const item of desired) {
+            const existing = current.find(
+              (candidate) => cartItemKey(candidate) === cartItemKey(item),
+            );
+            const result = existing
+              ? existing.quantity === item.quantity
+                ? null
+                : await updateServerCartItemQuantityAction({
+                    productId: item.productId,
+                    selectedOptions: item.selectedOptions,
+                    quantity: item.quantity,
+                  })
+              : await mergeGuestCartAction({
+                  items: [
+                    {
+                      productId: item.productId,
+                      selectedOptions: item.selectedOptions,
+                      quantity: item.quantity,
+                    },
+                  ],
+                });
+            if (result && !result.ok) throw new Error(actionError(result.code));
+            if (result?.ok) current = mapServerCartToLocal(result.cart);
+          }
+
+          serverItems.current = current;
+          suppressSubscription.current = true;
+          useCartStore.getState().replaceItems(current);
+        } catch (reason) {
+          setError(reason instanceof Error ? reason.message : actionError("INTERNAL_ERROR"));
+        } finally {
+          setSyncing(false);
+        }
+      });
+    });
+  }, [session.status]);
 
   async function signOut() {
-    setPending(true);
+    setSyncing(true);
     setError(null);
     try {
-      await saveServerCartPreview(useCartStore.getState().items);
-      window.sessionStorage.removeItem(PREVIEW_SESSION_KEY);
-      suppressNextSync.current = true;
+      await syncQueue.current;
+      await authSignOut({ redirect: false });
+      serverItems.current = [];
+      suppressSubscription.current = true;
       useCartStore.getState().clearCart();
-      setAuthenticated(false);
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : "Не удалось выйти из аккаунта.");
       throw reason;
     } finally {
-      setPending(false);
+      setSyncing(false);
     }
   }
 
-  useEffect(() => {
-    queueMicrotask(() => {
-      if (window.sessionStorage.getItem(PREVIEW_SESSION_KEY) === "authenticated") {
-        void restoreOrSignIn().catch(() => undefined);
-      } else {
-        setPending(false);
-      }
-    });
-  }, []);
-
-  useEffect(() => {
-    if (!authenticated) return;
-    return useCartStore.subscribe((state) => {
-      if (suppressNextSync.current) {
-        suppressNextSync.current = false;
-        return;
-      }
-      void saveServerCartPreview(state.items).catch((reason: unknown) => {
-        setError(reason instanceof Error ? reason.message : "Не удалось сохранить корзину.");
-      });
-    });
-  }, [authenticated]);
-
   return (
-    <SessionContext.Provider
-      value={{ authenticated, pending, error, signIn: restoreOrSignIn, signOut }}
+    <UserSessionContext.Provider
+      value={{
+        authenticated: session.status === "authenticated",
+        pending: session.status === "loading" || syncing,
+        error,
+        signOut,
+      }}
     >
       {children}
-    </SessionContext.Provider>
+    </UserSessionContext.Provider>
   );
-}
-
-export function usePreviewSession() {
-  return useContext(SessionContext);
 }

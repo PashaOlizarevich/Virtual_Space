@@ -22,7 +22,7 @@
 | Изображения      | Локальные mock-файлы и защищённый Cloudinary lifecycle товаров    | Cloudinary для всех управляемых товарных изображений, метаданные в PostgreSQL    |
 | Корзина          | Гостевой Zustand и защищённый API persistent-корзины              | Интеграция обоих состояний и безопасное объединение после входа                  |
 | Избранное        | Zustand и localStorage со списком ID товаров                      | Гостевой Zustand плюс PostgreSQL-список пользователя с объединением после входа  |
-| Авторизация      | Preview-сессии пользователя и администратора в sessionStorage     | Auth.js, серверная сессия и проверка роли на каждой защищённой операции          |
+| Авторизация      | Auth.js для пользователя и администратора                         | Серверная сессия и проверка роли на каждой защищённой операции                   |
 | Админка          | Каталог, заказы и настройки используют Auth.js и PostgreSQL       | Server Actions/Route Handlers и Prisma-сервисы для всех административных функций |
 | Заказы           | Checkout и admin UI подключены к транзакционным order-контрактам  | Пользовательская история и серверная корзина этапа 2                             |
 | API и интеграции | Auth.js, Prisma, Cloudinary и адаптер Telegram Bot API            | Route Handlers/Server Actions по всем сценариям                                  |
@@ -117,9 +117,9 @@ virtual-space/
 │   │   │   │   ├── tableware/page.tsx
 │   │   │   │   └── textiles-decor/page.tsx
 │   │   │   ├── checkout/page.tsx
-│   │   │   ├── login/page.tsx     # preview-auth
+│   │   │   ├── login/page.tsx     # Auth.js login/register/recovery
 │   │   │   ├── product/[id]/page.tsx
-│   │   │   └── profile/page.tsx   # preview-profile
+│   │   │   └── profile/page.tsx   # authenticated profile/cart/orders
 │   │   ├── admin/                 # preview-админка
 │   │   │   ├── page.tsx
 │   │   │   ├── orders/page.tsx
@@ -132,13 +132,13 @@ virtual-space/
 │   │   └── providers.tsx
 │   ├── modules/                   # вертикальные бизнес-модули
 │   │   ├── admin/                 # dashboard, UI CRUD и transport заказов
-│   │   ├── auth/                  # preview-сессия и формы
+│   │   ├── auth/                  # Auth.js session, формы и server actions
 │   │   ├── cart/                  # Zustand, schemas, validation и sync
 │   │   ├── catalog/               # карточки, слайдер, configurator, mock/query
 │   │   ├── checkout/              # форма, schemas и transport создания заказа
 │   │   ├── favorites/             # гостевые ID, persist и клиентский список избранного
 │   │   ├── settings/              # публичное чтение и защищённая запись настроек
-│   │   └── users/                 # preview-профиль и история
+│   │   └── users/                 # профиль и собственная история заказов
 │   ├── components/
 │   │   ├── layout/                # Header, CatalogMenu, навигация и каркас
 │   │   └── ui/                    # нейтральные UI-примитивы
@@ -354,7 +354,7 @@ hash и срок 30 минут. Подтверждение потребляет 
 
 Профиль принадлежит `users`: ownership берётся только из Auth.js session, разрешённый write-набор —
 `name`, канонический `email` и `phone`. `id`, `role`, `passwordHash`, `credentialsVersion` и поля
-удаления не входят в публичный DTO. UI `/login` и `/profile` переключается с preview на эти контракты
+удаления не входят в публичный DTO. UI `/login` и `/profile` использует эти контракты
 отдельным интеграционным пунктом 76.
 
 ## 8. База данных

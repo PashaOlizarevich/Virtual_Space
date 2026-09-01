@@ -4,6 +4,7 @@ import {
   AuthInputError,
   EmailAlreadyRegisteredError,
   InvalidPasswordResetTokenError,
+  createPasswordReset,
   registerUser,
   resetPassword,
 } from "@/modules/auth/server/public-auth";
@@ -22,6 +23,17 @@ export async function registerUserAction(input: unknown): Promise<AuthMutationRe
   } catch (error) {
     if (error instanceof AuthInputError) return { ok: false, code: "INVALID_INPUT" };
     if (error instanceof EmailAlreadyRegisteredError) return { ok: false, code: "EMAIL_CONFLICT" };
+    return { ok: false, code: "INTERNAL_ERROR" };
+  }
+}
+
+export async function requestPasswordResetAction(input: unknown): Promise<AuthMutationResult> {
+  try {
+    // The raw reset token never crosses this server boundary.
+    await createPasswordReset(input);
+    return { ok: true };
+  } catch (error) {
+    if (error instanceof AuthInputError) return { ok: false, code: "INVALID_INPUT" };
     return { ok: false, code: "INTERNAL_ERROR" };
   }
 }

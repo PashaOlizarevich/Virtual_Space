@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, LoaderCircle } from "lucide-react";
+import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { type KeyboardEvent, useRef, useState } from "react";
 import { type UseFormRegisterReturn, useForm } from "react-hook-form";
@@ -9,8 +10,7 @@ import { type UseFormRegisterReturn, useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { submitAuthPreview, type AuthMode } from "@/modules/auth/mock-transport";
-import { usePreviewSession } from "@/modules/auth/session-provider";
+import { registerUserAction, requestPasswordResetAction } from "@/modules/auth/server/actions";
 import {
   loginSchema,
   recoverySchema,
@@ -25,6 +25,8 @@ const modes: { id: AuthMode; label: string }[] = [
   { id: "registration", label: "Регистрация" },
   { id: "recovery", label: "Восстановление" },
 ];
+
+type AuthMode = "login" | "registration" | "recovery";
 
 function PasswordField({
   registered,
@@ -73,19 +75,18 @@ function Status({ value }: { value: string | null }) {
 
 function LoginForm({ onMode }: { onMode: (mode: AuthMode) => void }) {
   const router = useRouter();
-  const session = usePreviewSession();
   const [status, setStatus] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const form = useForm<LoginValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: { email: "", password: "" },
   });
-  const submit = form.handleSubmit(async () => {
+  const submit = form.handleSubmit(async (values) => {
     setError(null);
     try {
-      await submitAuthPreview("login");
-      await session.signIn();
-      setStatus("Корзина синхронизирована. Открываем личный кабинет…");
+      const result = await signIn("credentials", { ...values, redirect: false });
+      if (!result?.ok) throw new Error("Неверный email или пароль.");
+      setStatus("Вход выполнен. Открываем личный кабинет…");
       router.push("/profile");
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : "Не удалось обработать форму.");
@@ -94,7 +95,7 @@ function LoginForm({ onMode }: { onMode: (mode: AuthMode) => void }) {
   return (
     <AuthFormShell
       title="Войти в аккаунт"
-      description="В демонстрационном режиме вход синхронизирует гостевую корзину с серверным transport."
+      description="После входа гостевая корзина будет безопасно объединена с сохранённой корзиной."
     >
       <form onSubmit={submit} noValidate>
         <FieldGroup>
@@ -124,6 +125,7 @@ function LoginForm({ onMode }: { onMode: (mode: AuthMode) => void }) {
 }
 
 function RegistrationForm() {
+  const router = useRouter();
   const [status, setStatus] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const form = useForm<RegistrationValues>({
@@ -133,16 +135,24 @@ function RegistrationForm() {
   return (
     <AuthFormShell
       title="Создать аккаунт"
-      description="Сохраните данные для будущего профиля. Сейчас форма работает в демонстрационном режиме."
+      description="Создайте аккаунт, чтобы хранить корзину и отслеживать свои заказы."
     >
       <form
-        onSubmit={form.handleSubmit(async () => {
+        onSubmit={form.handleSubmit(async (values) => {
           setError(null);
           try {
-            await submitAuthPreview("registration");
-            setStatus(
-              "Данные формы проверены. Аккаунт не создан: регистрация будет подключена вместе с backend.",
-            );
+            const result = await registerUserAction(values);
+            if (!result.ok) {
+              throw new Error(
+                result.code === "EMAIL_CONFLICT"
+                  ? "Аккаунт с таким email уже существует."
+                  : "Не удалось создать аккаунт.",
+              );
+            }
+            const session = await signIn("credentials", { ...values, redirect: false });
+            if (!session?.ok) throw new Error("Аккаунт создан, но войти автоматически не удалось.");
+            setStatus("Аккаунт создан. Открываем личный кабинет…");
+            router.push("/profile");
           } catch (reason) {
             setError(reason instanceof Error ? reason.message : "Не удалось обработать форму.");
           }
@@ -194,15 +204,16 @@ function RecoveryForm() {
   return (
     <AuthFormShell
       title="Восстановить пароль"
-      description="Доставка инструкций на email будет подключена вместе с backend. Сейчас письмо не отправляется."
+      description="Укажите email аккаунта. Ответ не раскрывает, зарегистрирован ли этот адрес."
     >
       <form
-        onSubmit={form.handleSubmit(async () => {
+        onSubmit={form.handleSubmit(async (values) => {
           setError(null);
           try {
-            await submitAuthPreview("recovery");
+            const result = await requestPasswordResetAction(values);
+            if (!result.ok) throw new Error("Не удалось обработать запрос восстановления.");
             setStatus(
-              "Email проверен. Письмо не отправлено: доставка инструкций пока не подключена.",
+              "Если аккаунт существует, запрос подготовлен. Доставка письма пока не настроена.",
             );
           } catch (reason) {
             setError(reason instanceof Error ? reason.message : "Не удалось обработать форму.");

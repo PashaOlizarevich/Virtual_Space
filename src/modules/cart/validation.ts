@@ -16,7 +16,18 @@ function hasCurrentOptions(item: CartItem, product: Product) {
 }
 
 export function validateCartItem(item: CartItem): ValidatedCartItem {
-  const product = allProducts.find(({ id }) => id === item.productId);
+  const legacyProduct = allProducts.find(({ id }) => id === item.productId);
+  const product: Product | undefined =
+    legacyProduct ??
+    (item.productSnapshot
+      ? {
+          id: item.productId,
+          ...item.productSnapshot,
+          price: item.observedPrice,
+          gallery: [{ src: item.productSnapshot.image, alt: item.productSnapshot.imageAlt }],
+          specifications: [],
+        }
+      : undefined);
 
   if (!product || !hasCurrentOptions(item, product)) {
     return { status: "unavailable", item, product };

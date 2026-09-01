@@ -48,7 +48,7 @@
 перехода между маршрутами.
 
 - Общий `<title>` и описание сайта: `src/app/layout.tsx`.
-- Клиентские провайдеры каталога, корзины и preview-сессии: `src/app/providers.tsx`.
+- Клиентские провайдеры каталога, корзины и Auth.js-сессии: `src/app/providers.tsx`.
 - Анимация перехода: `src/components/layout/route-transition.tsx`.
 - Экран загрузки: `src/app/loading.tsx`.
 - Общая обработка ошибки: `src/app/error.tsx`.
@@ -156,7 +156,8 @@ mock-контракте хранятся как ISO 8601 UTC-строки; то�
   `src/modules/cart/components/cart-widget.tsx`.
 - Состояние корзины и сохранение в браузере: `src/modules/cart/store.ts`.
 - Проверка актуальности позиции: `src/modules/cart/validation.ts`.
-- Preview-синхронизация: `src/modules/cart/sync.ts` и `src/modules/cart/mock-transport.ts`.
+- Синхронизация Auth.js/PostgreSQL: `src/modules/auth/session-provider.tsx`,
+  `src/modules/cart/server-cart-adapter.ts` и защищённые cart Server Actions.
 - Защищённая persistent-корзина пользователя реализована server-only сервисом и Server Actions в
   `src/modules/cart/server/`; там же доступно атомарное объединение гостевого снимка после Auth.js
   входа. UI подключается к этому transport на интеграционном этапе 76 и пока продолжает использовать
@@ -320,9 +321,10 @@ Server Component, а пустой результат и клиентская п�
 
 Файл: `src/app/(store)/login/page.tsx`.
 
-Экран состоит из интерьерного изображения и форм входа/регистрации. Backend уже поддерживает
-пользовательские Credentials Auth.js, регистрацию и hash-only восстановление доступа, но экран пока
-использует preview-transport; его подключение к Server Actions выполняется пунктом 76.
+Экран состоит из интерьерного изображения и форм входа/регистрации. Вход выполняется через
+Credentials Auth.js, регистрация — через Server Action с последующим входом, а восстановление
+возвращает одинаковый публичный ответ независимо от существования email. После входа гостевая
+корзина атомарно объединяется с persistent-корзиной пользователя.
 
 Где править:
 
@@ -332,30 +334,29 @@ Server Component, а пустой результат и клиентская п�
 - Правила валидации: `src/modules/auth/schemas.ts`.
 - Backend регистрации и восстановления: `src/modules/auth/server/public-auth.ts` и
   `src/modules/auth/server/actions.ts`.
-- Демонстрационную отправку формы: `src/modules/auth/mock-transport.ts`.
-- Preview-сессию: `src/modules/auth/session-provider.tsx`.
+- Серверные мутации: `src/modules/auth/server/actions.ts`.
+- Auth.js-сессию и синхронизацию корзины: `src/modules/auth/session-provider.tsx`.
 - Стили: `.auth-*` в `src/styles/globals.css`.
 
 ### Личный кабинет — `/profile`
 
 Файл: `src/app/(store)/profile/page.tsx`.
 
-Секции: контактные данные, текущая корзина, история заказов и состояние preview-сессии. Backend
-защищённо читает и изменяет собственные `name/email/phone`, получает только собственную persistent-
-корзину и bounded историю заказов по identity из Auth.js; UI остаётся preview до пункта 76.
+Секции: контактные данные, текущая persistent-корзина, история заказов и состояние Auth.js-сессии.
+UI защищённо читает и изменяет собственные `name/email/phone`, получает только собственную корзину
+и bounded историю заказов по identity из Auth.js.
 Со страницы можно перейти в `/checkout`, `/catalog` или `/login`.
 
 Где править:
 
 - Вводный блок: файл маршрута `profile/page.tsx`.
 - Форму контактов, корзину, заказы и кнопки: `src/modules/users/components/profile-dashboard.tsx`.
-- Демонстрационные профиль и заказы: `src/modules/users/mock-data.ts`.
 - Валидацию профиля: `src/modules/users/schemas.ts`.
 - Защищённый backend профиля: `src/modules/users/server/profile.ts` и
   `src/modules/users/server/actions.ts`.
 - Защищённая история заказов: `src/modules/orders/server/order-read.ts` и
   `src/modules/orders/server/own-orders-action.ts`.
-- Демонстрационное сохранение: `src/modules/users/mock-transport.ts`.
+- Клиентскую загрузку и сохранение: `src/modules/users/components/profile-dashboard.tsx`.
 - Стили: `.profile-*` в `src/styles/globals.css`.
 
 ### Оформление заявки — `/checkout`

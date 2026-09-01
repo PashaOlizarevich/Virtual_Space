@@ -21,10 +21,16 @@ const cartItemSelect = {
   product: {
     select: {
       name: true,
+      slug: true,
       price: true,
       currency: true,
       stock: true,
       isActive: true,
+      images: {
+        orderBy: { position: "asc" },
+        take: 1,
+        select: { secureUrl: true, alt: true },
+      },
       optionGroups: {
         orderBy: { position: "asc" },
         select: {
@@ -50,6 +56,9 @@ export type ServerCartItemStatus =
 export type ServerCartItemDto = Readonly<{
   productId: string;
   name: string;
+  slug: string;
+  image: string;
+  imageAlt: string;
   quantity: number;
   selectedOptions: readonly Readonly<{
     groupId: string;
@@ -115,6 +124,9 @@ function toDto(record: CartItemRecord, totalQuantity: number): ServerCartItemDto
   return {
     productId: record.productId.toString(),
     name: record.product.name,
+    slug: record.product.slug ?? "",
+    image: record.product.images?.[0]?.secureUrl ?? "",
+    imageAlt: record.product.images?.[0]?.alt ?? "",
     quantity: record.quantity,
     selectedOptions: selectedOptions.options,
     observedPrice: money(record.observedPrice, record.product.currency),

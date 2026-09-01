@@ -144,6 +144,18 @@ export function ProductPreview({
                 productId: product.id,
                 selectedOptions: [],
                 observedPrice: pricing?.currentPrice ?? moneyToNumber(product.price),
+                ...(/^[1-9]\d*$/.test(product.id)
+                  ? {
+                      productSnapshot: {
+                        slug: product.slug,
+                        name: product.name,
+                        description: product.description,
+                        image: product.image,
+                        imageAlt: product.imageAlt,
+                        optionGroups: [],
+                      },
+                    }
+                  : {}),
               })
             }
           >

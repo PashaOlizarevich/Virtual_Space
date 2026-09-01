@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 
 import { Container } from "@/components/layout/container";
 import { ProfileDashboard } from "@/modules/users/components/profile-dashboard";
-import { previewOrders, previewProfile } from "@/modules/users/mock-data";
 
 export const metadata: Metadata = {
   title: "Личный кабинет",
@@ -15,14 +14,15 @@ export default function ProfilePage() {
       <Container>
         <header className="profile-page__intro">
           <p className="text-label-caps text-secondary">Личный кабинет</p>
-          <h1>Здравствуйте, Анна</h1>
+          <h1>Ваш личный кабинет</h1>
           <p>Управляйте контактами, возвращайтесь к текущему выбору и следите за заказами.</p>
         </header>
-        <aside className="profile-preview-notice" aria-label="Режим предварительного просмотра">
-          Профиль открыт в демонстрационном режиме. Сессия и серверная корзина имитируются
-          типизированным transport до подключения Auth.js и PostgreSQL.
+        <aside className="profile-preview-notice" aria-label="Хранение данных аккаунта">
+          Личный кабинет больше не работает в демонстрационном режиме: сессия управляется Auth.js, а
+          разделы «Контактная информация», «Корзина» и «Заказы» (включая статус «В работе»)
+          загружаются из PostgreSQL.
         </aside>
-        <ProfileDashboard profile={previewProfile} orders={previewOrders} />
+        <ProfileDashboard />
       </Container>
     </main>
   );

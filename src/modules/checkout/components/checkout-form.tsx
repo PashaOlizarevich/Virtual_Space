@@ -48,7 +48,15 @@ export function CheckoutForm() {
     setPriceChanges(new Map());
 
     try {
-      const submissionResult = await submitCheckoutOrder({ contact: values, items });
+      const submissionResult = await submitCheckoutOrder({
+        contact: values,
+        items: items.map(({ productId, quantity, selectedOptions, observedPrice }) => ({
+          productId,
+          quantity,
+          selectedOptions,
+          observedPrice,
+        })),
+      });
       clearCart();
       setResult(submissionResult);
     } catch (error) {
