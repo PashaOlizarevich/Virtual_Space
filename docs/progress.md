@@ -2615,3 +2615,45 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 - API overview: добавлены клиентские transport-границы создания, чтения и смены статуса заказа.
 - Ограничения: persistent idempotency и инфраструктурный rate limit остаются release-hardening;
   без живой PostgreSQL интеграционный браузерный сценарий не проверен.
+
+## Task 156 — Согласование типов Jest и воспроизводимого lock-файла
+
+- Результат: `@types/jest` согласован с Jest 29 и `ts-jest` 29; устранены 10 ложных `TS2554` в
+  существующих Prisma-mock assertions без изменения тестов или production-кода. `package-lock.json`
+  пересобран в согласованное дерево и дополнен отсутствовавшими optional peer-записями npm.
+- Файлы: `package.json`, `package-lock.json`, `docs/progress.md`.
+- Проверки: `npm ls jest @types/jest ts-jest jest-environment-jsdom typescript`,
+  `npm run prisma:generate`, `npm run typecheck`, `npm run lint`, targeted Jest (6 suite, 22 теста),
+  полный `npm test -- --runInBand` (79 suite, 257 тестов), Prettier для изменённых manifests,
+  `npm ci --dry-run --ignore-scripts --no-audit --no-fund`, `npm run build` и `git diff --check` —
+  успешно.
+- Переменные окружения: новых нет; Prisma generate и build использовали только одноразовые
+  безопасные placeholder `DATABASE_URL`, `DATABASE_URL_UNPOOLED` и build-only `AUTH_SECRET` без
+  подключения к PostgreSQL.
+- Архитектура: без изменений.
+- Product Tour: без изменений.
+- API overview: без изменений.
+- Ограничения: полный `npm ci` не завершился из-за native-файлов Next.js/Tailwind, заблокированных
+  работающим Node-процессом Windows; согласованность manifest/lock подтверждена успешным dry-run.
+  Общий `npm run format:check` по-прежнему проверяет также существующие `.worktrees` и сообщает о
+  прежних несвязанных форматных расхождениях; изменённые файлы проходят отдельную Prettier-проверку.
+
+## Task 157 — Транзакционные проверки заказов
+
+- Результат: пункт 66 закрыт новым integration-тестом серверных контрактов заказа. Подтверждены
+  server-owned перерасчёт и полные snapshots позиции, rollback списанного остатка при ошибке создания
+  заказа и rollback статуса при ошибке записи истории. Вместе с существующим покрытием проверены
+  история статусов, повторная проверка роли `ADMIN` и отклонение недопустимых переходов.
+- Файлы: `src/modules/orders/server/order-transaction-contracts.test.ts`,
+  `docs/first-db-release-decisions.md`, `docs/progress.md`.
+- Проверки: targeted Jest серверного контура заказов (18 suites, 85 тестов), `npm run lint`,
+  `npm run typecheck`, полный `npm test -- --runInBand` (80 suites, 260 тестов), `npm run build` и
+  read-only `security-review` — успешно; подтверждённых security findings нет.
+- Переменные окружения: новых нет; успешный build использовал только одноразовые безопасные
+  placeholder `DATABASE_URL`, `DATABASE_URL_UNPOOLED` и `AUTH_SECRET` без подключения к PostgreSQL.
+- Архитектура: без изменений; зафиксирован тестовый контракт атомарности существующих
+  Prisma-транзакций.
+- Product Tour: без изменений.
+- API overview: без изменений.
+- Ограничения: тесты используют управляемый in-memory transaction harness и не подключаются к живой
+  PostgreSQL; конкурентное оформление последней единицы остаётся пунктом 67.
