@@ -1,26 +1,28 @@
-import { ZodError } from "zod";
-
 import {
   createGuestOrder,
   OrderCreationConflictError,
 } from "@/modules/orders/server/order-creation";
+import { runRouteBoundary } from "@/server/http/route-boundary";
 
 export const runtime = "nodejs";
 
 export async function POST(request: Request) {
-  try {
-    const order = await createGuestOrder(await request.json());
-
-    return Response.json(order, { status: 201 });
-  } catch (error) {
-    if (error instanceof ZodError || error instanceof SyntaxError) {
-      return Response.json({ error: "Invalid request" }, { status: 400 });
-    }
-
-    if (error instanceof OrderCreationConflictError) {
-      return Response.json({ status: "CONFLICT", issues: error.issues }, { status: 409 });
-    }
-
-    return Response.json({ error: "Unable to create order" }, { status: 500 });
-  }
+  return runRouteBoundary(
+    {
+      operation: "order.create",
+      internalErrorMessage: "Unable to create order",
+      request,
+      rateLimit: { scope: "order-create", limit: 10, windowMs: 60_000 },
+    },
+    async ({ json }) => {
+      try {
+        return json(await createGuestOrder(await request.json()), { status: 201 });
+      } catch (error) {
+        if (error instanceof OrderCreationConflictError) {
+          return json({ status: "CONFLICT", issues: error.issues }, { status: 409 });
+        }
+        throw error;
+      }
+    },
+  );
 }

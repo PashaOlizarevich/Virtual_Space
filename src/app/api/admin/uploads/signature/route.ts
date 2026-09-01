@@ -1,26 +1,34 @@
-import { ZodError, z } from "zod";
+import { z } from "zod";
 
 import { createImageUploadSignature } from "@/modules/catalog/server/admin";
 import { AdminAccessRequiredError, AuthenticationRequiredError } from "@/server/admin-auth";
+import { runRouteBoundary } from "@/server/http/route-boundary";
 
 export const runtime = "nodejs";
 
 const requestSchema = z.strictObject({ productId: z.string().regex(/^[1-9]\d*$/) });
 
 export async function POST(request: Request) {
-  try {
-    const input = requestSchema.parse(await request.json());
-    return Response.json(await createImageUploadSignature(input.productId));
-  } catch (error) {
-    if (error instanceof AuthenticationRequiredError) {
-      return Response.json({ error: "Authentication required" }, { status: 401 });
-    }
-    if (error instanceof AdminAccessRequiredError) {
-      return Response.json({ error: "Administrator access required" }, { status: 403 });
-    }
-    if (error instanceof ZodError || error instanceof SyntaxError) {
-      return Response.json({ error: "Invalid request" }, { status: 400 });
-    }
-    return Response.json({ error: "Unable to create upload signature" }, { status: 500 });
-  }
+  return runRouteBoundary(
+    {
+      operation: "admin.upload-signature.create",
+      internalErrorMessage: "Unable to create upload signature",
+      request,
+      rateLimit: { scope: "admin-upload-signature", limit: 30, windowMs: 60_000 },
+    },
+    async ({ json }) => {
+      try {
+        const input = requestSchema.parse(await request.json());
+        return json(await createImageUploadSignature(input.productId));
+      } catch (error) {
+        if (error instanceof AuthenticationRequiredError) {
+          return json({ error: "Authentication required" }, { status: 401 });
+        }
+        if (error instanceof AdminAccessRequiredError) {
+          return json({ error: "Administrator access required" }, { status: 403 });
+        }
+        throw error;
+      }
+    },
+  );
 }

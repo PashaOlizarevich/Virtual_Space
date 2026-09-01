@@ -1,8 +1,10 @@
 import "server-only";
 
+import { createHash } from "node:crypto";
 import { z } from "zod";
 
 import { db } from "@/server/db";
+import { checkRateLimitKey } from "@/server/http/rate-limit";
 import { verifyPassword } from "@/modules/auth/server/password";
 
 // Auth.js adds its own callback/CSRF fields to the POST body. Zod strips them so
@@ -18,6 +20,13 @@ const DUMMY_PASSWORD_HASH =
 export async function authorizeCredentials(credentials: unknown) {
   const parsed = credentialsSchema.safeParse(credentials);
   if (!parsed.success) return null;
+
+  const credentialKey = createHash("sha256").update(parsed.data.email).digest("hex");
+  const attempt = checkRateLimitKey(`credential-login:${credentialKey}`, {
+    limit: 10,
+    windowMs: 15 * 60_000,
+  });
+  if (!attempt.allowed) return null;
 
   const user = await db.user.findUnique({
     where: { email: parsed.data.email },

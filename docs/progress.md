@@ -2879,3 +2879,32 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
   поля server cart DTO.
 - Ограничения: email-провайдер восстановления ещё не выбран, поэтому письмо не доставляется; live DB
   и новый E2E не запускались. Новые E2E не создавались без отдельного разрешения пользователя.
+
+## Task 168 — Единая безопасность серверных HTTP-границ
+
+- Результат: пункт 78 добавляет общий server-only boundary для Route Handlers с валидируемым или
+  сгенерированным request ID, корреляционным response header, единым отображением Zod/JSON и
+  неожиданных ошибок, безопасным структурным журналированием и `429`/`Retry-After` для
+  чувствительных HTTP-операций. Credential-login ограничен отдельным ключом SHA-256 email и
+  сохраняет одинаковый публичный отказ.
+- Файлы: `src/server/http/**`, Route Handlers заказов и административных операций,
+  `src/modules/auth/server/credentials.ts`, новые unit-тесты и документация архитектуры, API-слоя и
+  решений первого DB-релиза.
+- Безопасность: лог содержит только allowlist `requestId/operation/method/path/errorType`, без текста
+  исключения, stack, body, query, headers, credentials или PII. Read-only `security-review` выявил
+  возможность неограниченного роста Map limiter; после исправления добавлены очистка истёкших
+  записей и жёсткий предел 10 000 ключей, подтверждённых findings не осталось.
+- Проверки: `npm run lint`, `npm run typecheck`, полный `npm test -- --runInBand` (94 suites,
+  290 тестов), `npm run prisma:validate`, `npm run prisma:generate`, `npm run build` и
+  `git diff --check` прошли.
+- Переменные окружения: новых нет; Prisma и build использовали только одноразовые безопасные
+  placeholder `DATABASE_URL`, `DATABASE_URL_UNPOOLED` и `AUTH_SECRET` без подключения к PostgreSQL.
+- Архитектура: общая HTTP-инфраструктура размещена в `src/server/http`; доменные конфликты и
+  auth/ownership остаются в модулях и их transport-map, публичные DTO не изменены.
+- Product Tour: без изменений — маршруты и пользовательские сценарии не менялись.
+- API overview: добавлены общий boundary, request ID, безопасное логирование, лимиты и карта
+  подключённых endpoints.
+- Ограничения: in-memory limiter действует в пределах одного процесса, сбрасывается при рестарте и
+  полагается на настроенный trusted reverse proxy для IP-заголовков; горизонтальный production
+  deploy требует платформенного или распределённого rate limiting. E2E не добавлялись и не
+  запускались, поскольку пользовательские сценарии/UI не менялись.

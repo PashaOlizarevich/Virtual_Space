@@ -297,3 +297,25 @@ Auth.js, Prisma/PostgreSQL, Cloudinary и Telegram; наличие имени `O
 [src/modules/admin/orders-transport.ts](../src/modules/admin/orders-transport.ts) валидирует
 allowlisted DTO для клиентского повторного GET и отправляет PATCH только с новым enum-статусом;
 текущая роль и допустимость перехода по-прежнему повторно проверяются сервером.
+
+## Общая HTTP-граница, корреляция и ограничение частоты
+
+- [src/server/http/route-boundary.ts](../src/server/http/route-boundary.ts) — единый wrapper Route
+  Handlers: безопасные `400/429/500`, endpoint-specific публичное сообщение и журналирование только
+  неожиданных ошибок.
+- [src/server/http/request-context.ts](../src/server/http/request-context.ts) — проверка входного
+  `x-request-id`, генерация UUID при отсутствии/невалидности и добавление идентификатора в каждый
+  ответ подключённых endpoints.
+- [src/server/http/safe-logger.ts](../src/server/http/safe-logger.ts) — структурный allowlist логов
+  без error message, stack, body, query, headers и пользовательских данных.
+- [src/server/http/rate-limit.ts](../src/server/http/rate-limit.ts) — bounded fixed-window лимиты для
+  чувствительных HTTP-операций и хешированного credential-login ключа.
+
+Boundary подключён к `POST /api/orders`, `POST /api/orders/preflight`,
+`POST /api/orders/lookup`, `POST /api/admin/uploads/signature`,
+`PATCH /api/admin/orders/[orderNumber]/status` и административному GET списка для общей обработки
+ошибок/корреляции. Rate limiting применяется только к чувствительным или изменяющим состояние
+операциям; read-only административный список защищён Auth.js и bounded pagination без отдельного
+лимита. In-memory limiter является защитой одного процесса, а не заменой платформенному лимиту при
+горизонтальном production-развёртывании; адресные ключи корректны только за настроенным доверенным
+reverse proxy.
