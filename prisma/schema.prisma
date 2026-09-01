@@ -33,6 +33,7 @@ model User {
   passwordHash        String?
   credentialsVersion  Int                  @default(0)
   role                UserRole             @default(USER)
+  deletedAt           DateTime?            @db.Timestamptz(3)
   accounts            Account[]
   sessions            Session[]
   passwordResetTokens PasswordResetToken[]
@@ -202,7 +203,7 @@ model Cart {
   createdAt DateTime @default(now()) @db.Timestamptz(3)
   updatedAt DateTime @updatedAt @db.Timestamptz(3)
 
-  user  User       @relation(fields: [userId], references: [id])
+  user  User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   items CartItem[]
 }
 
@@ -217,26 +218,27 @@ model CartItem {
   createdAt       DateTime @default(now()) @db.Timestamptz(3)
   updatedAt       DateTime @updatedAt @db.Timestamptz(3)
 
-  cart    Cart    @relation(fields: [cartId], references: [id])
-  product Product @relation(fields: [productId], references: [id])
+  cart    Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Restrict)
 
   @@unique([cartId, productId, optionsKey])
 }
 
 model Order {
-  id           BigInt      @id @default(autoincrement())
-  publicNumber String      @unique
-  userId       String?
-  customerName String
-  phone        String
-  email        String
-  comment      String?
-  currency     Currency    @default(BYN)
+  id             BigInt      @id @default(autoincrement())
+  publicNumber   String      @unique
+  userId         String?
+  customerName   String
+  phone          String
+  email          String
+  comment        String?
+  currency       Currency    @default(BYN)
   /// DB invariant for the order migration: total >= 0.
-  total        Decimal     @db.Decimal(12, 2)
-  status       OrderStatus @default(NEW)
-  createdAt    DateTime    @default(now()) @db.Timestamptz(3)
-  updatedAt    DateTime    @updatedAt @db.Timestamptz(3)
+  total          Decimal     @db.Decimal(12, 2)
+  status         OrderStatus @default(NEW)
+  retentionUntil DateTime?   @db.Timestamptz(3)
+  createdAt      DateTime    @default(now()) @db.Timestamptz(3)
+  updatedAt      DateTime    @updatedAt @db.Timestamptz(3)
 
   user          User?                @relation(fields: [userId], references: [id], onDelete: SetNull)
   items         OrderItem[]

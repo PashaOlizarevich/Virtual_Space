@@ -2724,3 +2724,25 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 - Ограничения: явные `onDelete`, дополнительные индексы, SQL `CHECK` и миграция оставлены пунктам
   70–71 согласно порядку implementation plan; backend и синхронизация гостевой корзины — пунктам
   73–74.
+
+## Task 161 — Политика удаления аккаунта и сохранения заказов
+
+- Результат: пункт 70 задаёт явные referential actions для пользователя, активной корзины и заказов;
+  корзина с позициями удаляется каскадно, ссылки заказов и истории статусов на пользователя
+  обнуляются, а заказ, снимок покупателя, позиции и история не удаляются вместе с аккаунтом.
+- Файлы: `prisma/schema.prisma`, `docs/architecture.md`,
+  `docs/first-db-release-decisions.md`, `docs/progress.md`.
+- Миграция и данные: совместимое schema-only изменение с nullable `User.deletedAt` и
+  `Order.retentionUntil`; миграция, backfill, `db push`, seed и обращения к живой PostgreSQL не
+  выполнялись и оставлены пункту 71.
+- Проверки: `npm run prisma:validate`, `npm run prisma:generate`, `npm run lint`,
+  `npm run typecheck`, полный `npm test -- --runInBand`, `npm run build`, `git diff --check` и
+  read-only `security-review`.
+- Переменные окружения: новых нет; Prisma и build использовали только одноразовые безопасные
+  placeholder `DATABASE_URL`, `DATABASE_URL_UNPOOLED` и build-only `AUTH_SECRET` без подключения к
+  PostgreSQL.
+- Архитектура: анонимизация остаётся будущей server-only доменной транзакцией; nullable-поля и FK
+  только закрепляют её безопасные инварианты хранения.
+- Product Tour и API overview: без изменений — маршруты и публичные/server контракты не менялись.
+- Ограничения: server-only операция анонимизации, отзыв доступа, расчёт retention, legal hold и purge
+  не входят в пункт 70; SQL-миграция и DB-level проверки относятся к пункту 71.
