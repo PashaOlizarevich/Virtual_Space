@@ -2541,3 +2541,26 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 - API overview: документированы схемы, ownership, DTO, пагинация и HTTP-ошибки двух новых endpoints.
 - Ограничения: UI не переключался на backend по границе пункта 65; инфраструктурный rate limit
   публичного lookup остаётся общему hardening пункта 78.
+
+## Task 153 — Административное изменение статуса заказа
+
+- Результат: добавлен защищённый `PATCH /api/admin/orders/[orderNumber]/status`; текущая сессия и
+  роль `ADMIN` повторно проверяются перед мутацией, а текущий статус, допустимость перехода,
+  условное обновление заказа и запись истории обрабатываются атомарно.
+- Файлы: `src/modules/orders/server/read-schemas.ts`,
+  `src/modules/orders/server/order-status-update.ts`, `src/modules/orders/server/admin-status.ts`, новый
+  Route Handler и новые unit/transport-тесты, `docs/api-layer-overview.md`, `docs/ProductTour.md`,
+  `docs/architecture.md`, `docs/first-db-release-decisions.md`, `docs/progress.md`.
+- Проверки: targeted Jest (3 suite, 13 тестов), `npm run prisma:validate`,
+  `npm run prisma:generate`, `npm run lint`, `npm run typecheck`, полный `npm test -- --runInBand`
+  (75 suite, 249 тестов), `npm run build`, Prettier и `git diff --check`; read-only security review
+  проверил authentication/authorization, mass assignment, enum-переходы, конкурентное обновление,
+  атомарность истории и безопасные ошибки — подтверждённых findings нет.
+- Переменные окружения: новых нет; PostgreSQL не изменялся и миграция не создавалась.
+- Архитектура: write-service остаётся в orders-модуле, transport выполняет только parse/auth/map;
+  условный `updateMany` по предыдущему статусу закрывает гонку, а история входит в ту же транзакцию.
+- Product Tour: зафиксирована готовность backend чтения и смены статуса; UI остаётся preview до
+  пункта 65.
+- API overview: документированы новый PATCH-контракт, безопасные ошибки и транзакционная граница.
+- Ограничения: live PostgreSQL не вызывался; полный transaction/concurrency-набор остаётся пунктам
+  66–67, интеграция UI — пункту 65.

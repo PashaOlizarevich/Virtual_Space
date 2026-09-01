@@ -535,18 +535,20 @@ Checkout form + cart ids
 ### Изменение статуса администратором
 
 ```text
-Admin form -> Server Action -> auth() + role ADMIN -> Zod
-  -> orders service -> проверка разрешённого перехода
+Admin form -> PATCH /api/admin/orders/[orderNumber]/status -> auth() + актуальная роль ADMIN -> Zod
+  -> orders service -> повторное чтение статуса -> проверка разрешённого перехода
   -> transaction: Order.status + OrderStatusHistory
-  -> revalidatePath / Query invalidation -> UI
+  -> response DTO -> Query invalidation -> UI
 ```
 
 Разрешены `NEW -> CONFIRMED -> IN_PROGRESS -> COMPLETED`, а также переходы в `CANCELLED` из
 `NEW`, `CONFIRMED` и `IN_PROGRESS`. Остальные переходы отклоняются сервером.
 
-> Реализация пункта 61: закрытая матрица переходов и контролируемая доменная ошибка
-> централизованы в `src/modules/orders/server/status-transitions.ts`. Write-service обязан проверить
-> переход до первой мутации; атомарная запись статуса и истории относится к пункту 63.
+> Реализация пунктов 61 и 63: закрытая матрица переходов централизована в
+> `src/modules/orders/server/status-transitions.ts`, а защищённая мутация — в
+> `src/modules/orders/server/order-status-update.ts`. Условное обновление по `id + previousStatus`
+> обнаруживает конкурентную смену статуса; `Order.status` и `OrderStatusHistory` записываются в одной
+> транзакции, причём `changedByUserId` берётся из повторно проверенной admin-сессии.
 
 ### Загрузка изображения
 
