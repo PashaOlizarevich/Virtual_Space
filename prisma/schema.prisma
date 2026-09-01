@@ -24,18 +24,20 @@ enum UserRole {
 }
 
 model User {
-  id            String               @id @default(cuid())
-  name          String?
-  email         String               @unique
-  emailVerified DateTime?            @db.Timestamptz(3)
-  image         String?
-  phone         String?
-  passwordHash  String?
-  role          UserRole             @default(USER)
-  accounts      Account[]
-  sessions      Session[]
-  orders        Order[]
-  statusChanges OrderStatusHistory[] @relation("OrderStatusChangedBy")
+  id                  String               @id @default(cuid())
+  name                String?
+  email               String               @unique
+  emailVerified       DateTime?            @db.Timestamptz(3)
+  image               String?
+  phone               String?
+  passwordHash        String?
+  credentialsVersion  Int                  @default(0)
+  role                UserRole             @default(USER)
+  accounts            Account[]
+  sessions            Session[]
+  passwordResetTokens PasswordResetToken[]
+  orders              Order[]
+  statusChanges       OrderStatusHistory[] @relation("OrderStatusChangedBy")
 }
 
 model Account {
@@ -73,6 +75,19 @@ model VerificationToken {
   expires    DateTime @db.Timestamptz(3)
 
   @@id([identifier, token])
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  userId    String
+  tokenHash String   @unique
+  expiresAt DateTime @db.Timestamptz(3)
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
 }
 
 model Category {

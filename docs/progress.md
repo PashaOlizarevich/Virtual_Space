@@ -2678,3 +2678,30 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 - Ограничения: harness воспроизводит критическое чередование операций in-memory, но не проверяет
   реальные блокировки и уровень изоляции живого PostgreSQL; это остаётся release-интеграционной
   проверкой в disposable test DB.
+
+## Task 159 — Фундамент пользовательских сценариев Auth.js
+
+- Результат: пункт 68 добавляет `PasswordResetToken` с хранением только hash одноразового секрета и
+  `User.credentialsVersion` для будущего отзыва JWT после смены пароля; существующие Auth.js-модели
+  переиспользуются публичными пользователями без дублирования identity.
+- Профиль: PostgreSQL-профиль использует `User.name`, канонический `User.email` и optional
+  `User.phone`; демонстрационный профиль не переносится, гостевые заказы не присваиваются аккаунту
+  автоматически по совпадению email.
+- Файлы: `prisma/schema.prisma`, миграция
+  `20260901130000_add_public_user_auth_foundation`, `docs/architecture.md`,
+  `docs/first-db-release-decisions.md`, `docs/progress.md`.
+- Миграция и данные: совместимое additive-изменение без удаления и backfill персональных данных;
+  живая PostgreSQL, `db push`, seed и production-запросы не использовались.
+- Проверки: `npm run prisma:validate`, `npm run prisma:generate`, проверка SQL на destructive-
+  операции, `npm run lint`, `npm run typecheck`, полный `npm test -- --runInBand` (81 suite,
+  261 тест), `npm run build` и read-only `security-review` — успешно; подтверждённых security
+  findings нет.
+- Переменные окружения: новых нет; Prisma и build использовали только одноразовые безопасные
+  placeholder `DATABASE_URL`, `DATABASE_URL_UNPOOLED` и build-only `AUTH_SECRET` без подключения к
+  PostgreSQL.
+- Архитектура: зафиксированы публичная Auth.js identity, отзыв credentials-сессий и безопасная
+  граница будущего claim гостевых заказов.
+- Product Tour и API overview: без изменений — регистрация, восстановление, профиль и transport
+  реализуются пунктами 72 и 76.
+- Ограничения: runtime генерации/отправки/потребления reset-токена и сверки версии JWT ещё нет и
+  намеренно оставлен пункту 72.
