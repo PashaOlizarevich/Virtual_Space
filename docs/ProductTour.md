@@ -157,6 +157,8 @@ mock-контракте хранятся как ISO 8601 UTC-строки; то�
 - Состояние корзины и сохранение в браузере: `src/modules/cart/store.ts`.
 - Проверка актуальности позиции: `src/modules/cart/validation.ts`.
 - Preview-синхронизация: `src/modules/cart/sync.ts` и `src/modules/cart/mock-transport.ts`.
+- Защищённая persistent-корзина пользователя реализована server-only сервисом и Server Actions в
+  `src/modules/cart/server/`; UI подключается к этому transport на интеграционном этапе.
 - Типы: `src/modules/cart/types.ts`.
 - Стили: классы `.cart-widget*` в `src/styles/globals.css`.
 

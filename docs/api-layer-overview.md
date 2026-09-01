@@ -27,6 +27,10 @@
   только собственного профиля через allowlist DTO.
 - [src/modules/users/server/actions.ts](../src/modules/users/server/actions.ts) — transport профиля со
   стабильными кодами ошибок.
+- [src/modules/cart/server/cart-service.ts](../src/modules/cart/server/cart-service.ts) —
+  ownership-scoped чтение, ревалидация и мутации persistent-корзины пользователя.
+- [src/modules/cart/server/actions.ts](../src/modules/cart/server/actions.ts) — защищённый transport
+  серверной корзины со стабильными безопасными кодами результата.
 - [src/modules/auth/server/password.ts](../src/modules/auth/server/password.ts) — хеширование и
   проверка паролей через `scrypt`.
 - [src/modules/auth/server/first-admin.ts](../src/modules/auth/server/first-admin.ts) — безопасная
@@ -86,6 +90,24 @@
 
 Используемые техники: Zod, `strictObject`, ограничения длины и диапазонов, нормализация email и slug,
 allowlist полей, проверка идентификаторов и безопасное преобразование данных БД в DTO.
+
+## Серверная корзина пользователя
+
+- [src/modules/cart/server/schemas.ts](../src/modules/cart/server/schemas.ts) принимает только
+  `productId`, выбранные стабильные ключи опций и ограниченное количество; неизвестные поля, цена и
+  server-managed `optionsKey` отклоняются.
+- [src/modules/cart/server/cart-service.ts](../src/modules/cart/server/cart-service.ts) получает
+  владельца из актуальной Auth.js session, ограничивает каждый Prisma write через `cart.userId` и
+  возвращает allowlisted DTO без Prisma-моделей и внутренних id.
+- [src/modules/cart/server/actions.ts](../src/modules/cart/server/actions.ts) предоставляет операции
+  чтения, изменения количества и удаления для собственного UI и отображает ожидаемые ошибки в
+  стабильные коды без раскрытия БД.
+
+Чтение одновременно ревалидирует активность товара, полный набор опций, изменение Decimal-цены и
+суммарное количество товара во всех конфигурациях корзины. Изменение количества повторяет проверки,
+не доверяет клиентской цене и сохраняет актуальную цену из PostgreSQL. Удаление и update используют
+каноническую идентичность конфигурации и ownership-предикат; знание чужого product/configuration не
+даёт доступа к позиции. UI и объединение гостевой корзины остаются пунктам 76 и 74 соответственно.
 
 ## Авторизация
 
