@@ -26,5 +26,10 @@ export const cartQuantityUpdateSchema = cartItemIdentitySchema.extend({
   quantity: z.number().int().min(1).max(99),
 });
 
+export const guestCartMergeSchema = z.strictObject({
+  items: z.array(cartQuantityUpdateSchema).max(100),
+});
+
 export type CartItemIdentityInput = z.infer<typeof cartItemIdentitySchema>;
 export type CartQuantityUpdateInput = z.infer<typeof cartQuantityUpdateSchema>;
+export type GuestCartMergeInput = z.infer<typeof guestCartMergeSchema>;

@@ -133,7 +133,10 @@ async function readCartItems(userId: string, database: CartDatabase): Promise<Ca
   return cart?.items ?? [];
 }
 
-async function buildServerCart(userId: string, database: CartDatabase): Promise<ServerCartDto> {
+export async function buildServerCart(
+  userId: string,
+  database: CartDatabase,
+): Promise<ServerCartDto> {
   const records = await readCartItems(userId, database);
   const totals = new Map<string, number>();
   for (const record of records) {

@@ -158,7 +158,9 @@ mock-контракте хранятся как ISO 8601 UTC-строки; то�
 - Проверка актуальности позиции: `src/modules/cart/validation.ts`.
 - Preview-синхронизация: `src/modules/cart/sync.ts` и `src/modules/cart/mock-transport.ts`.
 - Защищённая persistent-корзина пользователя реализована server-only сервисом и Server Actions в
-  `src/modules/cart/server/`; UI подключается к этому transport на интеграционном этапе.
+  `src/modules/cart/server/`; там же доступно атомарное объединение гостевого снимка после Auth.js
+  входа. UI подключается к этому transport на интеграционном этапе 76 и пока продолжает использовать
+  preview-синхронизацию.
 - Типы: `src/modules/cart/types.ts`.
 - Стили: классы `.cart-widget*` в `src/styles/globals.css`.
 

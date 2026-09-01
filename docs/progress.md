@@ -2818,3 +2818,22 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 - Ограничения: корзина не резервирует складской остаток; окончательная конкурентная проверка и
   уменьшение остатка выполняются транзакционным checkout. Создание/merge позиций относится к пункту
   74, подключение UI — к пункту 76.
+
+## Task 165 — Безопасное объединение корзин
+
+- Результат: пункт 74 добавляет защищённую Server Action и атомарный сервис объединения недоверенного
+  гостевого снимка с persistent-корзиной текущего Auth.js-пользователя; дубли конфигураций
+  канонизируются, количества суммируются, а любой конфликт отклоняет merge целиком.
+- Файлы: `src/modules/cart/server/{schemas,cart-service,cart-merge,merge-action}.ts`, новые unit-тесты
+  и документация архитектуры, API-слоя, Product Tour и решений первого DB-релиза.
+- Проверки: `npm run prisma:validate`, `npm run prisma:generate`, `npm run lint`,
+  `npm run typecheck`, полный `npm test -- --runInBand` (88 suites, 280 тестов), `npm run build`,
+  `git diff --check` и read-only `security-review` прошли; подтверждённых findings нет.
+- Переменные окружения: нет.
+- Архитектура: merge выполняется в `Serializable`-транзакции, identity берётся из `requireUser()`,
+  клиентская цена и `optionsKey` не принимаются, в БД записывается только актуальная Decimal-цена.
+- Product Tour: раздел корзины дополнен фактическим server-only merge и оставшейся preview-интеграцией.
+- API overview: раздел серверной корзины дополнен merge-сервисом, Action, конфликтами и
+  транзакционной семантикой.
+- Ограничения: UI ещё не вызывает новый контракт и не очищает Zustand; это остаётся пункту 76.
+  Конкурентное поведение проверено unit transaction harness без подключения к живой PostgreSQL.
