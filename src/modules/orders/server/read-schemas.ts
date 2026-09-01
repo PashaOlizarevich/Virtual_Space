@@ -22,5 +22,11 @@ export const adminOrderListSchema = z.strictObject({
   limit: z.coerce.number().int().min(1).max(100).default(25),
 });
 
+export const adminOrderStatusUpdateSchema = z.strictObject({
+  orderNumber: publicOrderNumberSchema,
+  status: z.enum(["NEW", "CONFIRMED", "IN_PROGRESS", "COMPLETED", "CANCELLED"]),
+});
+
 export type OrderLookupInput = z.input<typeof orderLookupSchema>;
 export type AdminOrderListInput = z.input<typeof adminOrderListSchema>;
+export type AdminOrderStatusUpdateInput = z.input<typeof adminOrderStatusUpdateSchema>;
