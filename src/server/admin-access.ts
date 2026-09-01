@@ -26,13 +26,15 @@ export type AdminOperation<Arguments extends readonly unknown[], Result> = (
 ) => Promise<Result> | Result;
 
 interface SessionIdentity {
-  user?: { id?: string };
+  user?: { id?: string; credentialsVersion?: number };
 }
 
 interface StoredIdentity {
   id: string;
   email: string;
   role: UserRole;
+  credentialsVersion?: number;
+  deletedAt?: Date | null;
 }
 
 export async function resolveAdminPrincipal(
@@ -41,7 +43,16 @@ export async function resolveAdminPrincipal(
 ): Promise<AdminPrincipal> {
   if (!session?.user?.id) throw new AuthenticationRequiredError();
   const user = await findUser(session.user.id);
-  if (!user || user.role !== "ADMIN") throw new AdminAccessRequiredError();
+  if (
+    !user ||
+    user.deletedAt ||
+    user.role !== "ADMIN" ||
+    (typeof session.user.credentialsVersion === "number" &&
+      typeof user.credentialsVersion === "number" &&
+      session.user.credentialsVersion !== user.credentialsVersion)
+  ) {
+    throw new AdminAccessRequiredError();
+  }
   return { id: user.id, email: user.email, role: "ADMIN" };
 }
 

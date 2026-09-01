@@ -316,8 +316,9 @@ Server Component, а пустой результат и клиентская п�
 
 Файл: `src/app/(store)/login/page.tsx`.
 
-Экран состоит из интерьерного изображения и форм входа/регистрации. После успешной preview-
-авторизации пользователь переходит на `/profile`.
+Экран состоит из интерьерного изображения и форм входа/регистрации. Backend уже поддерживает
+пользовательские Credentials Auth.js, регистрацию и hash-only восстановление доступа, но экран пока
+использует preview-transport; его подключение к Server Actions выполняется пунктом 76.
 
 Где править:
 
@@ -325,6 +326,8 @@ Server Component, а пустой результат и клиентская п�
 - Изображение: `public/images/auth/login-interior.png`.
 - Поля, переключение режимов, сообщения и redirect: `src/modules/auth/components/auth-forms.tsx`.
 - Правила валидации: `src/modules/auth/schemas.ts`.
+- Backend регистрации и восстановления: `src/modules/auth/server/public-auth.ts` и
+  `src/modules/auth/server/actions.ts`.
 - Демонстрационную отправку формы: `src/modules/auth/mock-transport.ts`.
 - Preview-сессию: `src/modules/auth/session-provider.tsx`.
 - Стили: `.auth-*` в `src/styles/globals.css`.
@@ -333,8 +336,9 @@ Server Component, а пустой результат и клиентская п�
 
 Файл: `src/app/(store)/profile/page.tsx`.
 
-Секции: контактные данные, текущая корзина, история заказов и состояние preview-сессии. Со страницы
-можно перейти в `/checkout`, `/catalog` или `/login`.
+Секции: контактные данные, текущая корзина, история заказов и состояние preview-сессии. Backend
+защищённо читает и изменяет собственные `name/email/phone`, однако UI остаётся preview до пункта 76.
+Со страницы можно перейти в `/checkout`, `/catalog` или `/login`.
 
 Где править:
 
@@ -342,6 +346,8 @@ Server Component, а пустой результат и клиентская п�
 - Форму контактов, корзину, заказы и кнопки: `src/modules/users/components/profile-dashboard.tsx`.
 - Демонстрационные профиль и заказы: `src/modules/users/mock-data.ts`.
 - Валидацию профиля: `src/modules/users/schemas.ts`.
+- Защищённый backend профиля: `src/modules/users/server/profile.ts` и
+  `src/modules/users/server/actions.ts`.
 - Демонстрационное сохранение: `src/modules/users/mock-transport.ts`.
 - Стили: `.profile-*` в `src/styles/globals.css`.
 

@@ -2771,3 +2771,26 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 - API overview: без изменений — Prisma-запросы серверной корзины появятся в пункте 73.
 - Ограничения: миграция не применялась к test/preview PostgreSQL; фактические блокировки и планы
   `EXPLAIN` на репрезентативных данных остаются release-проверкой и пунктом 83.
+
+## Task 163 — Пользовательская авторизация и профиль
+
+- Результат: пункт 72 добавляет публичные Credentials Auth.js для активных `USER`/`ADMIN`, безопасную
+  регистрацию, hash-only восстановление доступа с атомарным отзывом прежних credentials JWT и
+  защищённое чтение/изменение собственного профиля по allowlist `name/email/phone`.
+- Файлы: `src/server/auth.ts`, `src/server/user-auth.ts`, `src/modules/auth/server/credentials.ts`,
+  `src/modules/auth/server/public-auth.ts`, `src/modules/auth/server/actions.ts`,
+  `src/modules/users/server/profile.ts`, `src/modules/users/server/actions.ts`, связанные схемы,
+  тесты и документация API/архитектуры/продукта/решений.
+- Проверки: `npm run lint`, `npm run typecheck`, полный `npm test -- --runInBand` (84 suite,
+  267 тестов), `npm run build`, `git diff --check` и read-only `security-review` — успешно;
+  подтверждённых security findings после исправления проверки legacy admin JWT нет.
+- Переменные окружения: новых нет; build использовал только одноразовые безопасные placeholder
+  `DATABASE_URL`, `DATABASE_URL_UNPOOLED` и `AUTH_SECRET` без подключения к PostgreSQL.
+- Архитектура: `docs/architecture.md` фиксирует единый credentials lookup, server-side ownership,
+  отзыв JWT через `credentialsVersion` и server-only границу reset-доставки.
+- Product Tour: обновлены разделы `/login` и `/profile` с фактическим статусом backend и оставшимся
+  preview UI до пункта 76.
+- API overview: обновлены аутентификация, авторизация, восстановление и профиль, их Actions/DTO и
+  ключевые server-only файлы.
+- Ограничения: конкретный email-провайдер не выбран, поэтому сырой reset-секрет выдаётся только
+  server-only адаптерной границе и не отправляется из UI; подключение UI и доставки остаётся пункту 76. Rate limiting чувствительных операций остаётся предусмотренному пункту 78.

@@ -12,3 +12,6 @@ export const profileDetailsSchema = z.strictObject({
 });
 
 export type ProfileDetailsValues = z.infer<typeof profileDetailsSchema>;
+
+export const profileUpdateSchema = profileDetailsSchema;
+export type ProfileUpdateInput = z.infer<typeof profileUpdateSchema>;

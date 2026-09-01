@@ -10,7 +10,12 @@ export const registrationSchema = z.strictObject({
   password,
 });
 export const recoverySchema = z.strictObject({ email });
+export const resetPasswordSchema = z.strictObject({
+  token: z.string().min(32, "Некорректная ссылка восстановления").max(256),
+  password,
+});
 
 export type LoginValues = z.infer<typeof loginSchema>;
 export type RegistrationValues = z.infer<typeof registrationSchema>;
 export type RecoveryValues = z.infer<typeof recoverySchema>;
+export type ResetPasswordValues = z.infer<typeof resetPasswordSchema>;

@@ -1,6 +1,7 @@
 import "server-only";
 
 import {
+  AuthenticationRequiredError,
   authorizeAdminOperation,
   resolveAdminPrincipal,
   type AdminOperation,
@@ -14,10 +15,13 @@ export type { AdminPrincipal } from "@/server/admin-access";
 
 export async function requireAdmin(): Promise<AdminPrincipal> {
   const session = await auth();
+  if (typeof session?.user?.credentialsVersion !== "number") {
+    throw new AuthenticationRequiredError();
+  }
   return resolveAdminPrincipal(session, (id) =>
     db.user.findUnique({
       where: { id },
-      select: { id: true, email: true, role: true },
+      select: { id: true, email: true, role: true, credentialsVersion: true, deletedAt: true },
     }),
   );
 }

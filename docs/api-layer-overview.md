@@ -16,7 +16,17 @@
 - [src/server/admin-access.ts](../src/server/admin-access.ts) — общий контракт разрешения
   административного доступа и безопасные ошибки доступа.
 - [src/modules/auth/server/credentials.ts](../src/modules/auth/server/credentials.ts) — серверная
-  валидация и проверка административных credentials.
+  валидация и проверка пользовательских и административных credentials.
+- [src/modules/auth/server/public-auth.ts](../src/modules/auth/server/public-auth.ts) — регистрация,
+  выпуск hash-only токена восстановления и атомарная смена пароля.
+- [src/modules/auth/server/actions.ts](../src/modules/auth/server/actions.ts) — безопасные Server
+  Actions регистрации и подтверждения сброса пароля.
+- [src/server/user-auth.ts](../src/server/user-auth.ts) — проверка пользовательской сессии, состояния
+  аккаунта и актуальной версии credentials.
+- [src/modules/users/server/profile.ts](../src/modules/users/server/profile.ts) — чтение и изменение
+  только собственного профиля через allowlist DTO.
+- [src/modules/users/server/actions.ts](../src/modules/users/server/actions.ts) — transport профиля со
+  стабильными кодами ошибок.
 - [src/modules/auth/server/password.ts](../src/modules/auth/server/password.ts) — хеширование и
   проверка паролей через `scrypt`.
 - [src/modules/auth/server/first-admin.ts](../src/modules/auth/server/first-admin.ts) — безопасная
@@ -83,8 +93,15 @@ allowlist полей, проверка идентификаторов и без�
   JWT-сессия.
 - [Auth.js Route Handler](../src/app/api/auth/[...nextauth]/route.ts) — стандартные `GET` и `POST`
   обработчики Auth.js.
-- [Проверка credentials](../src/modules/auth/server/credentials.ts) — поиск пользователя и допуск
-  только учётной записи с актуальной ролью `ADMIN`.
+- [Проверка credentials](../src/modules/auth/server/credentials.ts) — единый поиск активного
+  пользователя с паролем; административная wrapper-граница дополнительно требует роль `ADMIN`.
+- [Пользовательская сессия](../src/server/user-auth.ts) — защищённые операции повторно читают
+  пользователя и отклоняют удалённый аккаунт или JWT со старой `credentialsVersion`.
+- [Восстановление доступа](../src/modules/auth/server/public-auth.ts) — случайный одноразовый секрет
+  хранится только как SHA-256 hash, действует 30 минут и потребляется транзакционно со сменой
+  password hash и отзывом прежних credentials-сессий.
+- [Профиль](../src/modules/users/server/profile.ts) — ownership определяется только из Auth.js
+  session; клиент не передаёт user id или роль.
 - [Проверка административной сессии](../src/server/admin-auth.ts) и
   [логика доступа](../src/server/admin-access.ts) — повторное чтение пользователя из PostgreSQL и
   проверка текущей роли перед защищённой операцией.
