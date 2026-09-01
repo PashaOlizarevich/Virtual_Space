@@ -1654,3 +1654,28 @@ Production migration и rollout сериализованы concurrency-груп�
 раздельные preview/production credentials, required reviewers, branch restrictions, backup/PITR и
 restore drill по `docs/production-operations.md`. Prisma schema, SQL migration history и production
 данные пунктом не изменялись; workflow локально не запускал Vercel deploy или live migration.
+
+## Пункт 83 — проверка планов основных запросов
+
+Добавлена явная команда `npm run prisma:verify-query-plans` для проверки основных PostgreSQL-путей
+каталога, корзины и заказов. Она создаёт в одной транзакции 2 000 товаров, 2 000 заказов, целевую и
+фоновые корзины, обновляет статистику и выполняет `EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON)` для
+общего и категорийного каталога, пользовательской корзины, собственной и административной истории
+заказов, а также поиска заказа по публичному номеру. Проверка завершается ошибкой, если план не
+содержит ожидаемый индекс, и безусловно откатывает транзакцию в `finally`.
+
+Команда запрещена при `NODE_ENV=production`, принимает только `QUERY_PLAN_ENV=local|test|preview` и
+дополнительно требует осознанное подтверждение rollback-only записей через
+`QUERY_PLAN_ALLOW_WRITES=1`. Подключение выполняется только через direct
+`DATABASE_URL_UNPOOLED`; строка подключения, параметры и строки данных не выводятся. Запуск:
+
+```powershell
+$env:QUERY_PLAN_ENV = "preview"
+$env:QUERY_PLAN_ALLOW_WRITES = "1"
+npm run prisma:verify-query-plans
+```
+
+Prisma schema и история SQL-миграций не изменены: проверяемые индексы уже соответствуют фактическим
+путям запросов. В текущем рабочем окружении отсутствовали непроизводственная PostgreSQL и
+`DATABASE_URL_UNPOOLED`, поэтому фактическое evidence `EXPLAIN` должно быть получено отдельным
+прогоном команды на local/preview target; статическая проверка не считается его заменой.

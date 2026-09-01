@@ -21,6 +21,7 @@
     "prisma:validate": "prisma validate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:seed": "node scripts/run-prisma-seed.mjs",
+    "prisma:verify-query-plans": "node scripts/verify-query-plans.mjs",
     "prisma:studio": "prisma studio",
     "admin:create-first": "tsx --conditions=react-server scripts/create-first-admin.ts"
   },

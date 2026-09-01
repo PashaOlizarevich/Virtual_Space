@@ -795,6 +795,11 @@ dev-ветку. Preview/local не получают production credentials ил�
 
 Обязательные проверки перед релизом: TypeScript/`next build`, ESLint, Jest, критические Playwright-сценарии, валидные миграции. Seed не запускается автоматически в production.
 
+Основные планы PostgreSQL проверяются отдельной rollback-only командой
+`npm run prisma:verify-query-plans` на явно выбранной local/test/preview базе. Команда создаёт
+репрезентативные транзакционные fixtures, выполняет `EXPLAIN ANALYZE` и подтверждает ожидаемые
+индексы каталога, корзины и заказов; production target и неявное разрешение записей запрещены.
+
 ## 17. Добавление функций и модулей
 
 ### Новый сценарий существующего домена

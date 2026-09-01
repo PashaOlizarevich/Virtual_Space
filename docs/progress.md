@@ -3006,3 +3006,30 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
   изменения. До первого запуска владелец обязан отключить Vercel auto-production deploy, создать
   Neon branches, GitHub Environment protection, scoped secrets и подтвердить backup/PITR restore
   drill; автоматические post-deploy E2E остаются пункту 84.
+
+## Task 173 — Проверка планов основных запросов
+
+- Результат: пункт 83 добавляет rollback-only CLI, который создаёт репрезентативные fixtures и через
+  `EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON)` проверяет ожидаемые индексы основных запросов каталога,
+  корзины, собственной/административной истории и поиска заказа.
+- Файлы: `scripts/verify-query-plans.mjs`, `package.json`, `docs/architecture.md`,
+  `docs/first-db-release-decisions.md`, `docs/progress.md`.
+- Проверки: guards для отсутствующего `QUERY_PLAN_ENV`, неподтверждённых записей и
+  `NODE_ENV=production`, `node --check`, `npm run prisma:check-migrations`,
+  `npm run prisma:validate`, `npm run prisma:generate`, `npm run lint`, `npm run typecheck`, полный
+  `npm test -- --runInBand` (94 suites, 290 тестов) и `npm run build` прошли; фактический `EXPLAIN`
+  не запускался без доступной непроизводственной PostgreSQL.
+- Переменные окружения: новых runtime-переменных нет; CLI требует существующую server-only
+  `DATABASE_URL_UNPOOLED` и явные подтверждения `QUERY_PLAN_ENV=local|test|preview`,
+  `QUERY_PLAN_ALLOW_WRITES=1`.
+- Архитектура: добавлена изолированная операционная проверка планов без runtime entry point; Prisma
+  schema, SQL migration history, API-контракты и постоянные данные не изменены.
+- Product Tour: без изменений — маршруты и пользовательские сценарии не менялись.
+- API overview: без изменений — server entry points и публичные контракты не менялись.
+- Security review: SQL параметризован, connection string и fixture data не логируются, production и
+  неявные записи отклоняются до подключения, транзакция откатывается также при ошибке;
+  подтверждённых findings нет. Остаточный риск: оператор с доступом к credentials может неверно
+  обозначить target как непроизводственный, поэтому команда требует изолированные scoped credentials.
+- Ограничения: в окружении отсутствовали `DATABASE_URL_UNPOOLED`, `psql` и Docker; эмпирическое
+  подтверждение ожидаемых индексов остаётся обязательным прогоном команды на local/preview базе и не
+  заменено статическим анализом.
