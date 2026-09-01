@@ -1631,3 +1631,26 @@ Prisma seed остаётся явной `npm run prisma:seed` local/preview-ко
 новой версионированной forward-fix миграции над изменением применённого SQL или destructive rollback.
 Конкретные provider-команды, retention, RPO/RTO, protected environments и автоматизация фиксируются
 при provisioning в пункте 82. Live-БД, backup, restore и seed не запускались.
+
+## Пункт 82 — защищённый production release
+
+Production release реализован как ручной GitHub Actions workflow для полного lowercase Git SHA из
+`main`. Один и тот же immutable artifact сначала проходит проверки, миграцию и Vercel deployment в
+изолированном GitHub Environment `release-preview`; только затем job входит в защищённый Environment
+`production`, ожидает approval, повторно подтверждает SHA, применяет те же preview-verified миграции
+и выполняет production build/deploy.
+
+Runtime и migration configuration берутся из соответствующего Vercel Environment. Prisma runtime
+использует pooled `DATABASE_URL`, а release CLI — direct `DATABASE_URL_UNPOOLED`; env-файл хранится
+только на ephemeral GitHub runner и исключён из Git. GitHub хранит только scoped Vercel deployment
+credentials. Secrets выдаются отдельным CLI-шагам и не доступны `npm ci`, lint, typecheck или Jest.
+
+Production migration и rollout сериализованы concurrency-группой `production-release` без отмены
+уже выполняющегося job. GitHub Actions закреплены по полным commit SHA, Vercel CLI — по точной версии
+и предварительно кешируется без secrets. Автоматический Vercel production deployment из Git должен
+быть отключён, иначе он сможет обойти порядок `migration -> rollout`.
+
+Внешнее provisioning не выполнялось: владелец инфраструктуры создаёт Vercel/Neon resources,
+раздельные preview/production credentials, required reviewers, branch restrictions, backup/PITR и
+restore drill по `docs/production-operations.md`. Prisma schema, SQL migration history и production
+данные пунктом не изменялись; workflow локально не запускал Vercel deploy или live migration.

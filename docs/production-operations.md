@@ -3,6 +3,60 @@
 Этот runbook применяется к production-релизам Virtual Space. Он не заменяет настройки managed
 backup Neon/Vercel и не разрешает выполнять операции над production без отдельного подтверждения.
 
+## Provisioning Vercel, Neon и GitHub
+
+Первый production-вариант использует Vercel и Neon-managed Vercel Integration. До включения workflow
+ответственный за инфраструктуру обязан:
+
+1. связать Vercel project с репозиторием, но отключить автоматический production deployment из
+   `main`, чтобы rollout выполнялся только после migration job из
+   `.github/workflows/production-release.yml`;
+2. подключить Neon integration, назначить защищённую долгоживущую ветку production и отдельную
+   непроизводственную ветку для GitHub Environment `release-preview`;
+3. выбрать регионы Neon compute и Vercel Functions максимально близко друг к другу;
+4. включить managed backup/PITR с доступным по тарифу retention и выполнить restore drill до первого
+   релиза; фактические RPO/RTO записать в журнал инфраструктуры, а не угадывать в репозитории;
+5. создать GitHub Environments `release-preview` и `production`; для `production` включить required
+   reviewers, запрет self-review и разрешить deployment только из `main`;
+6. запретить параллельные production release вне этого workflow и не создавать второй workflow с
+   иным concurrency group для миграций.
+
+Оба GitHub Environment содержат только deployment secrets `VERCEL_TOKEN`, `VERCEL_ORG_ID` и
+`VERCEL_PROJECT_ID`, с раздельными значениями либо scope для preview и production. Runtime и database
+secrets хранятся в соответствующих Vercel Environment: `DATABASE_URL` (pooled endpoint),
+`DATABASE_URL_UNPOOLED` (direct endpoint), `AUTH_SECRET`, `AUTH_URL`, Cloudinary и Telegram variables
+из `.env.example`. Preview/local credentials не должны иметь доступ к production. Для обоих
+PostgreSQL URL обязателен TLS согласно строке подключения Neon; URL не собираются вручную из
+отдельных фрагментов.
+
+Vercel project хранит соответствующий runtime-набор переменных для Preview и Production. В build и
+runtime Prisma получает только pooled `DATABASE_URL`; direct `DATABASE_URL_UNPOOLED` читается из
+защищённого Vercel env-файла только release preflight, GitHub migration job и Prisma CLI, но не
+клиентский bundle. Env-файл существует только на ephemeral runner и исключён из Git. Auth.js,
+Cloudinary и Telegram secrets не используют `NEXT_PUBLIC_`.
+
+## Release pipeline
+
+Production release запускается вручную для полного lowercase SHA из `main`. Workflow:
+
+1. проверяет, что checkout в точности соответствует SHA и является предком `origin/main`;
+2. в `release-preview` устанавливает зависимости через lock-файл, выполняет preflight, Prisma
+   validation/generation, migration-history check, lint, typecheck и Jest;
+3. применяет миграции к изолированной preview-БД, собирает и развёртывает этот же SHA как Vercel
+   Preview;
+4. ожидает approval защищённого GitHub Environment `production`;
+5. повторно проверяет SHA и production env, сериализованно применяет те же миграции через direct URL,
+   затем собирает и развёртывает production artifact через Vercel CLI.
+
+Concurrency `production-release` допускает не более одного production rollout. Ожидающий release не
+отменяет выполняющийся. Vercel CLI зафиксирован по версии, GitHub Actions — по immutable commit SHA.
+После обновления версии CLI или Actions требуется отдельный review и обычные проверки проекта.
+
+Workflow намеренно не выполняет seed, `prisma db push`, rollback, чтение secret values или
+автоматическое восстановление. Перед approval оператор проверяет preview deployment, состояние
+backup/PITR и результат последнего restore drill. После deployment выполняются разрешённые smoke/E2E
+проверки; их автоматизация остаётся пункту 84 и не даёт разрешения изменять `tests/e2e/**`.
+
 ## Проверка окружения
 
 Перед migration job и rollout приложения release pipeline обязан выполнить:

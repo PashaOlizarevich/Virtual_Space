@@ -781,8 +781,11 @@ main         -> те же проверки -> prisma migrate deploy -> productio
 expand/migrate/contract: сначала совместимая схема, затем код/данные, затем удаление старого поля.
 Протокол подготовки, неизменяемость применённой истории и локальная проверка schema/migration diff
 зафиксированы в `docs/database-migrations.md`. Release-only команда связывает preview-проверку и
-production-применение с одним immutable Git SHA; production pipeline и сериализация jobs добавляются
-отдельным инфраструктурным этапом.
+production-применение с одним immutable Git SHA. GitHub Actions workflow
+`.github/workflows/production-release.yml` сначала проверяет и развёртывает этот SHA в изолированном
+`release-preview`, затем через защищённый GitHub Environment `production` сериализует migration job
+и Vercel rollout общей concurrency-группой. Автоматический Vercel Git production deployment
+отключается, чтобы код не был опубликован раньше миграции.
 
 Для self-hosting позже можно добавить Dockerfile с `next build`/standalone output и запуском Node.js.
 Docker не нужен для первого Vercel-развёртывания и не меняет модульную архитектуру. Production

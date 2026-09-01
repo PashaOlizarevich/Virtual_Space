@@ -1,0 +1,158 @@
+name: Production release
+
+on:
+  workflow_dispatch:
+    inputs:
+      artifact_sha:
+        description: Full Git SHA from main to verify and release
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+env:
+  NODE_VERSION: "24"
+  VERCEL_CLI_VERSION: "59.10.0"
+  ARTIFACT_SHA: ${{ inputs.artifact_sha }}
+
+jobs:
+  preview:
+    name: Verify immutable artifact on preview
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: release-preview
+    concurrency:
+      group: database-release-preview
+      cancel-in-progress: false
+    env:
+      NODE_ENV: production
+      MIGRATION_BASE_REF: origin/main
+    steps:
+      - name: Check out the requested artifact
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: ${{ inputs.artifact_sha }}
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Verify the immutable main artifact
+        shell: bash
+        run: |
+          if [[ ! "$ARTIFACT_SHA" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "artifact_sha must be a full lowercase Git SHA" >&2
+            exit 1
+          fi
+          test "$(git rev-parse HEAD)" = "$ARTIFACT_SHA"
+          git merge-base --is-ancestor "$ARTIFACT_SHA" origin/main
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Cache pinned Vercel CLI without secrets
+        run: npx --yes vercel@${VERCEL_CLI_VERSION} --version
+
+      - name: Pull Vercel preview configuration
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: npx --yes vercel@${VERCEL_CLI_VERSION} pull --yes --environment=preview --token="$VERCEL_TOKEN"
+
+      - name: Validate preview environment
+        run: node --env-file=.vercel/.env.preview.local scripts/validate-production-env.mjs
+
+      - name: Run release checks
+        run: |
+          node --env-file=.vercel/.env.preview.local node_modules/prisma/build/index.js validate
+          node --env-file=.vercel/.env.preview.local node_modules/prisma/build/index.js generate
+          npm run prisma:check-migrations
+          npm run lint
+          npm run typecheck
+          npm test -- --runInBand
+
+      - name: Apply migrations to isolated preview database
+        run: node --env-file=.vercel/.env.preview.local scripts/deploy-prisma-migrations.mjs --environment=preview --artifact-sha="$ARTIFACT_SHA"
+
+      - name: Build preview artifact
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: npx --yes vercel@${VERCEL_CLI_VERSION} build --token="$VERCEL_TOKEN"
+
+      - name: Deploy preview artifact
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: npx --yes vercel@${VERCEL_CLI_VERSION} deploy --prebuilt --archive=tgz --token="$VERCEL_TOKEN"
+
+  production:
+    name: Migrate and deploy production
+    needs: preview
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: production
+    concurrency:
+      group: production-release
+      cancel-in-progress: false
+    env:
+      NODE_ENV: production
+      MIGRATION_BASE_REF: origin/main
+    steps:
+      - name: Check out the verified artifact
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: ${{ inputs.artifact_sha }}
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Verify the approved artifact
+        shell: bash
+        run: |
+          test "$(git rev-parse HEAD)" = "$ARTIFACT_SHA"
+          git merge-base --is-ancestor "$ARTIFACT_SHA" origin/main
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Cache pinned Vercel CLI without secrets
+        run: npx --yes vercel@${VERCEL_CLI_VERSION} --version
+
+      - name: Pull Vercel production configuration
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: npx --yes vercel@${VERCEL_CLI_VERSION} pull --yes --environment=production --token="$VERCEL_TOKEN"
+
+      - name: Validate production environment
+        run: node --env-file=.vercel/.env.production.local scripts/validate-production-env.mjs
+
+      - name: Apply preview-verified migrations once
+        run: node --env-file=.vercel/.env.production.local scripts/deploy-prisma-migrations.mjs --environment=production --artifact-sha="$ARTIFACT_SHA" --preview-verified-sha="$ARTIFACT_SHA"
+
+      - name: Build production artifact
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: npx --yes vercel@${VERCEL_CLI_VERSION} build --prod --token="$VERCEL_TOKEN"
+
+      - name: Deploy production artifact
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: npx --yes vercel@${VERCEL_CLI_VERSION} deploy --prebuilt --prod --archive=tgz --token="$VERCEL_TOKEN"

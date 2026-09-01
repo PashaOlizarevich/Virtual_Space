@@ -2979,3 +2979,30 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
   подтверждённых findings нет. Значения секретов не читаются и не выводятся.
 - Ограничения: provider-specific retention, RPO/RTO, protected pipeline и автоматизация preflight
   относятся к пункту 82; live PostgreSQL, backup, restore, migrate и seed не запускались.
+
+## Task 172 — Production deployment pipeline
+
+- Результат: пункт 82 добавляет ручной release одного immutable SHA через изолированный preview,
+  защищённый production approval, сериализованный `prisma migrate deploy` и Vercel rollout.
+- Файлы: `.github/workflows/production-release.yml`, `.gitignore`, `docs/production-operations.md`,
+  `docs/architecture.md`, `docs/first-db-release-decisions.md`, `docs/progress.md`.
+- Проверки: production env preflight, `npm run prisma:check-migrations`, `npm run prisma:validate`,
+  `npm run prisma:generate`, `npm run lint`, `npm run typecheck`, полный
+  `npm test -- --runInBand` (94 suites, 290 тестов), `npm run build`, Prettier для изменённых файлов и
+  `git diff --check` прошли. Workflow разобран Prettier как YAML; фактический GitHub/Vercel запуск
+  невозможен без внешнего provisioning и secrets.
+- Переменные окружения: новых runtime-переменных нет. GitHub Environments получают только scoped
+  `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`; runtime/DB/Auth.js/Cloudinary/Telegram
+  configuration хранится раздельно в Vercel Preview и Production и адресно читается release-шагами.
+- Архитектура: migration job использует direct `DATABASE_URL_UNPOOLED` до rollout, приложение —
+  pooled `DATABASE_URL`; production concurrency не отменяет выполняющийся release, cold start и build
+  миграции не запускают. Prisma schema, SQL history и данные не менялись.
+- Product Tour: без изменений — маршруты и пользовательские сценарии не менялись.
+- API overview: без изменений — server entry points и публичные контракты не менялись.
+- Security review: устранено первоначальное job-wide раскрытие secrets; Actions закреплены полными
+  commit SHA, Vercel CLI — точной версией и кешируется до выдачи token, workflow имеет только
+  `contents: read`, env-файлы gitignored. Подтверждённых findings после исправления нет.
+- Ограничения: локально не выполнялись live migrations, Vercel deployment, backup/restore и внешние
+  изменения. До первого запуска владелец обязан отключить Vercel auto-production deploy, создать
+  Neon branches, GitHub Environment protection, scoped secrets и подтвердить backup/PITR restore
+  drill; автоматические post-deploy E2E остаются пункту 84.
