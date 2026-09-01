@@ -193,3 +193,22 @@ Prisma/PostgreSQL и Cloudinary.
 некорректные контакты и конфигурации отклоняются. Цена, итог, название, подписи опций, активность и
 остаток никогда не копируются из клиента. Условное `updateMany` не допускает отрицательного остатка,
 а любая ошибка до commit откатывает уже выполненные уменьшения вместе со всем графом заказа.
+
+## Чтение заказов
+
+- [src/modules/orders/server/read-schemas.ts](../src/modules/orders/server/read-schemas.ts) — строгие
+  схемы guest/user lookup и ограниченной административной пагинации.
+- [src/modules/orders/server/order-read.ts](../src/modules/orders/server/order-read.ts) — явные
+  Prisma `select`, ownership-фильтры и allowlisted DTO покупателя и администратора.
+- [src/modules/orders/server/admin.ts](../src/modules/orders/server/admin.ts) — server-only граница,
+  перепроверяющая актуальную роль `ADMIN` перед выборкой.
+- [src/app/api/orders/lookup/route.ts](../src/app/api/orders/lookup/route.ts) — публичный
+  `POST /api/orders/lookup`; пользователь доказывает владение session `userId`, гость — парой
+  `orderNumber + email`. Несовпадение ownership и отсутствие заказа одинаково возвращают `404`.
+- [src/app/api/admin/orders/route.ts](../src/app/api/admin/orders/route.ts) — защищённый
+  `GET /api/admin/orders?limit=&cursor=` с максимум 100 строками и безопасными `400/401/403/500`.
+
+Покупательский DTO не содержит контактов или внутреннего id заказа. Административный DTO включает
+контактный снимок, необходимый для обработки заявки, но не возвращает Prisma-модель. Сортировка
+административной страницы стабильна: `createdAt DESC, id DESC`; наружу cursor передаётся как
+уникальный `publicNumber`.

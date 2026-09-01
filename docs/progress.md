@@ -2515,3 +2515,29 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
   ошибка для будущего write-service.
 - Ограничения: административная авторизация, повторное чтение текущего статуса и атомарная запись
   `Order.status` вместе с `OrderStatusHistory` относятся к пункту 63.
+
+## Task 152 — Безопасное чтение заказов
+
+- Результат: добавлены `POST /api/orders/lookup` для owner-checked чтения заказа пользователем или
+  гостем и защищённый пагинированный `GET /api/admin/orders`; оба контракта используют минимальные
+  Prisma `select`, allowlisted DTO и безопасные ошибки.
+- Файлы: `src/modules/orders/server/read-schemas.ts`,
+  `src/modules/orders/server/order-read.ts`, `src/modules/orders/server/admin.ts`, новые Route
+  Handlers и unit/transport-тесты, `docs/architecture.md`, `docs/api-layer-overview.md`,
+  `docs/ProductTour.md`, `docs/first-db-release-decisions.md`, `docs/progress.md`.
+- Проверки: targeted Jest (4 suite, 12 тестов), `npm run prisma:validate`,
+  `npm run prisma:generate`, `npm run lint`, `npm run typecheck`, `npm test -- --runInBand`
+  (72 suite, 236 тестов), `npm run build`, `git diff --check`; read-only security review проверил
+  IDOR/ownership, роль администратора, минимизацию PII, входные лимиты и безопасные ошибки —
+  подтверждённых findings нет.
+- Переменные окружения: новых нет; Prisma-проверки и build использовали только одноразовые безопасные
+  placeholder `DATABASE_URL`, `DATABASE_URL_UNPOOLED` и build-only `AUTH_SECRET` без подключения к
+  PostgreSQL.
+- Архитектура: добавлены отдельные customer/admin read-модели заказов; guest ownership доказывается
+  парой `publicNumber + email`, пользовательский ownership — session `userId`, админская роль
+  перепроверяется по БД до выборки.
+- Product Tour: административный раздел уточнён — backend чтения готов, но UI `/admin/orders`
+  остаётся на preview transport до пункта 65.
+- API overview: документированы схемы, ownership, DTO, пагинация и HTTP-ошибки двух новых endpoints.
+- Ограничения: UI не переключался на backend по границе пункта 65; инфраструктурный rate limit
+  публичного lookup остаётся общему hardening пункта 78.

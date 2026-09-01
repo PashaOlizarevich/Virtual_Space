@@ -812,3 +812,16 @@ dev-ветку. Preview/local не получают production credentials ил�
 с этой ценой как `observedPrice`: старое значение всегда снова приводит к `409`. Endpoint остаётся
 read-only; создание заказа и конкурентно безопасная повторная проверка относятся к следующей
 транзакционной границе.
+
+## 23. Чтение заказов и ownership
+
+`src/modules/orders/server/order-read.ts` содержит две server-only read-модели с явными Prisma
+`select`. Публичный `POST /api/orders/lookup` получает заказ пользователя только по `userId` из
+Auth.js session либо гостевой заказ по паре `publicNumber + email`; ownership входит в запрос к
+PostgreSQL. DTO покупателя исключает контактные данные и внутренний id заказа.
+
+`src/modules/orders/server/admin.ts` защищает административную выборку через
+`withAdminAuthorization`, поэтому актуальная роль перепроверяется до Prisma-запроса. Админский
+`GET /api/admin/orders` возвращает ограниченную cursor-страницу в обратной хронологии и включает
+контактный снимок только для административного сценария. Route Handlers выполняют parse/auth/map и
+возвращают безопасные ошибки без раскрытия существования чужого заказа.
