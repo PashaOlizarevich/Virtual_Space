@@ -901,10 +901,16 @@ read-only; создание заказа и конкурентно безопа�
 
 ## 23. Чтение заказов и ownership
 
-`src/modules/orders/server/order-read.ts` содержит две server-only read-модели с явными Prisma
+`src/modules/orders/server/order-read.ts` содержит server-only read-модели с явными Prisma
 `select`. Публичный `POST /api/orders/lookup` получает заказ пользователя только по `userId` из
 Auth.js session либо гостевой заказ по паре `publicNumber + email`; ownership входит в запрос к
 PostgreSQL. DTO покупателя исключает контактные данные и внутренний id заказа.
+
+Защищённая `listOwnOrders` получает актуального владельца через `requireUser()`, не принимает
+`userId` от клиента и включает владельца непосредственно в bounded cursor-запрос PostgreSQL.
+`own-orders-action.ts` остаётся тонким transport: передаёт недоверенный cursor/limit в строгую схему
+и отображает только безопасные коды ошибок. Профиль и корзина используют ту же server-owned identity,
+поэтому ни одна пользовательская граница этих трёх ресурсов не полагается на переданный клиентом id.
 
 `src/modules/orders/server/admin.ts` защищает административную выборку через
 `withAdminAuthorization`, поэтому актуальная роль перепроверяется до Prisma-запроса. Админский

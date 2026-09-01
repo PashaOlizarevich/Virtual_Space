@@ -31,6 +31,10 @@
   ownership-scoped чтение, ревалидация и мутации persistent-корзины пользователя.
 - [src/modules/cart/server/actions.ts](../src/modules/cart/server/actions.ts) — защищённый transport
   серверной корзины со стабильными безопасными кодами результата.
+- [src/modules/orders/server/order-read.ts](../src/modules/orders/server/order-read.ts) — ограниченная
+  cursor-выборка истории заказов только по `userId` актуального пользователя.
+- [src/modules/orders/server/own-orders-action.ts](../src/modules/orders/server/own-orders-action.ts) —
+  защищённый transport собственной истории заказов с безопасными кодами результата.
 - [src/modules/auth/server/password.ts](../src/modules/auth/server/password.ts) — хеширование и
   проверка паролей через `scrypt`.
 - [src/modules/auth/server/first-admin.ts](../src/modules/auth/server/first-admin.ts) — безопасная
@@ -264,6 +268,9 @@ Auth.js, Prisma/PostgreSQL, Cloudinary и Telegram; наличие имени `O
   схемы guest/user lookup и ограниченной административной пагинации.
 - [src/modules/orders/server/order-read.ts](../src/modules/orders/server/order-read.ts) — явные
   Prisma `select`, ownership-фильтры и allowlisted DTO покупателя и администратора.
+- [src/modules/orders/server/own-orders-action.ts](../src/modules/orders/server/own-orders-action.ts) —
+  Server Action собственной истории; `userId` не принимается от клиента, а извлекается через
+  `requireUser()` внутри server-only read-модели.
 - [src/modules/orders/server/admin.ts](../src/modules/orders/server/admin.ts) — server-only граница,
   перепроверяющая актуальную роль `ADMIN` перед выборкой.
 - [src/app/api/orders/lookup/route.ts](../src/app/api/orders/lookup/route.ts) — публичный
@@ -272,7 +279,9 @@ Auth.js, Prisma/PostgreSQL, Cloudinary и Telegram; наличие имени `O
 - [src/app/api/admin/orders/route.ts](../src/app/api/admin/orders/route.ts) — защищённый
   `GET /api/admin/orders?limit=&cursor=` с максимум 100 строками и безопасными `400/401/403/500`.
 
-Покупательский DTO не содержит контактов или внутреннего id заказа. Административный DTO включает
+Собственная история ограничена максимум 50 заказами за запрос, сортируется стабильно по
+`createdAt DESC, id DESC` и фильтруется в том же Prisma-запросе по владельцу. Покупательский DTO не
+содержит контактов или внутреннего id заказа. Административный DTO включает
 контактный снимок, необходимый для обработки заявки, но не возвращает Prisma-модель. Сортировка
 административной страницы стабильна: `createdAt DESC, id DESC`; наружу cursor передаётся как
 уникальный `publicNumber`.

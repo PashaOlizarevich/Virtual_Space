@@ -2837,3 +2837,23 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
   транзакционной семантикой.
 - Ограничения: UI ещё не вызывает новый контракт и не очищает Zustand; это остаётся пункту 76.
   Конкурентное поведение проверено unit transaction harness без подключения к живой PostgreSQL.
+
+## Task 166 — Доступ только к собственным пользовательским ресурсам
+
+- Результат: пункт 75 завершает ownership-границы профиля, persistent-корзины и истории заказов;
+  новая bounded cursor-выборка получает актуального пользователя через `requireUser()` и включает
+  его `userId` одновременно в фильтр страницы и cursor заказа.
+- Файлы: `src/modules/orders/server/{read-schemas,order-read,own-orders-action}.ts`, два новых unit-
+  теста и документация архитектуры, API-слоя, Product Tour и решений первого DB-релиза.
+- Проверки: `npm run lint`, `npm run typecheck`, полный `npm test -- --runInBand` (90 suites,
+  284 теста), целевые тесты после ownership-hardening (2 suites, 4 теста), `npm run build`,
+  `git diff --check` и read-only `security-review` прошли; найденный риск неограниченного владельцем
+  cursor устранён, подтверждённых findings после исправления нет.
+- Переменные окружения: новых нет; build использовал только одноразовые безопасные placeholder
+  `DATABASE_URL`, `DATABASE_URL_UNPOOLED` и `AUTH_SECRET` без подключения к PostgreSQL.
+- Архитектура: пользовательский `userId` не принимается от клиента; строгий вход допускает только
+  cursor/limit, Prisma возвращает allowlist DTO без контактов и внутренних order/user id.
+- Product Tour: `/profile` дополнен фактическим статусом backend собственной истории; UI остаётся
+  preview до пункта 76.
+- API overview: добавлены собственная история заказов, её Server Action, pagination и ownership.
+- Ограничения: живая PostgreSQL и E2E не использовались; UI-интеграция относится к пункту 76.

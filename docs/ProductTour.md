@@ -341,7 +341,8 @@ Server Component, а пустой результат и клиентская п�
 Файл: `src/app/(store)/profile/page.tsx`.
 
 Секции: контактные данные, текущая корзина, история заказов и состояние preview-сессии. Backend
-защищённо читает и изменяет собственные `name/email/phone`, однако UI остаётся preview до пункта 76.
+защищённо читает и изменяет собственные `name/email/phone`, получает только собственную persistent-
+корзину и bounded историю заказов по identity из Auth.js; UI остаётся preview до пункта 76.
 Со страницы можно перейти в `/checkout`, `/catalog` или `/login`.
 
 Где править:
@@ -352,6 +353,8 @@ Server Component, а пустой результат и клиентская п�
 - Валидацию профиля: `src/modules/users/schemas.ts`.
 - Защищённый backend профиля: `src/modules/users/server/profile.ts` и
   `src/modules/users/server/actions.ts`.
+- Защищённая история заказов: `src/modules/orders/server/order-read.ts` и
+  `src/modules/orders/server/own-orders-action.ts`.
 - Демонстрационное сохранение: `src/modules/users/mock-transport.ts`.
 - Стили: `.profile-*` в `src/styles/globals.css`.
 

@@ -5,6 +5,7 @@ import type { OrderStatus, Prisma, PrismaClient } from "@prisma/client";
 import {
   adminOrderListSchema,
   orderLookupSchema,
+  ownOrderListSchema,
   type AdminOrderListInput,
   type OrderLookupInput,
 } from "@/modules/orders/server/read-schemas";
@@ -77,6 +78,11 @@ export type AdminOrderDto = CustomerOrderDto &
 
 export type AdminOrderPageDto = Readonly<{
   orders: readonly AdminOrderDto[];
+  nextCursor: string | null;
+}>;
+
+export type OwnOrderPageDto = Readonly<{
+  orders: readonly CustomerOrderDto[];
   nextCursor: string | null;
 }>;
 
@@ -169,6 +175,29 @@ export async function getCustomerOrder(
 
   if (!order) throw new OrderNotFoundError();
   return mapCustomerOrder(order);
+}
+
+export async function listOwnOrders(
+  input: unknown,
+  database: OrderReadDatabase = db,
+): Promise<OwnOrderPageDto> {
+  const { cursor, limit } = ownOrderListSchema.parse(input);
+  const { requireUser } = await import("@/server/user-auth");
+  const principal = await requireUser();
+  const orders = await database.order.findMany({
+    where: { userId: principal.id },
+    ...(cursor ? { cursor: { publicNumber: cursor, userId: principal.id }, skip: 1 } : {}),
+    orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+    take: limit + 1,
+    select: customerOrderSelect,
+  });
+  const hasNextPage = orders.length > limit;
+  const page = hasNextPage ? orders.slice(0, limit) : orders;
+
+  return {
+    orders: page.map(mapCustomerOrder),
+    nextCursor: hasNextPage ? (page.at(-1)?.publicNumber ?? null) : null,
+  };
 }
 
 export async function listAdminOrders(
