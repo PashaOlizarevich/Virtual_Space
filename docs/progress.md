@@ -3058,3 +3058,23 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
   раздельными политиками операций и regression-тестами. Review оставлен read-only по правилам skill.
 - Ограничения: новые E2E не создавались без отдельного разрешения на конкретный сценарий; live
   PostgreSQL, Cloudinary и production deployment не запускались.
+
+## Task 175 — Финальная приёмка первого DB-релиза
+
+- Результат: пункт 85 завершает локальную приёмку первого DB-релиза; обязательные статические,
+  тестовые и production build-проверки подтверждены без изменения runtime-кода.
+- Файлы: `docs/first-db-release-decisions.md`, `docs/progress.md`.
+- Проверки: `npm run prisma:validate`, `npm run prisma:generate`, полный
+  `npm test -- --runInBand` (96 suites, 297 тестов), `npm run lint`, `npm run typecheck` и
+  `npm run build` прошли. TypeScript повторно запускался после production build, чтобы исключить
+  гонку с генерацией `.next/types` при первоначальном параллельном прогоне.
+- Переменные окружения: Prisma и build получили только безопасные placeholder-значения в окружении
+  процесса; файлы окружения, реальные secrets и внешние сервисы не использовались.
+- Архитектура: без изменений — runtime-код, границы модулей, Prisma schema и SQL migration history
+  не менялись, поэтому `docs/architecture.md` не обновлялся.
+- Product Tour: без изменений — маршруты и пользовательские сценарии не менялись.
+- API overview: без изменений — server entry points и публичные контракты не менялись.
+- Security review: новых чувствительных изменений нет; остаётся `Medium` finding пункта 84 об
+  отсутствии distributed rate limiting публичных auth Server Actions.
+- Ограничения: E2E не запускались как нерелевантные документационному этапу; live PostgreSQL,
+  `EXPLAIN`, production migration/deployment и backup/restore drill требуют целевой внешней среды.
