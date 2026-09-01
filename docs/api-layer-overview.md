@@ -110,6 +110,12 @@ allowlist полей, проверка идентификаторов и без�
   загрузки только после проверки административного доступа.
 - [Lifecycle изображений](../src/modules/catalog/server/image-lifecycle.ts) — проверка загруженного
   ресурса, согласованное сохранение, замена и удаление изображения.
+- [Server-only адаптер Telegram](../src/server/integrations/telegram.ts) — валидирует server-only
+  конфигурацию, отправляет минимальное уведомление о созданном заказе с timeout и проверяет ответ
+  Bot API.
+- [Создание заказа](../src/modules/orders/server/order-creation.ts) — вызывает Telegram только после
+  разрешения serializable-транзакции; ошибка доставки перехватывается отдельно и не меняет успешный
+  DTO заказа.
 - [Server Actions административного интерфейса](../src/modules/admin/server/actions.ts) — связывают
   UI с защищёнными операциями каталога, настроек и загрузок.
 - [Подключение Prisma/PostgreSQL](../src/server/db.ts) и
@@ -117,9 +123,9 @@ allowlist полей, проверка идентификаторов и без�
   связям.
 
 В [.env.example](../.env.example) перечислены только имена переменных PostgreSQL, Auth.js,
-Cloudinary, Telegram и OpenAI без секретных значений. Наличие переменных Telegram и OpenAI не
-считается доказательством готовой интеграции: фактически в проверенной части подключены Auth.js,
-Prisma/PostgreSQL и Cloudinary.
+Cloudinary, Telegram и OpenAI без секретных значений. Фактически в проверенной части подключены
+Auth.js, Prisma/PostgreSQL, Cloudinary и Telegram; наличие имени `OPENAI_API_KEY` ещё не считается
+готовой интеграцией OpenAI.
 
 ## Бизнес-логика
 

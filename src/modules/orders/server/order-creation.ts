@@ -10,6 +10,7 @@ import {
 import { cartProductSelect } from "@/modules/orders/server/queries";
 import { createGuestOrderSchema } from "@/modules/orders/server/schemas";
 import { db } from "@/server/db";
+import { notifyAdminOfCreatedOrder } from "@/server/integrations/telegram";
 import { mapMoney, type MoneyDto } from "@/shared/money";
 
 const MAX_SERIALIZABLE_RETRIES = 3;
@@ -21,6 +22,7 @@ export type OrderCreationTransaction = Readonly<{
 export type TransactionRunner = <Result>(
   operation: (transaction: OrderCreationTransaction) => Promise<Result>,
 ) => Promise<Result>;
+export type CreatedOrderNotifier = (order: CreatedGuestOrderDto) => Promise<void>;
 
 export type CreatedGuestOrderDto = Readonly<{
   orderNumber: string;
@@ -65,12 +67,13 @@ export async function createGuestOrder(
   input: unknown,
   executeTransaction: TransactionRunner = defaultTransactionRunner,
   generatePublicNumber: () => string = createPublicNumber,
+  notifyCreatedOrder: CreatedOrderNotifier = notifyAdminOfCreatedOrder,
 ): Promise<CreatedGuestOrderDto> {
   const { contact, cart } = createGuestOrderSchema.parse(input);
 
   for (let attempt = 1; attempt <= MAX_SERIALIZABLE_RETRIES; attempt += 1) {
     try {
-      return await executeTransaction(async (transaction) => {
+      const createdOrder = await executeTransaction(async (transaction) => {
         const validation = await validateGuestCart(cart, (productIds) =>
           transaction.product.findMany({
             where: { id: { in: [...productIds] } },
@@ -130,9 +133,17 @@ export async function createGuestOrder(
         return {
           orderNumber: order.publicNumber,
           total: mapMoney(order.total, order.currency),
-          status: "NEW",
+          status: "NEW" as const,
         };
       });
+
+      try {
+        await notifyCreatedOrder(createdOrder);
+      } catch {
+        console.error("Telegram order notification failed after order commit");
+      }
+
+      return createdOrder;
     } catch (error) {
       if (isRetryableTransactionError(error) && attempt < MAX_SERIALIZABLE_RETRIES) continue;
       throw error;

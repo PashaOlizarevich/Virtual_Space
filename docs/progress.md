@@ -2564,3 +2564,29 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 - API overview: документированы новый PATCH-контракт, безопасные ошибки и транзакционная граница.
 - Ограничения: live PostgreSQL не вызывался; полный transaction/concurrency-набор остаётся пунктам
   66–67, интеграция UI — пункту 65.
+
+## Task 154 — Уведомление администратора о новом заказе в Telegram
+
+- Результат: добавлен server-only адаптер Telegram Bot API; создание заказа вызывает его только
+  после успешного commit, а ошибка конфигурации, сети, timeout, HTTP или ответа Telegram не меняет
+  успешный результат заказа и логируется без секретов и персональных данных.
+- Файлы: `src/server/integrations/telegram.ts`,
+  `src/modules/orders/server/order-creation.ts`, новые unit-тесты, `docs/architecture.md`,
+  `docs/api-layer-overview.md`, `docs/first-db-release-decisions.md`, `docs/progress.md`.
+- Проверки: targeted Jest (3 suite, 7 тестов), `npm run lint`, полный
+  `npm test -- --runInBand` (77 suite, 254 теста), `npm run prisma:generate`, Prettier и
+  `git diff --check` — успешно; read-only security review проверил server-only секреты, минимизацию
+  данных, timeout, порядок commit/уведомления и безопасный log — подтверждённых findings нет.
+  `npm run typecheck` и TypeScript-этап `npm run build` блокируются 10 существующими ошибками
+  `TS2554` в прежних Jest-тестах; компиляция production bundle до typecheck успешна.
+- Переменные окружения: существующие `TELEGRAM_BOT_TOKEN` и `TELEGRAM_ADMIN_CHAT_ID` теперь
+  используются адаптером; значения в репозиторий не добавлялись. Prisma generate и build
+  использовали только одноразовые безопасные placeholder без подключения к PostgreSQL.
+- Архитектура: внешний вызов изолирован адаптером и расположен после транзакционной границы;
+  гарантированная доставка/outbox намеренно не добавлялись для MVP.
+- Product Tour: без изменений — уведомление является внутренней административной интеграцией, а UI
+  checkout и `/admin/orders` остаются preview до пункта 65.
+- API overview: документированы Telegram-адаптер, минимальный payload, timeout и post-commit
+  best-effort семантика сервиса создания заказа.
+- Ограничения: без deployment credentials live-вызов Telegram не выполнялся; доставка не
+  гарантируется и повторно не ставится в очередь.
