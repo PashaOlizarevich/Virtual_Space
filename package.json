@@ -15,6 +15,7 @@
     "test:e2e": "playwright test --grep-invert @visual",
     "test:e2e:visual": "playwright test --grep @visual",
     "prisma:generate": "prisma generate",
+    "prisma:check-migrations": "node scripts/check-prisma-migrations.mjs",
     "prisma:validate": "prisma validate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio",

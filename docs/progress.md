@@ -2908,3 +2908,23 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
   полагается на настроенный trusted reverse proxy для IP-заголовков; горизонтальный production
   deploy требует платформенного или распределённого rate limiting. E2E не добавлялись и не
   запускались, поскольку пользовательские сценарии/UI не менялись.
+
+## Task 169 — Жизненный цикл версионированных миграций
+
+- Результат: пункт 79 закрепляет обязательную поставку изменения Prisma schema вместе с новой
+  SQL-миграцией и использующим кодом, неизменяемость существующей migration history, forward-fix и
+  поэтапный `expand -> migrate -> contract`; добавлена локальная проверка schema/migration diff.
+- Файлы: `scripts/check-prisma-migrations.mjs`, `package.json`, `docs/database-migrations.md`,
+  `docs/architecture.md`, `docs/first-db-release-decisions.md`.
+- Проверки: `npm run prisma:check-migrations`, `npm run prisma:validate`,
+  `npm run prisma:generate`, `npm run lint`, `npm run typecheck`, `npm test -- --runInBand`,
+  `npm run build`, `npx prettier --check` для изменённых файлов и `git diff --check`.
+- Переменные окружения: `MIGRATION_BASE_REF` — optional явная Git-база сравнения для CI/review;
+  Prisma и build использовали только одноразовые placeholder `DATABASE_URL`,
+  `DATABASE_URL_UNPOOLED` и `AUTH_SECRET`, значения и DB credentials в репозиторий не добавлены.
+- Архитектура: раздел развёртывания ссылается на отдельный протокол подготовки миграций;
+  Prisma schema, SQL-история и поток runtime-данных не менялись.
+- Product Tour: без изменений — маршруты и пользовательские сценарии не менялись.
+- API overview: без изменений — серверные entry points и контракты не менялись.
+- Ограничения: проверка структуры не заменяет ручной review SQL и replay на preview; отдельный
+  `prisma migrate deploy` release-job остаётся пункту 80, production pipeline — пункту 82.

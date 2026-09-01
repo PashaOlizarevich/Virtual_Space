@@ -772,6 +772,8 @@ main         -> те же проверки -> prisma migrate deploy -> productio
 Миграции выполняются один раз сериализованным release-шагом через direct connection до rollout, а не
 во время build, старта или serverless cold start. Перед несовместимыми изменениями применяется
 expand/migrate/contract: сначала совместимая схема, затем код/данные, затем удаление старого поля.
+Протокол подготовки, неизменяемость применённой истории и локальная проверка schema/migration diff
+зафиксированы в `docs/database-migrations.md`.
 
 Для self-hosting позже можно добавить Dockerfile с `next build`/standalone output и запуском Node.js.
 Docker не нужен для первого Vercel-развёртывания и не меняет модульную архитектуру. Production
