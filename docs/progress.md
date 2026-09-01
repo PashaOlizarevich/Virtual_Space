@@ -3033,3 +3033,28 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 - Ограничения: в окружении отсутствовали `DATABASE_URL_UNPOOLED`, `psql` и Docker; эмпирическое
   подтверждение ожидаемых индексов остаётся обязательным прогоном команды на local/preview базе и не
   заменено статическим анализом.
+
+## Task 174 — Серверные regression-тесты и финальный security-аудит
+
+- Результат: пункт 84 дополняет покрытие Cloudinary policy и одноразового password reset семью
+  unit/integration regression-тестами; существующие тесты и E2E не изменялись.
+- Файлы: `src/server/integrations/cloudinary.test.ts`,
+  `src/modules/auth/server/password-reset-security.test.ts`,
+  `docs/first-db-release-decisions.md`, `docs/progress.md`.
+- Проверки: targeted Jest-прогон двух новых suites (7 тестов), `npm run prisma:validate`,
+  `npm run prisma:generate`, `npm run lint`, `npm run typecheck`, полный Jest (96 suites, 297 тестов),
+  production build, Prettier и `git diff --check` прошли. Coverage baseline до изменений — 76.31%
+  statements / 81.97% lines, серверный модуль заказов — 93.67% statements / 96.65% lines.
+- Переменные окружения: новых нет; Cloudinary credentials в тестах — безопасные локальные заглушки,
+  реальные значения и `.env` не читались.
+- Архитектура: без изменений — добавлено только regression-покрытие существующих server-only
+  контрактов.
+- Product Tour: без изменений — маршруты и пользовательские сценарии не менялись.
+- API overview: без изменений — серверные entry points и публичные контракты не менялись.
+- Security review: `Medium` — публичные `registerUserAction`, `requestPasswordResetAction` и
+  `resetPasswordAction` (`src/modules/auth/server/actions.ts`) не ограничивают частоту вызовов;
+  аноним может создавать scrypt/DB-нагрузку и многократно заменять reset-токен существующего
+  пользователя. Рекомендация: distributed limiter по доверенному IP и hash нормализованного email с
+  раздельными политиками операций и regression-тестами. Review оставлен read-only по правилам skill.
+- Ограничения: новые E2E не создавались без отдельного разрешения на конкретный сценарий; live
+  PostgreSQL, Cloudinary и production deployment не запускались.
