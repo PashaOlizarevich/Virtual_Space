@@ -2746,3 +2746,28 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 - Product Tour и API overview: без изменений — маршруты и публичные/server контракты не менялись.
 - Ограничения: server-only операция анонимизации, отзыв доступа, расчёт retention, legal hold и purge
   не входят в пункт 70; SQL-миграция и DB-level проверки относятся к пункту 71.
+
+## Task 162 — Индексы и миграция пользовательской корзины
+
+- Результат: пункт 71 добавляет индексы стабильной выборки позиций корзины и связи позиции с товаром;
+  unique-индекс `Cart.userId` используется для пользовательской корзины, а существующий составной
+  индекс `Order.userId + createdAt DESC + id DESC` — для истории заказов пользователя.
+- Файлы: `prisma/schema.prisma`, миграция
+  `20260901140000_add_user_cart_and_retention`, `docs/architecture.md`,
+  `docs/first-db-release-decisions.md`, `docs/progress.md`.
+- Миграция и данные: совместимое additive `schema + migration`; создаются `Cart`/`CartItem`, nullable
+  retention-поля, FK, индексы и `CHECK` количества/наблюдаемой цены. Живая PostgreSQL, `db push`, seed
+  и production-запросы не использовались.
+- Проверки: `npm run prisma:validate`, `npm run prisma:generate`, Prisma `migrate diff` от пустой
+  схемы для сверки целевых индексов, ручная проверка SQL на destructive-операции, `npm run lint`,
+  `npm run typecheck`, полный `npm test -- --runInBand` (81 suite, 261 тест), `npm run build`,
+  `git diff --check` и read-only `security-review` — успешно; подтверждённых findings нет.
+- Переменные окружения: новых нет; Prisma и build использовали только одноразовые безопасные
+  placeholder `DATABASE_URL`, `DATABASE_URL_UNPOOLED` и build-only `AUTH_SECRET` без подключения к
+  PostgreSQL.
+- Архитектура: зафиксированы индексируемые пути пользовательской корзины, её позиций и истории
+  заказов; публичные DTO и server transport не менялись.
+- Product Tour: без изменений — пользовательские сценарии и маршруты не менялись.
+- API overview: без изменений — Prisma-запросы серверной корзины появятся в пункте 73.
+- Ограничения: миграция не применялась к test/preview PostgreSQL; фактические блокировки и планы
+  `EXPLAIN` на репрезентативных данных остаются release-проверкой и пунктом 83.
