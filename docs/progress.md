@@ -2637,3 +2637,23 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
   работающим Node-процессом Windows; согласованность manifest/lock подтверждена успешным dry-run.
   Общий `npm run format:check` по-прежнему проверяет также существующие `.worktrees` и сообщает о
   прежних несвязанных форматных расхождениях; изменённые файлы проходят отдельную Prettier-проверку.
+
+## Task 157 — Транзакционные проверки заказов
+
+- Результат: пункт 66 закрыт новым integration-тестом серверных контрактов заказа. Подтверждены
+  server-owned перерасчёт и полные snapshots позиции, rollback списанного остатка при ошибке создания
+  заказа и rollback статуса при ошибке записи истории. Вместе с существующим покрытием проверены
+  история статусов, повторная проверка роли `ADMIN` и отклонение недопустимых переходов.
+- Файлы: `src/modules/orders/server/order-transaction-contracts.test.ts`,
+  `docs/first-db-release-decisions.md`, `docs/progress.md`.
+- Проверки: targeted Jest серверного контура заказов (18 suites, 85 тестов), `npm run lint`,
+  `npm run typecheck`, полный `npm test -- --runInBand` (80 suites, 260 тестов), `npm run build` и
+  read-only `security-review` — успешно; подтверждённых security findings нет.
+- Переменные окружения: новых нет; успешный build использовал только одноразовые безопасные
+  placeholder `DATABASE_URL`, `DATABASE_URL_UNPOOLED` и `AUTH_SECRET` без подключения к PostgreSQL.
+- Архитектура: без изменений; зафиксирован тестовый контракт атомарности существующих
+  Prisma-транзакций.
+- Product Tour: без изменений.
+- API overview: без изменений.
+- Ограничения: тесты используют управляемый in-memory transaction harness и не подключаются к живой
+  PostgreSQL; конкурентное оформление последней единицы остаётся пунктом 67.
