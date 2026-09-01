@@ -87,3 +87,6 @@ SHA в обоих аргументах должен совпадать. Для �
 Скрипт не импортируется приложением и не включён в `build`, `start`, Server Action или Route Handler,
 поэтому миграции не запускаются при build, старте процесса или serverless cold start. Автоматический
 production pipeline, protected environment и сериализация jobs относятся к пункту 82.
+
+Проверка обязательного production-окружения, запрет production seed и процедуры backup, restore и
+forward-fix описаны в `docs/production-operations.md`.

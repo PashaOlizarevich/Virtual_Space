@@ -2952,3 +2952,30 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
   является операторским подтверждением, а не автоматически защищённым CI artifact.
 - Ограничения: live PostgreSQL не подключалась, поэтому `migrate deploy` не выполнялся; успешный
   preview replay и production orchestration требуют настроенных Neon/Vercel окружений.
+
+## Task 171 — Production environment и восстановление
+
+- Результат: пункт 81 добавляет безопасный preflight обязательных production-переменных, запрещает
+  Prisma seed при `NODE_ENV=production` и фиксирует runbook backup, restore в изолированный target и
+  версионированного forward-fix.
+- Файлы: `scripts/validate-production-env.mjs`, `scripts/run-prisma-seed.mjs`, `prisma/seed.ts`,
+  `prisma.config.ts`, `package.json`,
+  `docs/production-operations.md`, `docs/database-migrations.md`, `docs/architecture.md`,
+  `docs/first-db-release-decisions.md`.
+- Проверки: negative/success preflight guards и production seed guard, `node --check` для обоих
+  CLI-скриптов, `npm run prisma:check-migrations`, `npm run prisma:validate`,
+  `npm run prisma:generate`, `npm run lint`, `npm run typecheck`, полный
+  `npm test -- --runInBand` (94 suites, 290 тестов), `npm run build`, Prettier для изменённых файлов
+  и `git diff --check` прошли.
+- Переменные окружения: новых нет; обязательный production-набор явно проверяет существующие
+  `DATABASE_URL`, `DATABASE_URL_UNPOOLED`, `AUTH_SECRET`, `AUTH_URL`, `CLOUDINARY_CLOUD_NAME`,
+  `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`, `TELEGRAM_BOT_TOKEN`, `TELEGRAM_ADMIN_CHAT_ID` без
+  вывода значений.
+- Архитектура: добавлены release preflight, production seed boundary и ссылка на операционный runbook;
+  Prisma schema, SQL-история и runtime data flow не менялись.
+- Product Tour: без изменений — маршруты и пользовательские сценарии не менялись.
+- API overview: без изменений — server entry points и публичные контракты не менялись.
+- Security review: проверены env input, логи, server-only границы и запуск дочернего seed без shell;
+  подтверждённых findings нет. Значения секретов не читаются и не выводятся.
+- Ограничения: provider-specific retention, RPO/RTO, protected pipeline и автоматизация preflight
+  относятся к пункту 82; live PostgreSQL, backup, restore, migrate и seed не запускались.

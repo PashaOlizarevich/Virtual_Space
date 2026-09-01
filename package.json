@@ -17,8 +17,10 @@
     "prisma:generate": "prisma generate",
     "prisma:check-migrations": "node scripts/check-prisma-migrations.mjs",
     "prisma:migrate:deploy": "node scripts/deploy-prisma-migrations.mjs",
+    "production:validate-env": "node scripts/validate-production-env.mjs",
     "prisma:validate": "prisma validate",
     "prisma:migrate": "prisma migrate dev",
+    "prisma:seed": "node scripts/run-prisma-seed.mjs",
     "prisma:studio": "prisma studio",
     "admin:create-first": "tsx --conditions=react-server scripts/create-first-admin.ts"
   },

@@ -1613,3 +1613,21 @@ Preview сначала получает тот же commit, который пл�
 менялись, live-БД не подключалась и `migrate deploy` фактически не выполнялся. Guard-условия можно
 проверить через `--dry-run`; production pipeline, protected environment и concurrency lock остаются
 пункту 82.
+
+## Пункт 81 — production environment и восстановление
+
+Добавлен отдельный preflight `npm run production:validate-env`. Он проверяет наличие непустых
+`DATABASE_URL`, `DATABASE_URL_UNPOOLED`, `AUTH_SECRET`, `AUTH_URL`, Cloudinary и Telegram переменных,
+но при успехе или отказе не выводит ни одного значения. `OPENAI_API_KEY` пока не включён в обязательный
+набор, поскольку AI-функция не реализована. Подключение команды к protected deployment pipeline
+остаётся пункту 82.
+
+Prisma seed остаётся явной `npm run prisma:seed` local/preview-командой. Её JavaScript wrapper и
+сам TypeScript seed безусловно отказывают при `NODE_ENV=production` до создания Prisma Client. Seed
+не вызывается из build, start или migration job; production-данные он не изменяет.
+
+В `docs/production-operations.md` зафиксированы обязательные managed backup/PITR и restore drill,
+восстановление только в новый изолированный target, защита backup и credentials, а также приоритет
+новой версионированной forward-fix миграции над изменением применённого SQL или destructive rollback.
+Конкретные provider-команды, retention, RPO/RTO, protected environments и автоматизация фиксируются
+при provisioning в пункте 82. Live-БД, backup, restore и seed не запускались.

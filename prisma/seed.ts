@@ -3,6 +3,10 @@ import { Prisma, PrismaClient } from "@prisma/client";
 
 import { catalogSeed, categoryNames, storeSettingsSeed } from "./seed-data";
 
+if (process.env.NODE_ENV === "production") {
+  throw new Error("Database seed is disabled in production.");
+}
+
 const databaseUrl = process.env.DATABASE_URL_UNPOOLED;
 
 if (!databaseUrl) {
