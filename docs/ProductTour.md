@@ -407,12 +407,14 @@ Backend уже умеет атомарно создать гостевой за�
 - Защищённые Server Actions товаров и настроек: `src/modules/admin/server/actions.ts`.
 - Типы и допустимые переходы статусов заказа: `src/modules/admin/types.ts`.
 - Валидация форм: `src/modules/admin/schemas.ts`.
-- Preview transport остаётся только для ещё не переведённого экрана заказов; защищённый
-  `GET /api/admin/orders` уже доступен для интеграции в пункте 65.
+- Preview transport остаётся только для ещё не переведённого экрана заказов; защищённые
+  `GET /api/admin/orders` и `PATCH /api/admin/orders/[orderNumber]/status` уже доступны для
+  интеграции в пункте 65.
 - Стили: классы `.admin-*` в `src/styles/globals.css`.
 
-Обзор, товары и настройки работают через Auth.js, Prisma и PostgreSQL. Backend чтения заказов уже
-реализован, но сам экран заказов остаётся preview до переключения transport в пункте 65.
+Обзор, товары и настройки работают через Auth.js, Prisma и PostgreSQL. Backend чтения и смены
+статуса заказов уже реализован, но сам экран заказов остаётся preview до переключения transport в
+пункте 65.
 
 ## Карта данных и контента
 
