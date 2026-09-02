@@ -42,18 +42,21 @@ Production release запускается вручную для полного l
 1. проверяет, что checkout в точности соответствует SHA и является предком `origin/main`;
 2. в `release-preview` устанавливает зависимости через lock-файл, выполняет preflight, Prisma
    validation/generation, migration-history check, lint, typecheck и Jest;
-3. применяет миграции к изолированной preview-БД, собирает и развёртывает этот же SHA как Vercel
-   Preview;
+3. применяет миграции к изолированной preview-БД, добавляет только отсутствующие записи versioned
+   демонстрационного каталога, собирает и развёртывает этот же SHA как Vercel Preview;
 4. ожидает approval защищённого GitHub Environment `production`;
 5. повторно проверяет SHA и production env, сериализованно применяет те же миграции через direct URL,
-   затем собирает и развёртывает production artifact через Vercel CLI.
+   добавляет только отсутствующие записи каталога, затем собирает и развёртывает production artifact
+   через Vercel CLI.
 
 Concurrency `production-release` допускает не более одного production rollout. Ожидающий release не
 отменяет выполняющийся. Vercel CLI зафиксирован по версии, GitHub Actions — по immutable commit SHA.
 После обновления версии CLI или Actions требуется отдельный review и обычные проверки проекта.
 
-Workflow намеренно не выполняет seed, `prisma db push`, rollback, чтение secret values или
-автоматическое восстановление. Перед approval оператор проверяет preview deployment, состояние
+Workflow намеренно не выполняет общий seed, `prisma db push`, rollback, чтение secret values или
+автоматическое восстановление. Отдельный catalog bootstrap создаёт категории при отсутствии и
+полностью создаёт товар с дочерними записями только тогда, когда его уникальный `slug` ещё
+отсутствует; существующие операторские записи не обновляются. Перед approval оператор проверяет preview deployment, состояние
 backup/PITR и результат последнего restore drill. После deployment выполняются разрешённые smoke/E2E
 проверки; их автоматизация остаётся пункту 84 и не даёт разрешения изменять `tests/e2e/**`.
 

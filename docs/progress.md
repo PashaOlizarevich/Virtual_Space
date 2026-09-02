@@ -3157,3 +3157,29 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 - Файлы: `docs/vercel-production-incident-report.md`, `docs/progress.md`.
 - Код, конфигурация, Prisma schema, миграции и данные не изменялись.
 - Проверки: targeted Prettier и `git diff --check`.
+
+## Task 181 — Безопасный bootstrap production-каталога из GitHub
+
+- Результат: release pipeline после миграций создаёт в Preview и Production отсутствующие категории
+  и полный versioned каталог из репозитория. Для каждого отсутствующего `slug` товар, изображения,
+  характеристики, группы опций и варианты создаются атомарно; существующие записи не обновляются и
+  не удаляются.
+- Файлы: `scripts/bootstrap-production-catalog.ts`, `.github/workflows/production-release.yml`,
+  `package.json`, `docs/production-operations.md`, `docs/first-db-release-decisions.md`,
+  `docs/vercel-production-incident-report.md`, `docs/progress.md`.
+- Классификация БД: совместимая data-only операция без изменения Prisma schema и SQL migration
+  history. Bootstrap повторяем по уникальным `Category.slug` и `Product.slug`, выполняется одной
+  транзакцией и сохраняет операторские данные.
+- Проверки: seed-data regression suite (3 теста), полный Jest (96 suites, 297 тестов), ESLint,
+  TypeScript, Prisma validate/generate, migration-history check, production build с безопасными
+  process-local placeholders, targeted Prettier и `git diff --check` прошли.
+- Переменные окружения: новых нет; script использует server-only `DATABASE_URL_UNPOOLED` и принимает
+  только явный target `preview` или `production`.
+- Архитектура: общий production seed остаётся запрещён; отдельный ограниченный bootstrap встроен в
+  существующий порядок `migration -> data bootstrap -> build -> deploy`.
+- Product Tour и API overview: без изменений — маршруты, UI-сценарии и публичные API-контракты не
+  менялись.
+- Security review: внешнего ввода и вывода данных нет, connection string не логируется; конфликт
+  дочернего unique key откатывает всю транзакцию. Новых findings нет.
+- Ограничения: субагентская независимая проверка не завершилась из-за лимита сервиса; live Preview и
+  Production базы локально не изменялись, фактическая загрузка подтверждается следующим release.
