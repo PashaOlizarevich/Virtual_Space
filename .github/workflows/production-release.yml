@@ -52,7 +52,7 @@ jobs:
           git merge-base --is-ancestor "$ARTIFACT_SHA" origin/main
 
       - name: Install locked dependencies
-        run: npm ci
+        run: npm ci --include=dev
 
       - name: Cache pinned Vercel CLI without secrets
         run: npx --yes vercel@${VERCEL_CLI_VERSION} --version
@@ -125,7 +125,7 @@ jobs:
           git merge-base --is-ancestor "$ARTIFACT_SHA" origin/main
 
       - name: Install locked dependencies
-        run: npm ci
+        run: npm ci --include=dev
 
       - name: Cache pinned Vercel CLI without secrets
         run: npx --yes vercel@${VERCEL_CLI_VERSION} --version

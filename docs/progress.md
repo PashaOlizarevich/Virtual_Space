@@ -3099,3 +3099,15 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 - Security review: новых findings нет; install/generate без direct URL не подключается к БД, а
   release validation и migration wrapper по-прежнему требуют реальные scoped credentials до
   миграции. Остаточный риск ограничен ошибочной настройкой GitHub/Vercel environments вне кода.
+
+## Task 177 — Установка CI-инструментов в production release
+
+- Результат: оба job release workflow явно устанавливают devDependencies через
+  `npm ci --include=dev`, даже когда job-level `NODE_ENV=production`; lint, TypeScript и Jest CLI
+  доступны до миграций и deployment.
+- Файлы: `.github/workflows/production-release.yml`, `docs/progress.md`.
+- Причина: npm с `NODE_ENV=production` исключал devDependencies, поэтому release preflight падал на
+  `eslint: not found` до применения миграций.
+- Схема, миграции, runtime-код, переменные окружения и данные не изменялись.
+- Проверки: `npm ci --include=dev --ignore-scripts --dry-run` при `NODE_ENV=production`, targeted
+  Prettier, `npm run lint`, `npm run typecheck` и `git diff --check` прошли.
