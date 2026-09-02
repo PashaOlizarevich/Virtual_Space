@@ -3149,3 +3149,11 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
   runtime smoke-проверкой после нового release.
 - Product Tour и API overview: без изменений — маршруты, UI-сценарии и публичные контракты не
   менялись.
+
+## Task 180 — Отчёт об инциденте production deployment
+
+- Результат: причины недоступности production-сайта, выполненные исправления, итоговое состояние и
+  оставшийся шаг загрузки каталога собраны в отдельном Markdown-отчёте.
+- Файлы: `docs/vercel-production-incident-report.md`, `docs/progress.md`.
+- Код, конфигурация, Prisma schema, миграции и данные не изменялись.
+- Проверки: targeted Prettier и `git diff --check`.
