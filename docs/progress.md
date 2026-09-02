@@ -3127,3 +3127,25 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
   `npm run typecheck`, targeted Prettier и `git diff --check` прошли.
 - Product Tour и API overview: без изменений — пользовательские сценарии, маршруты и публичные
   контракты не менялись.
+
+## Task 179 — Первичная production-конфигурация магазина и явный Auth.js secret
+
+- Результат: новая повторяемая data migration создаёт обязательную запись `StoreSettings.primary`
+  только при её отсутствии; существующая операторская конфигурация не перезаписывается. Auth.js
+  получает `AUTH_SECRET` явно из server-only окружения.
+- Файлы: `prisma/migrations/20260902200000_initialize_primary_store_settings/migration.sql`,
+  `src/server/auth.ts`, `docs/first-db-release-decisions.md`, `docs/progress.md`.
+- Причина: первый production release создал таблицы, но не выполнял запрещённый в production seed,
+  поэтому публичная страница завершалась с `Primary public store settings are not configured`;
+  runtime-лог Auth.js одновременно фиксировал `MissingSecret`.
+- Классификация БД: совместимая data-only migration. `INSERT ... ON CONFLICT DO NOTHING` не меняет
+  schema, не удаляет и не обновляет существующие строки, не требует backfill или table rewrite.
+- Проверки: migration-history check, `prisma validate`, `prisma generate`, полный Jest (96 suites,
+  297 тестов), ESLint, TypeScript, production build с безопасными process-local placeholders и
+  `git diff --check` прошли. Live PostgreSQL и production migration локально не запускались.
+- Security review: секрет остаётся server-only и не логируется; SQL не принимает внешний ввод,
+  ограничен одной детерминированной записью и сохраняет существующие настройки. Новых findings нет;
+  остаточный риск — фактическую доступность `AUTH_SECRET` и результат data migration нужно подтвердить
+  runtime smoke-проверкой после нового release.
+- Product Tour и API overview: без изменений — маршруты, UI-сценарии и публичные контракты не
+  менялись.

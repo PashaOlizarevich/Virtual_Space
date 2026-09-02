@@ -1720,3 +1720,18 @@ Prisma schema и история SQL-миграций не изменены: пр
 репрезентативной local/preview PostgreSQL, а production provisioning, migration/deployment и
 backup/restore drill — в целевой инфраструктуре. Также остаётся подтверждённый пунктом 84 `Medium`
 security finding об отсутствии distributed rate limiting публичных auth Server Actions.
+
+## Исправление первого production bootstrap после пункта 85
+
+Первый фактический production rollout подтвердил, что versioned schema migrations применяются, но
+намеренно не запускаемый production seed оставляет новую базу без обязательной записи
+`StoreSettings.primary`. Для устранения этого разрыва добавлена отдельная data-only migration,
+которая вставляет публичный профиль магазина через `ON CONFLICT ("key") DO NOTHING`.
+
+Решение сохраняет границу безопасности seed: общий каталог и тестовые fixture-данные автоматически
+в production не загружаются, а уже созданные администратором настройки не перезаписываются. Prisma
+schema не меняется; rollback для единственной bootstrap-записи намеренно не автоматизируется, чтобы
+не удалить настройки, которые оператор мог изменить после release.
+
+Auth.js дополнительно получает `AUTH_SECRET` явным server-only параметром конфигурации. Значение
+секрета не хранится в Git, не выводится в логи и остаётся обязательной переменной Vercel Production.

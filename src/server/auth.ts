@@ -6,6 +6,7 @@ import Credentials from "next-auth/providers/credentials";
 import { authorizeCredentials } from "@/modules/auth/server/credentials";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  secret: process.env.AUTH_SECRET,
   providers: [
     Credentials({
       credentials: {
