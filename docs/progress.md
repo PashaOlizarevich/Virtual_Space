@@ -3078,3 +3078,24 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
   отсутствии distributed rate limiting публичных auth Server Actions.
 - Ограничения: E2E не запускались как нерелевантные документационному этапу; live PostgreSQL,
   `EXPLAIN`, production migration/deployment и backup/restore drill требуют целевой внешней среды.
+
+## Task 176 — Надёжная генерация Prisma Client в CI и deployment
+
+- Результат: чистая установка зависимостей, `typecheck` и production build теперь автоматически
+  генерируют Prisma Client; production release job дополнительно выполняет явную генерацию после
+  загрузки и проверки Vercel environment.
+- Файлы: `package.json`, `prisma.config.ts`, `.github/workflows/production-release.yml`,
+  `docs/progress.md`.
+- Prisma config допускает отсутствие `DATABASE_URL_UNPOOLED` для не подключающейся к БД команды
+  `prisma generate`; migration/deploy scripts по-прежнему отдельно требуют direct URL перед любыми
+  операциями с PostgreSQL.
+- Схема Prisma, миграции, runtime-контракты и данные не изменялись.
+- Проверки: `npm run postinstall`, `npm run prisma:validate`, `npm run prisma:generate`,
+  `npm run typecheck`, `npm run lint`, targeted Prettier, `git diff --check`, полный Jest
+  (96 suites, 297 тестов) и production build прошли. Общий `npm run format:check` сохраняет
+  существующий baseline форматирования в 461 файле, не относящийся к исправлению.
+- Переменные окружения: для production build использованы только безопасные process-local
+  placeholder-значения; `.env` и реальные credentials не читались.
+- Security review: новых findings нет; install/generate без direct URL не подключается к БД, а
+  release validation и migration wrapper по-прежнему требуют реальные scoped credentials до
+  миграции. Остаточный риск ограничен ошибочной настройкой GitHub/Vercel environments вне кода.
