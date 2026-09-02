@@ -23,7 +23,8 @@ export function mapCategoryRecord(record: CategoryRecord): CategoryDto {
 }
 
 export function mapProductPreviewRecord(record: ProductPreviewRecord): ProductPreviewDto {
-  const primaryImage = record.images[0];
+  const gallery = record.images.map((image) => ({ src: image.secureUrl, alt: image.alt }));
+  const primaryImage = gallery[0];
 
   return productPreviewDtoSchema.parse({
     id: record.id.toString(),
@@ -31,8 +32,9 @@ export function mapProductPreviewRecord(record: ProductPreviewRecord): ProductPr
     name: record.name,
     description: record.description,
     price: mapMoney(record.price, record.currency),
-    image: primaryImage?.secureUrl ?? "",
+    image: primaryImage?.src ?? "",
     imageAlt: primaryImage?.alt ?? "",
+    gallery,
     newFrom: record.newFrom?.toISOString() ?? null,
     newUntil: record.newUntil?.toISOString() ?? null,
   });
@@ -41,7 +43,6 @@ export function mapProductPreviewRecord(record: ProductPreviewRecord): ProductPr
 export function mapProductDetailRecord(record: ProductDetailRecord): ProductDto {
   return productDtoSchema.parse({
     ...mapProductPreviewRecord(record),
-    gallery: record.images.map((image) => ({ src: image.secureUrl, alt: image.alt })),
     specifications: record.specifications.map(({ label, value }) => ({ label, value })),
     optionGroups: record.optionGroups.map((group) => ({
       id: group.key,

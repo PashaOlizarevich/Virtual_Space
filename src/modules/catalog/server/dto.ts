@@ -49,12 +49,12 @@ export const productPreviewDtoSchema = z.strictObject({
   price: catalogMoneyDtoSchema,
   image: imageSourceSchema,
   imageAlt: z.string().trim().max(300),
+  gallery: z.array(productImageDtoSchema).max(20),
   newFrom: isoDateTimeSchema.nullable(),
   newUntil: isoDateTimeSchema.nullable(),
 });
 
 export const productDtoSchema = productPreviewDtoSchema.extend({
-  gallery: z.array(productImageDtoSchema).max(20),
   specifications: z.array(productSpecificationDtoSchema).max(100),
   optionGroups: z.array(productOptionGroupDtoSchema).max(30),
 });

@@ -3183,3 +3183,28 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
   дочернего unique key откатывает всю транзакцию. Новых findings нет.
 - Ограничения: субагентская независимая проверка не завершилась из-за лимита сервиса; live Preview и
   Production базы локально не изменялись, фактическая загрузка подтверждается следующим release.
+
+## Task 182 — Галерея изображений в production-превью товаров
+
+- Результат: публичные preview-карточки снова получают упорядоченную галерею из PostgreSQL, поэтому
+  существующие стрелки, счётчик и полноэкранный просмотр работают для товаров с несколькими
+  изображениями.
+- Причина: `productPreviewSelect` ограничивал relation `images` одним элементом, а preview DTO и mapper
+  не передавали `gallery` в клиентский `ProductPreview`.
+- Файлы: `src/modules/catalog/server/queries.ts`, `src/modules/catalog/server/dto.ts`,
+  `src/modules/catalog/server/mapper.ts`, `src/modules/catalog/types.ts`,
+  `src/test/catalog-service-fixtures.ts`, связанные unit-тесты,
+  `docs/vercel-production-incident-report.md`, `docs/progress.md`.
+- Архитектура: без изменений; Prisma остаётся источником данных, серверный слой возвращает allowlisted
+  Zod DTO, а существующий client component отвечает только за интерактивность галереи.
+- База и окружение: Prisma schema, миграции, данные и переменные Vercel не изменялись; исправление
+  требует только нового Production release.
+- Производительность: в RSC payload передаются только URL и alt-тексты максимум 20 изображений на
+  товар; bitmap-файлы не рендерятся и не загружаются до переключения кадра или открытия fullscreen.
+- Проверки: targeted Jest (4 suites, 14 тестов), полный Jest (96 suites, 299 тестов), ESLint,
+  TypeScript, production build, targeted Prettier и `git diff --check` прошли.
+- Security review: новых findings нет; DTO сохраняет allowlist полей, проверяет URL и ограничивает
+  галерею 20 элементами. Остаточный риск ограничен увеличением сериализованных публичных метаданных
+  изображений для каталожных страниц.
+- Product Tour и API overview: маршруты и пользовательский сценарий не изменились; публичный preview
+  DTO расширен уже существующими безопасными данными галереи.

@@ -3,6 +3,15 @@ import { describe, expect, it, jest } from "@jest/globals";
 jest.mock("@/server/db", () => ({ db: {} }));
 
 describe("catalog server queries", () => {
+  it("selects the complete ordered gallery for product previews", async () => {
+    const { productPreviewSelect } = await import("@/modules/catalog/server/queries");
+
+    expect(productPreviewSelect.images).toEqual({
+      select: { secureUrl: true, alt: true },
+      orderBy: { position: "asc" },
+    });
+  });
+
   it("selects and orders only public category fields", async () => {
     const { categorySelect, findPublicCategories } =
       await import("@/modules/catalog/server/queries");
