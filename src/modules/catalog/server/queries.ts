@@ -25,7 +25,6 @@ export const productPreviewSelect = {
       alt: true,
     },
     orderBy: { position: "asc" },
-    take: 1,
   },
 } satisfies Prisma.ProductSelect;
 

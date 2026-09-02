@@ -12,6 +12,7 @@ export function toProductPreviewDto(product: Product): ProductPreviewDto {
     price: mapMoney(moneyToNumber(product.price)),
     image: product.image,
     imageAlt: product.imageAlt,
+    gallery: product.gallery.map((image) => ({ ...image })),
     newFrom: product.newFrom ?? null,
     newUntil: product.newUntil ?? null,
   };

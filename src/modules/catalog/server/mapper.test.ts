@@ -18,7 +18,10 @@ const productRecord = {
   newFrom: new Date("2026-08-30T12:00:00.000Z"),
   newUntil: null,
   createdAt: new Date("2026-08-29T12:00:00.000Z"),
-  images: [{ secureUrl: "https://example.com/forma.png", alt: "Forma chair" }],
+  images: [
+    { secureUrl: "https://example.com/forma.png", alt: "Forma chair" },
+    { secureUrl: "https://example.com/forma-detail.png", alt: "Forma chair detail" },
+  ],
 } as ProductPreviewRecord;
 
 describe("catalog Prisma mappers", () => {
@@ -38,6 +41,10 @@ describe("catalog Prisma mappers", () => {
       price: { amount: "1299.90", currency: "BYN" },
       image: "https://example.com/forma.png",
       imageAlt: "Forma chair",
+      gallery: [
+        { src: "https://example.com/forma.png", alt: "Forma chair" },
+        { src: "https://example.com/forma-detail.png", alt: "Forma chair detail" },
+      ],
       newFrom: "2026-08-30T12:00:00.000Z",
       newUntil: null,
     });
@@ -59,7 +66,10 @@ describe("catalog Prisma mappers", () => {
         ],
       }),
     ).toMatchObject({
-      gallery: [{ src: "https://example.com/forma.png", alt: "Forma chair" }],
+      gallery: [
+        { src: "https://example.com/forma.png", alt: "Forma chair" },
+        { src: "https://example.com/forma-detail.png", alt: "Forma chair detail" },
+      ],
       specifications: [{ label: "Material", value: "Oak" }],
       optionGroups: [{ id: "color", label: "Color", options: [{ id: "sand", label: "Sand" }] }],
     });

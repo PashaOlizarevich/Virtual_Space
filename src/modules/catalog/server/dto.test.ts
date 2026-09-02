@@ -1,6 +1,6 @@
 import { describe, expect, it } from "@jest/globals";
 
-import { productDtoSchema } from "@/modules/catalog/server/dto";
+import { productDtoSchema, productPreviewDtoSchema } from "@/modules/catalog/server/dto";
 
 const product = {
   id: "42",
@@ -18,6 +18,19 @@ const product = {
 };
 
 describe("productDtoSchema", () => {
+  it("keeps the ordered gallery in a product preview", () => {
+    const {
+      specifications: _specifications,
+      optionGroups: _optionGroups,
+      ...previewProduct
+    } = product;
+    void _specifications;
+    void _optionGroups;
+    const preview = productPreviewDtoSchema.parse(previewProduct);
+
+    expect(preview.gallery).toEqual(product.gallery);
+  });
+
   it("accepts a JSON-safe public product", () => {
     expect(productDtoSchema.parse(product)).toEqual(product);
   });

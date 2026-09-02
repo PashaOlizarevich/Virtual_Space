@@ -20,13 +20,13 @@ export type ProductPreview = Readonly<{
   currency?: ProductCurrency;
   image: string;
   imageAlt: string;
+  gallery: readonly ProductImage[];
   newFrom?: string | null;
   newUntil?: string | null;
 }>;
 
 export type Product = ProductPreview &
   Readonly<{
-    gallery: readonly ProductImage[];
     specifications: readonly ProductSpecification[];
     optionGroups: readonly ProductOptionGroup[];
   }>;
