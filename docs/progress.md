@@ -3111,3 +3111,19 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 - Схема, миграции, runtime-код, переменные окружения и данные не изменялись.
 - Проверки: `npm ci --include=dev --ignore-scripts --dry-run` при `NODE_ENV=production`, targeted
   Prettier, `npm run lint`, `npm run typecheck` и `git diff --check` прошли.
+
+## Task 178 — Тестовое окружение Jest в production release
+
+- Результат: Jest вынесен в отдельный шаг production release workflow и получает явный
+  `NODE_ENV=test`; остальные release checks, миграции и сборка продолжают выполняться с
+  job-level `NODE_ENV=production`.
+- Файлы: `.github/workflows/production-release.yml`, `docs/progress.md`.
+- Причина: job-level `NODE_ENV=production` заставлял Jest загружать production-сборку React, где
+  тестовый `act()` недоступен; из-за этого component-тесты завершались с
+  `TypeError: (0, _react.act) is not a function` до применения миграций.
+- Схема, миграции, runtime-код, переменные окружения и данные не изменялись; существующие тесты не
+  изменялись.
+- Проверки: полный Jest с `NODE_ENV=test` (96 suites, 297 тестов), `npm run lint`,
+  `npm run typecheck`, targeted Prettier и `git diff --check` прошли.
+- Product Tour и API overview: без изменений — пользовательские сценарии, маршруты и публичные
+  контракты не менялись.
