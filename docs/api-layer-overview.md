@@ -48,6 +48,8 @@
   Actions административного интерфейса.
 - [src/app/api/admin/uploads/signature/route.ts](../src/app/api/admin/uploads/signature/route.ts) —
   Route Handler подписанного контракта загрузки Cloudinary.
+- [src/app/api/admin/uploads/finalize/route.ts](../src/app/api/admin/uploads/finalize/route.ts) —
+  защищённый Route Handler проверки и закрепления загруженного изображения за товаром.
 - [src/modules/catalog/server/admin.ts](../src/modules/catalog/server/admin.ts) — авторизованная
   серверная граница операций каталога.
 - [src/modules/catalog/server/admin-service.ts](../src/modules/catalog/server/admin-service.ts) —
@@ -166,6 +168,9 @@ Zustand server DTO и сериализует последующие update/remov
   переменных окружения, формирование подписей и ограниченный контракт внешнего сервиса.
 - [Endpoint подписи Cloudinary](../src/app/api/admin/uploads/signature/route.ts) — выдаёт контракт
   загрузки только после проверки административного доступа.
+- [Endpoint финализации Cloudinary](../src/app/api/admin/uploads/finalize/route.ts) — принимает только
+  серверный `publicId`, повторно проверяет административный доступ и фактический ресурс Cloudinary,
+  после чего сохраняет allowlisted metadata изображения в PostgreSQL.
 - [Lifecycle изображений](../src/modules/catalog/server/image-lifecycle.ts) — проверка загруженного
   ресурса, согласованное сохранение, замена и удаление изображения.
 - [Server-only адаптер Telegram](../src/server/integrations/telegram.ts) — валидирует server-only
@@ -313,6 +318,7 @@ allowlisted DTO для клиентского повторного GET и отп
 
 Boundary подключён к `POST /api/orders`, `POST /api/orders/preflight`,
 `POST /api/orders/lookup`, `POST /api/admin/uploads/signature`,
+`POST /api/admin/uploads/finalize`,
 `PATCH /api/admin/orders/[orderNumber]/status` и административному GET списка для общей обработки
 ошибок/корреляции. Rate limiting применяется только к чувствительным или изменяющим состояние
 операциям; read-only административный список защищён Auth.js и bounded pagination без отдельного

@@ -3272,3 +3272,28 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
   loopback PostgreSQL на `127.0.0.1:5432` недоступен. Использование неизвестной БД из локального
   окружения намеренно исключено; функциональная и visual матрицы выполнятся в изолированном
   PostgreSQL service GitHub Actions после push.
+
+## Task 186 — Восстановление загрузки изображений товара в Vercel
+
+- Результат: подпись и финализация Cloudinary переведены с непрозрачных для production-ошибок
+  Server Actions на защищённые JSON Route Handlers. Администратор получает понятное сообщение вместо
+  React error #441, а новый товар при сбое загрузки или публикации компенсирующе удаляется вместе с
+  уже закреплёнными изображениями и больше не остаётся пустым черновиком.
+- Причина: создание товара, загрузка Cloudinary и публикация выполнялись последовательными запросами;
+  исключение Server Action после первого write скрывалось production-сборкой React, оставляя
+  `isActive=false` запись без изображения.
+- Файлы: `src/modules/admin/components/admin-products-manager.tsx`,
+  `src/modules/admin/product-images-transport.ts`,
+  `src/app/api/admin/uploads/finalize/route.ts`, связанные новые unit/integration-тесты,
+  `docs/api-layer-overview.md`, `docs/progress.md`.
+- Проверки: targeted Jest (3 suites, 9 тестов), ESLint и TypeScript прошли. Production build успешно
+  компилируется и проходит TypeScript, но локальный сбор данных ожидаемо остановлен без
+  `DATABASE_URL`; неизвестная локальная БД намеренно не использовалась.
+- Переменные окружения: новые не добавлялись. Production по-прежнему требует
+  `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`.
+- Security review: новых findings нет. Оба upload endpoint повторно проверяют роль администратора,
+  используют строгие Zod allowlist-схемы и rate limit; секрет Cloudinary остаётся server-only,
+  фактический ресурс и принадлежность `publicId` товару проверяются перед записью.
+- Архитектура: Prisma/PostgreSQL и lifecycle Cloudinary не изменены; добавлена тонкая HTTP-граница и
+  клиентская проверка response DTO. Product Tour не менялся, поскольку маршрут и пользовательский
+  сценарий админ-панели сохранены.

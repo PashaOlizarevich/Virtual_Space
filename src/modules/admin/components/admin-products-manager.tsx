@@ -11,13 +11,15 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { AdminShell } from "@/modules/admin/components/admin-shell";
 import {
-  createAdminImageSignatureAction,
   deleteAdminImageAction,
   deleteAdminProductAction,
-  finalizeAdminImageAction,
   loadAdminCatalog,
   saveAdminProductAction,
 } from "@/modules/admin/server/actions";
+import {
+  finalizeProductImage,
+  requestProductImageUploadSignature,
+} from "@/modules/admin/product-images-transport";
 import {
   ADMIN_PRODUCT_IMAGE_LIMIT,
   adminProductEditorSchema,
@@ -54,7 +56,7 @@ function readImage(file: File): Promise<string> {
 
 async function uploadProductImage(productId: string, image: EditorImage, position: number) {
   if (!image.file) return;
-  const signed = await createAdminImageSignatureAction(productId);
+  const signed = await requestProductImageUploadSignature(productId);
   const body = new FormData();
   body.set("file", image.file);
   body.set("api_key", signed.apiKey);
@@ -67,8 +69,9 @@ async function uploadProductImage(productId: string, image: EditorImage, positio
     `https://api.cloudinary.com/v1_1/${encodeURIComponent(signed.cloudName)}/image/upload`,
     { method: "POST", body },
   );
-  if (!response.ok) throw new Error("Cloudinary не принял изображение.");
-  await finalizeAdminImageAction({
+  if (!response.ok)
+    throw new Error("Cloudinary не принял изображение. Проверьте формат и размер файла.");
+  await finalizeProductImage({
     productId,
     publicId: signed.publicId,
     alt: image.alt,
@@ -133,6 +136,7 @@ function ProductDialog({
       setGalleryError("Добавьте хотя бы одно изображение.");
       return;
     }
+    let createdProductId: string | null = null;
     try {
       const productInput = {
         categoryId: values.categoryId,
@@ -149,6 +153,7 @@ function ProductDialog({
         dimensions: values.dimensions,
       };
       const saved = await saveAdminProductAction(product?.id ?? null, productInput);
+      if (!product) createdProductId = saved.id;
       const retainedIds = new Set(images.filter((image) => !image.file).map((image) => image.id));
       const removedImages = (product?.images ?? []).filter((image) => !retainedIds.has(image.id));
       const firstNewPosition =
@@ -163,7 +168,20 @@ function ProductDialog({
       }
       await onSaved();
     } catch (error) {
-      setSubmitError(error instanceof Error ? error.message : "Не удалось сохранить товар.");
+      let rollbackFailed = false;
+      if (createdProductId) {
+        try {
+          await deleteAdminProductAction(createdProductId);
+        } catch {
+          rollbackFailed = true;
+        }
+      }
+      const message = error instanceof Error ? error.message : "Не удалось сохранить товар.";
+      setSubmitError(
+        rollbackFailed
+          ? `${message} Не удалось автоматически удалить черновик; обновите список товаров.`
+          : message,
+      );
     }
   });
 
