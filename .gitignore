@@ -13,3 +13,4 @@ test-results/
 Thumbs.db
 *.tsbuildinfo
 .npm-cache/
+.vercel

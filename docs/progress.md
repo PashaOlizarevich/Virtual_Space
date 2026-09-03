@@ -3227,3 +3227,14 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 - Ограничения: полный runtime-прогон Playwright локально не выполнялся из-за отсутствия Docker и
   изолированного PostgreSQL; обе группы будут выполнены GitHub Actions после push. `npm ci` сообщает
   о 5 high severity уязвимостях существующего lockfile; зависимости в рамках задачи не изменялись.
+
+## Task 184 — Исключение локального состояния Vercel
+
+- Результат: локальный каталог конфигурации связанного Vercel-проекта исключён из Git.
+- Файлы: `.gitignore`, `docs/progress.md`.
+- Проверки: Next.js type generation, TypeScript, targeted Prettier и `git diff --check`.
+- Переменные окружения: нет; `.env.local` остаётся исключённым из Git.
+- Архитектура: без изменений.
+- Product Tour: без изменений.
+- API overview: без изменений.
+- Ограничения: нет.
