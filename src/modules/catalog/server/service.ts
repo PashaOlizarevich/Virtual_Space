@@ -66,7 +66,9 @@ export async function getPublicCatalog(input: CatalogPageInput = {}): Promise<Ca
       take: pageSize + 1,
     }),
   ]);
-  const products = productsWithLookahead.slice(0, pageSize);
+  const products = productsWithLookahead
+    .filter((product) => product.images.length > 0)
+    .slice(0, pageSize);
   const lastProduct = products.at(-1);
 
   return {
@@ -82,5 +84,5 @@ export async function getPublicCatalog(input: CatalogPageInput = {}): Promise<Ca
 export async function getPublicProductBySlug(slug: string): Promise<ProductDto | null> {
   const product = await findPublicProductBySlug(slugSchema.parse(slug));
 
-  return product ? mapProductDetailRecord(product) : null;
+  return product?.images.length ? mapProductDetailRecord(product) : null;
 }
