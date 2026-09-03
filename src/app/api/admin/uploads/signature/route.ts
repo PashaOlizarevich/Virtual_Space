@@ -19,7 +19,11 @@ export async function POST(request: Request) {
     async ({ json }) => {
       try {
         const input = requestSchema.parse(await request.json());
-        return json(await createImageUploadSignature(input.productId));
+        const { public_id: _publicId, ...signature } = await createImageUploadSignature(
+          input.productId,
+        );
+        void _publicId;
+        return json(signature);
       } catch (error) {
         if (error instanceof AuthenticationRequiredError) {
           return json({ error: "Authentication required" }, { status: 401 });

@@ -3315,3 +3315,17 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
   URL не получают fallback и не раскрываются клиенту.
 - Архитектура, Product Tour и API overview: публичные контракты и маршруты не изменялись; добавлен
   defensive guard в существующем server-only сервисе каталога.
+
+## Task 188 — Исправление response-контракта подписи Cloudinary
+
+- Результат: endpoint подписи загрузки удаляет дублирующее внутреннее поле Cloudinary `public_id`
+  перед отправкой ответа. Строгий клиентский DTO снова принимает контракт, и загрузка продолжает
+  выполнение после получения подписи.
+- Причина: адаптер подписи возвращал одновременно публичное DTO-поле `publicId` и подписываемый
+  параметр `public_id`; добавленный ранее `strictObject` корректно отклонял лишний ключ.
+- Файлы: `src/app/api/admin/uploads/signature/route.ts`, новый regression-тест контракта,
+  `docs/progress.md`.
+- Проверки: targeted Jest (3 suites, 7 тестов), ESLint и TypeScript прошли.
+- Безопасность: secret и параметры подписи не изменены; HTTP-ответ сокращён до ожидаемого allowlist,
+  внутреннее дублирующее поле больше не сериализуется клиенту. Новых findings нет.
+- База, окружение, архитектура, Product Tour и API overview: без изменений.
