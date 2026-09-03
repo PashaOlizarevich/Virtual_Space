@@ -1,0 +1,114 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - "**"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: "24"
+  DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/virtual_space_ci?schema=public
+  DATABASE_URL_UNPOOLED: postgresql://postgres:postgres@127.0.0.1:5432/virtual_space_ci?schema=public
+  AUTH_SECRET: ci-only-auth-secret-ci-only-auth-secret
+  AUTH_URL: http://127.0.0.1:3000
+
+jobs:
+  quality:
+    name: Lint, types, tests and build
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      MIGRATION_BASE_REF: origin/main
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci --include=dev
+
+      - name: Validate Prisma schema
+        run: npm run prisma:validate
+
+      - name: Validate migration history
+        run: npm run prisma:check-migrations
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Run unit, component and integration tests
+        env:
+          NODE_ENV: test
+        run: npm test -- --runInBand
+
+      - name: Build
+        run: npm run build
+
+  e2e:
+    name: E2E (${{ matrix.suite }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - suite: functional
+            command: npm run test:e2e
+          - suite: visual
+            command: npm run test:e2e:visual
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: virtual_space_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d virtual_space_ci"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci --include=dev
+
+      - name: Prepare isolated test database
+        env:
+          NODE_ENV: test
+        run: |
+          node node_modules/prisma/build/index.js migrate deploy
+          npm run prisma:seed
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run ${{ matrix.suite }} E2E tests
+        run: ${{ matrix.command }}

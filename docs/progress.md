@@ -3208,3 +3208,22 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
   изображений для каталожных страниц.
 - Product Tour и API overview: маршруты и пользовательский сценарий не изменились; публичный preview
   DTO расширен уже существующими безопасными данными галереи.
+
+## Task 183 — CI для всех веток
+
+- Результат: добавлен GitHub Actions workflow `CI`, запускаемый при push в любую ветку. Отдельный
+  quality job проверяет Prisma schema и историю миграций, ESLint, TypeScript, полный Jest и production
+  build; E2E matrix независимо запускает функциональные и визуальные Playwright-сценарии.
+- Файлы: `.github/workflows/ci.yml`, `docs/progress.md`.
+- Проверки: чистый `npm ci --include=dev`, `npm run prisma:validate`,
+  `npm run prisma:check-migrations`, `npm run lint`, `npm run typecheck`, полный
+  `npm test -- --runInBand` (96 suites, 299 тестов), `npm run build`, Prettier для `ci.yml` и
+  `git diff --check` прошли; Playwright обнаружил 26 функциональных и 6 визуальных E2E-сценариев.
+- Переменные окружения: CI-only `DATABASE_URL`, `DATABASE_URL_UNPOOLED`, `AUTH_SECRET`, `AUTH_URL`.
+- Архитектура: без изменений — workflow использует существующие npm scripts и поднимает отдельный
+  PostgreSQL service с миграциями и seed для каждой E2E-матрицы.
+- Product Tour: без изменений — маршруты и пользовательские сценарии не менялись.
+- API overview: без изменений — серверные entry points и публичные контракты не менялись.
+- Ограничения: полный runtime-прогон Playwright локально не выполнялся из-за отсутствия Docker и
+  изолированного PostgreSQL; обе группы будут выполнены GitHub Actions после push. `npm ci` сообщает
+  о 5 high severity уязвимостях существующего lockfile; зависимости в рамках задачи не изменялись.
