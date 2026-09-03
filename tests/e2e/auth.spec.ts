@@ -1,17 +1,30 @@
 import { expect, test } from "@playwright/test";
 
-test("switches auth modes, validates and reports preview success", async ({ page }) => {
+import { addFormaToCart, loginAsUser, userCredentials } from "./support/app";
+
+test("registers an account and accepts a password recovery request", async ({ page }, testInfo) => {
   await page.goto("/login");
   await expect(page.getByRole("heading", { name: "Войти в аккаунт" })).toBeVisible();
+
   await page.getByRole("tab", { name: "Регистрация" }).click();
   await expect(page.getByRole("heading", { name: "Создать аккаунт" })).toBeVisible();
   await page.getByLabel("Имя").fill("Анна");
-  await page.getByLabel("Email").fill("anna@example.com");
-  await page.getByLabel("Пароль", { exact: true }).fill("password1");
+  await page
+    .getByLabel("Email")
+    .fill(`registration-${testInfo.workerIndex}-${testInfo.retry}-${Date.now()}@example.test`);
+  await page.getByLabel("Пароль", { exact: true }).fill(userCredentials(testInfo).password);
   await page.getByRole("button", { name: "Создать аккаунт" }).click();
-  await expect(page.getByRole("status")).toContainText("Аккаунт не создан");
+
+  await expect(page).toHaveURL(/\/profile$/);
+  await expect(page.getByRole("heading", { name: "Вход выполнен" })).toBeVisible();
+
+  await page.goto("/login");
   await page.getByRole("tab", { name: "Восстановление" }).click();
-  await expect(page.getByText("Сейчас письмо не отправляется")).toBeVisible();
+  await page.getByLabel("Email").fill("unknown-account@example.test");
+  await page.getByRole("button", { name: "Проверить email" }).click();
+  await expect(page.getByRole("status")).toContainText(
+    "Если аккаунт существует, запрос подготовлен. Доставка письма пока не настроена.",
+  );
 });
 
 test("supports keyboard tabs, validation and password autocomplete", async ({ page }) => {
@@ -52,56 +65,22 @@ test("supports keyboard tabs, validation and password autocomplete", async ({ pa
   await expect(page.getByLabel("Email")).toHaveAttribute("aria-invalid", "true");
 });
 
-test("merges guest and server carts, preserves them on logout and restores on re-login", async ({
+test("merges guest and server carts, preserves the server cart on logout and restores it", async ({
   page,
-}) => {
-  const item = {
-    productId: "forma-armchair",
-    quantity: 1,
-    selectedOptions: [{ groupId: "color", optionId: "milk" }],
-    observedPrice: 1390,
-  };
-
-  await page.addInitScript((cartItem) => {
-    if (sessionStorage.getItem("virtual-space:e2e-cart-seeded") === "true") return;
-    localStorage.setItem(
-      "virtual-space:guest-cart:v1",
-      JSON.stringify({ state: { items: [cartItem] }, version: 1 }),
-    );
-    localStorage.setItem(
-      "virtual-space:preview-server-cart:v1",
-      JSON.stringify({ items: [{ ...cartItem, quantity: 2 }] }),
-    );
-    sessionStorage.setItem("virtual-space:e2e-cart-seeded", "true");
-  }, item);
-
-  await page.goto("/login");
-  await page.getByLabel("Email").fill("anna@example.com");
-  await page.getByLabel("Пароль", { exact: true }).fill("password1");
-  await page.getByRole("button", { name: "Войти" }).click();
-
-  await expect(page).toHaveURL(/\/profile$/);
-  await expect(page.getByText("Демонстрационный вход выполнен")).toBeVisible();
+}, testInfo) => {
+  await addFormaToCart(page);
+  await loginAsUser(page, testInfo);
   await expect(page.locator(".profile-cart-summary").getByText("3", { exact: true })).toBeVisible();
 
   await page.getByRole("button", { name: "Выйти из аккаунта" }).click();
-  await expect(page.getByText("Гостевой режим", { exact: true })).toBeVisible();
-  const afterLogout = await page.evaluate(() => ({
-    guest: localStorage.getItem("virtual-space:guest-cart:v1"),
-    server: localStorage.getItem("virtual-space:preview-server-cart:v1"),
-  }));
-  expect(afterLogout.guest).toContain('"items":[]');
-  expect(afterLogout.server).toContain('"quantity":3');
+  await expect(page.getByRole("heading", { name: "Войдите в аккаунт" })).toBeVisible();
+  await expect
+    .poll(async () =>
+      page.evaluate(() => window.localStorage.getItem("virtual-space:guest-cart:v1")),
+    )
+    .toContain('"items":[]');
 
-  await page.evaluate((cartItem) => {
-    localStorage.setItem(
-      "virtual-space:guest-cart:v1",
-      JSON.stringify({ state: { items: [cartItem] }, version: 1 }),
-    );
-  }, item);
-  await page.goto("/login");
-  await page.getByLabel("Email").fill("anna@example.com");
-  await page.getByLabel("Пароль", { exact: true }).fill("password1");
-  await page.getByRole("button", { name: "Войти" }).click();
+  await addFormaToCart(page);
+  await loginAsUser(page, testInfo);
   await expect(page.locator(".profile-cart-summary").getByText("4", { exact: true })).toBeVisible();
 });

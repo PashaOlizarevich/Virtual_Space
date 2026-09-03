@@ -1,5 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 
+import { loginAsUser } from "./support/app";
+
 function trackRuntimeErrors(page: Page) {
   const runtimeErrors: string[] = [];
   page.on("pageerror", (error) => runtimeErrors.push(error.message));
@@ -9,11 +11,12 @@ function trackRuntimeErrors(page: Page) {
   return runtimeErrors;
 }
 
-test("shows profile dashboard and validates personal details", async ({ page }) => {
+test("shows profile dashboard and validates personal details", async ({ page }, testInfo) => {
   const runtimeErrors = trackRuntimeErrors(page);
-  await page.goto("/profile");
-  await expect(page.getByRole("heading", { name: "Здравствуйте, Анна" })).toBeVisible();
-  await expect(page.getByText("Профиль открыт в демонстрационном режиме")).toBeVisible();
+  await loginAsUser(page, testInfo);
+
+  await expect(page.getByRole("heading", { name: "Ваш личный кабинет" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Вход выполнен" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Корзина" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Заказы" })).toBeVisible();
   await expect(page.getByText("В работе", { exact: true })).toBeVisible();

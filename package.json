@@ -24,6 +24,7 @@
     "prisma:validate": "prisma validate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:seed": "node scripts/run-prisma-seed.mjs",
+    "prisma:seed:e2e": "tsx scripts/seed-e2e.ts",
     "prisma:bootstrap-catalog": "tsx --conditions=react-server scripts/bootstrap-production-catalog.ts",
     "prisma:verify-query-plans": "node scripts/verify-query-plans.mjs",
     "prisma:studio": "prisma studio",

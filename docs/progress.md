@@ -3238,3 +3238,37 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 - Product Tour: без изменений.
 - API overview: без изменений.
 - Ограничения: нет.
+
+## Task 185 — Актуализация E2E после перехода на PostgreSQL и Auth.js
+
+- Результат: 12 устаревших Playwright-сценариев переведены с preview/sessionStorage и строковых
+  mock-id на реальные Auth.js-сессии, PostgreSQL-данные и числовые product id. Каталог больше не
+  зависит от фиксированного количества и порядка карточек, checkout pending проверяется через
+  управляемую задержку фактического `POST /api/orders`, а административные сценарии используют
+  retry-safe записи.
+- Причина: E2E были написаны до завершения первого DB-релиза и ожидали старые mock-сообщения,
+  `admin/123`, preview-корзину и `forma-armchair` как `productId`; CI впервые выполнил полный runtime
+  набор против текущего приложения и получил 12 падений из 26 функциональных сценариев.
+- Файлы: `scripts/seed-e2e.ts`, `tests/e2e/support/app.ts`, шесть затронутых E2E spec-файлов,
+  `.github/workflows/ci.yml`, `.env.example`, `package.json`, `docs/progress.md`.
+- Классификация БД: совместимый data-only seed без изменения Prisma schema и migration history.
+  Seed разрешён только при `NODE_ENV=test`, отдельном `E2E_ALLOW_DATABASE_SEED=true` и loopback
+  PostgreSQL URL; он создаёт/сбрасывает только записи с E2E-идентификаторами и корзины выделенных
+  E2E-пользователей. Password hashing выполняется до открытия транзакции.
+- Переменные окружения: добавлены `E2E_ALLOW_DATABASE_SEED`, `E2E_ADMIN_EMAIL`,
+  `E2E_ADMIN_PASSWORD`, `E2E_USER_EMAIL`, `E2E_USER_PASSWORD`. В CI пароли выводятся из run id и
+  доступны только E2E job; значения и connection string не логируются.
+- Проверки: защитный отказ seed без разрешающего флага, `npm run prisma:validate`,
+  `npm run prisma:check-migrations`, `npm run lint`, `npm run typecheck`, полный
+  `npm test -- --runInBand` (96 suites, 299 тестов), `npm run build`, обнаружение Playwright
+  (26 функциональных и 6 visual сценариев), targeted Prettier и `git diff --check` прошли.
+- Security review: новых findings нет. Seed недоступен production и удалённым БД, не логирует
+  credentials, а тестовые пользователи разделены по retry. Cloudinary и другие внешние сервисы для
+  E2E-фикстур не требуются.
+- Архитектура, Product Tour и API overview: без изменений — runtime-маршруты, server entry points,
+  публичные контракты и пользовательские сценарии не менялись; обновлены только их E2E-проверки и
+  CI-подготовка данных.
+- Ограничения: полный runtime-прогон Playwright локально не выполнен — Docker отсутствует, а
+  loopback PostgreSQL на `127.0.0.1:5432` недоступен. Использование неизвестной БД из локального
+  окружения намеренно исключено; функциональная и visual матрицы выполнятся в изолированном
+  PostgreSQL service GitHub Actions после push.
