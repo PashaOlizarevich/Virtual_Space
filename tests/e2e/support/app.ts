@@ -1,0 +1,78 @@
+import { expect, type Page, type TestInfo } from "@playwright/test";
+
+const FORMA_PRODUCT_PATH = "/product/forma-armchair";
+
+type Credentials = Readonly<{ email: string; password: string }>;
+
+function requiredEnvironmentVariable(name: string): string {
+  const value = process.env[name];
+  if (!value) throw new Error(`Missing required E2E environment variable: ${name}`);
+  return value;
+}
+
+function retryEmail(email: string, retry: number): string {
+  const separator = email.lastIndexOf("@");
+  if (separator < 1) throw new Error("E2E fixture email must contain a local part and domain.");
+  return `${email.slice(0, separator)}+retry-${retry}${email.slice(separator)}`.toLowerCase();
+}
+
+export function adminCredentials(testInfo: TestInfo): Credentials {
+  return {
+    email: retryEmail(requiredEnvironmentVariable("E2E_ADMIN_EMAIL"), testInfo.retry),
+    password: requiredEnvironmentVariable("E2E_ADMIN_PASSWORD"),
+  };
+}
+
+export function userCredentials(testInfo: TestInfo): Credentials {
+  return {
+    email: retryEmail(requiredEnvironmentVariable("E2E_USER_EMAIL"), testInfo.retry),
+    password: requiredEnvironmentVariable("E2E_USER_PASSWORD"),
+  };
+}
+
+export async function loginAsAdmin(page: Page, testInfo: TestInfo): Promise<void> {
+  const credentials = adminCredentials(testInfo);
+  await page.goto("/admin");
+  await page.getByLabel("Email").fill(credentials.email);
+  await page.getByLabel("Пароль", { exact: true }).fill(credentials.password);
+  await page.getByRole("button", { name: "Войти в Dashboard" }).click();
+  await expect(page.getByRole("heading", { name: "Добро пожаловать" })).toBeVisible();
+}
+
+export async function loginAsUser(page: Page, testInfo: TestInfo): Promise<void> {
+  const credentials = userCredentials(testInfo);
+  await page.goto("/login");
+  await page.getByLabel("Email").fill(credentials.email);
+  await page.getByLabel("Пароль", { exact: true }).fill(credentials.password);
+  await page.getByRole("button", { name: "Войти" }).click();
+  await expect(page).toHaveURL(/\/profile$/);
+  await expect(page.getByRole("heading", { name: "Вход выполнен" })).toBeVisible();
+}
+
+export async function addFormaToCart(page: Page, color = "Молочный"): Promise<void> {
+  await page.goto(FORMA_PRODUCT_PATH);
+  await page.getByLabel(color).check();
+  await page.getByRole("button", { name: "Добавить в корзину" }).click();
+  await expect(page.getByRole("status")).toContainText(`Букле, ${color}`);
+}
+
+export async function openFormaFromCatalog(page: Page): Promise<void> {
+  await page.goto("/catalog");
+  const productLink = page.locator(`a[href="${FORMA_PRODUCT_PATH}"]`);
+
+  for (let pageIndex = 0; pageIndex < 10; pageIndex += 1) {
+    if ((await productLink.count()) > 0) {
+      await productLink.click();
+      await expect(page).toHaveURL(new RegExp(`${FORMA_PRODUCT_PATH}$`));
+      return;
+    }
+
+    const nextPage = page.getByRole("button", { name: "Следующая страница каталога" });
+    if ((await nextPage.count()) === 0 || (await nextPage.isDisabled())) break;
+    const currentUrl = page.url();
+    await nextPage.click();
+    await expect.poll(() => page.url()).not.toBe(currentUrl);
+  }
+
+  throw new Error("The Forma product link was not found in the catalog pagination.");
+}

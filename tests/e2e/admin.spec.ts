@@ -1,95 +1,82 @@
 import { expect, test } from "@playwright/test";
 
-test.beforeEach(async ({ page }) => {
-  await page.goto("/admin");
-  await page.evaluate(() => sessionStorage.clear());
-  await page.reload();
-});
+import { adminCredentials, loginAsAdmin } from "./support/app";
 
-test("validates admin login and opens dashboard", async ({ page }) => {
+test("validates admin login and opens dashboard", async ({ page }, testInfo) => {
+  await page.goto("/admin");
   await expect(page.getByRole("heading", { name: "Вход администратора" })).toBeVisible();
 
   await page.getByRole("button", { name: "Войти в Dashboard" }).click();
-  await expect(page.getByText("Неверный логин")).toBeVisible();
-  await expect(page.getByText("Неверный пароль")).toBeVisible();
+  await expect(page.getByText("Введите корректную почту")).toBeVisible();
+  await expect(page.getByText("Введите пароль")).toBeVisible();
 
-  await page.getByLabel("Логин").fill("admin");
-  await page.locator("#admin-password").fill("123");
+  const credentials = adminCredentials(testInfo);
+  await page.getByLabel("Email").fill(credentials.email);
+  await page.getByLabel("Пароль", { exact: true }).fill(credentials.password);
   await page.getByRole("button", { name: "Войти в Dashboard" }).click();
 
   await expect(page.getByRole("heading", { name: "Добро пожаловать" })).toBeVisible();
-  await expect(page.getByText("Новые заказы")).toBeVisible();
+  await expect(page.getByText("Всего товаров")).toBeVisible();
 });
 
-test("restores admin preview session and signs out", async ({ page }) => {
-  await page.evaluate(() =>
-    sessionStorage.setItem("virtual-space:admin-preview-session:v1", "admin"),
-  );
-  await page.reload();
+test("restores an authenticated admin session and signs out", async ({ page }, testInfo) => {
+  await loginAsAdmin(page, testInfo);
+  await page.goto("/admin/orders");
+  await expect(page.getByRole("heading", { name: "Заказы" })).toBeVisible();
 
+  await page.goto("/admin");
   await expect(page.getByRole("heading", { name: "Добро пожаловать" })).toBeVisible();
   await page.getByRole("button", { name: "Выйти" }).click();
   await expect(page.getByRole("heading", { name: "Вход администратора" })).toBeVisible();
 });
 
-test("creates, edits and deletes a product preview", async ({ page }) => {
-  await page.evaluate(() =>
-    sessionStorage.setItem("virtual-space:admin-preview-session:v1", "admin"),
-  );
+test("edits and deletes an isolated product fixture", async ({ page }, testInfo) => {
+  await loginAsAdmin(page, testInfo);
   await page.goto("/admin/products");
   await expect(page.getByRole("heading", { name: "Товары" })).toBeVisible();
 
-  await page.getByRole("button", { name: "Добавить товар" }).click();
-  await page.getByLabel("Название").fill("Пуф Solo");
-  await page.getByLabel("Slug").fill("solo-pouf");
-  await page.getByLabel("Категория").fill("Пуфы");
-  await page.getByLabel("Описание").fill("Компактный мягкий пуф для современной гостиной.");
-  await page.getByLabel("Цена, BYN").fill("490");
-  await page.getByLabel("Остаток").fill("8");
-  await page
-    .getByLabel("Галерея")
-    .setInputFiles({ name: "solo.png", mimeType: "image/png", buffer: Buffer.from("preview") });
-  await page.getByRole("button", { name: "Сохранить товар" }).click();
-  await expect(page.getByRole("row", { name: /Пуф Solo/ })).toBeVisible();
+  const productName = `Пуф E2E ${testInfo.retry}`;
+  await page.getByLabel("Поиск товаров").fill(productName);
+  await expect(page.getByRole("row", { name: new RegExp(productName) })).toBeVisible();
 
-  await page.getByRole("button", { name: "Редактировать Пуф Solo" }).click();
+  await page.getByRole("button", { name: `Редактировать ${productName}` }).click();
   await page.getByLabel("Остаток").fill("4");
   await page.getByRole("button", { name: "Сохранить товар" }).click();
-  await expect(page.getByRole("row", { name: /Пуф Solo/ })).toContainText("4 шт.");
+  await expect(page.getByRole("row", { name: new RegExp(productName) })).toContainText("4 шт.");
 
-  await page.getByRole("button", { name: "Удалить Пуф Solo" }).click();
+  await page.getByRole("button", { name: `Удалить ${productName}` }).click();
   await expect(page.getByRole("heading", { name: "Удалить товар?" })).toBeVisible();
   await page.getByRole("button", { name: "Удалить товар", exact: true }).click();
-  await expect(page.getByRole("row", { name: /Пуф Solo/ })).toHaveCount(0);
+  await expect(page.getByRole("row", { name: new RegExp(productName) })).toHaveCount(0);
 });
 
-test("opens an order and filters the admin order list", async ({ page }) => {
-  await page.evaluate(() =>
-    sessionStorage.setItem("virtual-space:admin-preview-session:v1", "admin"),
-  );
+test("opens an order and filters the admin order list", async ({ page }, testInfo) => {
+  await loginAsAdmin(page, testInfo);
   await page.goto("/admin/orders");
 
   await expect(page).toHaveTitle(/Заказы/);
   await expect(page.getByRole("heading", { name: "Заказы" })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "VS-24042" })).toBeVisible();
-  await expect(page.getByText("Диван Forma")).toBeVisible();
-  await expect(page.locator(".admin-order-details").getByText("Анна Ковалёва")).toBeVisible();
 
-  await page.getByRole("button", { name: /VS-24031/ }).click();
-  await expect(page.getByRole("heading", { name: "VS-24031" })).toBeVisible();
-  await expect(page.getByText("Кресло Mono")).toBeVisible();
-  await expect(page.getByText("Подтверждён")).toBeVisible();
+  await page.getByRole("button", { name: /VS-E2E00000042/ }).click();
+  const details = page.locator(".admin-order-details");
+  await expect(details.getByRole("heading", { name: "VS-E2E00000042" })).toBeVisible();
+  await expect(details.getByText("Диван Forma")).toBeVisible();
+  await expect(details.getByText("Анна Ковалёва")).toBeVisible();
+
+  await page.getByRole("button", { name: /VS-E2E00000031/ }).click();
+  await expect(details.getByRole("heading", { name: "VS-E2E00000031" })).toBeVisible();
+  await expect(details.getByText("Кресло Mono")).toBeVisible();
+  await expect(details.getByText("Подтверждён", { exact: true })).toBeVisible();
 
   await page.getByLabel("Поиск заказов").fill("Мария");
-  await expect(page.getByRole("button", { name: /VS-23998/ })).toBeVisible();
-  await expect(page.getByRole("button", { name: /VS-24042/ })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: /VS-E2E00000998/ })).toBeVisible();
+  await expect(page.getByRole("button", { name: /VS-E2E00000042/ })).toHaveCount(0);
 });
 
-test("updates an order through allowed status transitions", async ({ page }) => {
-  await page.evaluate(() =>
-    sessionStorage.setItem("virtual-space:admin-preview-session:v1", "admin"),
-  );
+test("updates an order through allowed status transitions", async ({ page }, testInfo) => {
+  await loginAsAdmin(page, testInfo);
   await page.goto("/admin/orders");
+  await page.getByRole("button", { name: new RegExp(`VS-E2ETRANS00${testInfo.retry}`) }).click();
 
   const details = page.locator(".admin-order-details");
   await expect(details.getByText("Новый", { exact: true })).toBeVisible();

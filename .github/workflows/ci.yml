@@ -65,6 +65,11 @@ jobs:
     name: E2E (${{ matrix.suite }})
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    env:
+      E2E_ADMIN_EMAIL: e2e-admin@example.test
+      E2E_ADMIN_PASSWORD: E2E-${{ github.run_id }}-${{ github.run_attempt }}-Admin!
+      E2E_USER_EMAIL: e2e-user@example.test
+      E2E_USER_PASSWORD: E2E-${{ github.run_id }}-${{ github.run_attempt }}-User!
     strategy:
       fail-fast: false
       matrix:
@@ -103,9 +108,11 @@ jobs:
       - name: Prepare isolated test database
         env:
           NODE_ENV: test
+          E2E_ALLOW_DATABASE_SEED: "true"
         run: |
           node node_modules/prisma/build/index.js migrate deploy
           npm run prisma:seed
+          npm run prisma:seed:e2e
 
       - name: Install Chromium
         run: npx playwright install --with-deps chromium
