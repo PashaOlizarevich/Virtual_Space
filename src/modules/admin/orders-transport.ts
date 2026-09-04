@@ -37,7 +37,11 @@ const serverOrderPageSchema = z.strictObject({
   orders: z.array(serverOrderSchema),
   nextCursor: z.string().nullable(),
 });
-const statusResultSchema = z.strictObject({ orderNumber: z.string(), status: serverStatusSchema });
+const statusResultSchema = z.strictObject({
+  orderNumber: z.string(),
+  status: serverStatusSchema,
+  updatedAt: z.iso.datetime(),
+});
 
 const serverToClientStatus = {
   NEW: "new",

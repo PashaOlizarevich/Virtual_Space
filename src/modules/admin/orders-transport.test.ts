@@ -1,6 +1,14 @@
-import { describe, expect, it } from "@jest/globals";
+import { afterEach, describe, expect, it, jest } from "@jest/globals";
 
-import { mapAdminOrderPage } from "@/modules/admin/orders-transport";
+import { mapAdminOrderPage, updateAdminOrderStatus } from "@/modules/admin/orders-transport";
+
+const originalFetch = globalThis.fetch;
+
+afterEach(() => {
+  jest.restoreAllMocks();
+  if (originalFetch) globalThis.fetch = originalFetch;
+  else Reflect.deleteProperty(globalThis, "fetch");
+});
 
 describe("admin orders transport", () => {
   it("maps the allowlisted PostgreSQL DTO to the existing admin view model", () => {
@@ -46,5 +54,22 @@ describe("admin orders transport", () => {
       total: 2500,
       items: [{ configuration: "Графит", unitPrice: 1250 }],
     });
+  });
+
+  it("accepts the complete status update response and maps its status", async () => {
+    const fetchMock = jest.fn<typeof fetch>().mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: async () => ({
+        orderNumber: "VS-ORDER42",
+        status: "CONFIRMED",
+        updatedAt: "2026-09-01T11:00:00.000Z",
+      }),
+    } as Response);
+    globalThis.fetch = fetchMock;
+
+    await expect(
+      updateAdminOrderStatus({ orderId: "VS-ORDER42", status: "confirmed" }),
+    ).resolves.toEqual({ orderNumber: "VS-ORDER42", status: "confirmed" });
   });
 });
