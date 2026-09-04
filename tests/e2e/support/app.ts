@@ -35,9 +35,10 @@ export async function loginAsAdmin(page: Page, testInfo: TestInfo): Promise<void
   await page.goto("/admin");
   await expect(page).toHaveURL(/\/login\?callbackUrl=%2Fadmin$/);
   await expect(page.getByRole("heading", { name: "Войти в аккаунт" })).toBeVisible();
-  await page.getByLabel("Email").fill(credentials.email);
-  await page.getByLabel("Пароль", { exact: true }).fill(credentials.password);
-  await page.getByRole("button", { name: "Войти", exact: true }).click();
+  const loginPanel = page.getByRole("tabpanel");
+  await loginPanel.getByLabel("Email").fill(credentials.email);
+  await loginPanel.getByLabel("Пароль", { exact: true }).fill(credentials.password);
+  await loginPanel.getByRole("button", { name: "Войти", exact: true }).click();
   await expect(page).toHaveURL(/\/admin$/);
   await expect(page.getByRole("heading", { name: "Добро пожаловать" })).toBeVisible();
 }
@@ -45,9 +46,10 @@ export async function loginAsAdmin(page: Page, testInfo: TestInfo): Promise<void
 export async function loginAsUser(page: Page, testInfo: TestInfo): Promise<void> {
   const credentials = userCredentials(testInfo);
   await page.goto("/login");
-  await page.getByLabel("Email").fill(credentials.email);
-  await page.getByLabel("Пароль", { exact: true }).fill(credentials.password);
-  await page.getByRole("button", { name: "Войти" }).click();
+  const loginPanel = page.getByRole("tabpanel");
+  await loginPanel.getByLabel("Email").fill(credentials.email);
+  await loginPanel.getByLabel("Пароль", { exact: true }).fill(credentials.password);
+  await loginPanel.getByRole("button", { name: "Войти", exact: true }).click();
   await expect(page).toHaveURL(/\/profile$/);
   await expect(page.getByRole("heading", { name: "Вход выполнен" })).toBeVisible();
 }
