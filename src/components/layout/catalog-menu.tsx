@@ -31,9 +31,11 @@ const categoryGroups = [
 ] as const;
 
 const subscribeToMount = () => () => undefined;
+const CLOSE_TRANSITION_FALLBACK_MS = 450;
 
 export function CatalogMenu() {
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const isMounted = useSyncExternalStore(
@@ -46,6 +48,23 @@ export function CatalogMenu() {
     const dialog = dialogRef.current;
     if (dialog?.open) dialog.close();
   }, [pathname]);
+
+  useEffect(
+    () => () => {
+      if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
+    },
+    [],
+  );
+
+  function finishClosing() {
+    if (closeTimerRef.current) {
+      clearTimeout(closeTimerRef.current);
+      closeTimerRef.current = null;
+    }
+
+    const dialog = dialogRef.current;
+    if (dialog?.open && dialog.dataset.state === "closing") dialog.close();
+  }
 
   function openMenu() {
     const dialog = dialogRef.current;
@@ -67,15 +86,16 @@ export function CatalogMenu() {
     }
 
     dialog.dataset.state = "closing";
+    closeTimerRef.current = setTimeout(finishClosing, CLOSE_TRANSITION_FALLBACK_MS);
   }
 
-  function finishClosing(event: TransitionEvent<HTMLDivElement>) {
+  function handleClosingTransition(event: TransitionEvent<HTMLDivElement>) {
     if (
       event.target === event.currentTarget &&
       event.propertyName === "transform" &&
       dialogRef.current?.dataset.state === "closing"
     ) {
-      dialogRef.current.close();
+      finishClosing();
     }
   }
 
@@ -105,7 +125,14 @@ export function CatalogMenu() {
         event.preventDefault();
         closeMenu();
       }}
-      onClose={() => setIsOpen(false)}
+      onClose={() => {
+        if (closeTimerRef.current) {
+          clearTimeout(closeTimerRef.current);
+          closeTimerRef.current = null;
+        }
+        setIsOpen(false);
+        document.getElementById("catalog-menu-trigger")?.focus();
+      }}
       onClick={(event) => {
         if (event.target === event.currentTarget) closeMenu();
       }}
@@ -114,7 +141,11 @@ export function CatalogMenu() {
         setIsOpen(event.currentTarget.open);
       }}
     >
-      <div className="catalog-menu__panel" onTransitionEnd={finishClosing}>
+      <div
+        className="catalog-menu__panel"
+        onTransitionCancel={handleClosingTransition}
+        onTransitionEnd={handleClosingTransition}
+      >
         <div className="catalog-menu__header">
           <p id="catalog-menu-title">Категории</p>
           <Button variant="ghost" size="icon" aria-label="Закрыть каталог" onClick={closeMenu}>
