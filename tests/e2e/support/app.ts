@@ -54,7 +54,8 @@ export async function loginAsUser(page: Page, testInfo: TestInfo): Promise<void>
 
 export async function addFormaToCart(page: Page, color = "Молочный"): Promise<void> {
   await page.goto(FORMA_PRODUCT_PATH);
-  await page.getByLabel(color).check();
+  const colorOptions = page.getByRole("group", { name: "Цвет", exact: true });
+  await colorOptions.getByRole("radio", { name: color, exact: true }).check();
   await page.getByRole("button", { name: "Добавить в корзину" }).click();
   await expect(page.getByRole("status")).toContainText(`Букле, ${color}`);
 }
