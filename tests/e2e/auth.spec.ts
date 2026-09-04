@@ -7,22 +7,27 @@ test("registers an account and accepts a password recovery request", async ({ pa
   await expect(page.getByRole("heading", { name: "Войти в аккаунт" })).toBeVisible();
 
   await page.getByRole("tab", { name: "Регистрация" }).click();
-  await expect(page.getByRole("heading", { name: "Создать аккаунт" })).toBeVisible();
-  await page.getByLabel("Имя").fill("Анна");
-  await page
+  const registrationPanel = page.getByRole("tabpanel");
+  await expect(registrationPanel.getByRole("heading", { name: "Создать аккаунт" })).toBeVisible();
+  await registrationPanel.getByLabel("Имя").fill("Анна");
+  await registrationPanel
     .getByLabel("Email")
     .fill(`registration-${testInfo.workerIndex}-${testInfo.retry}-${Date.now()}@example.test`);
-  await page.getByLabel("Пароль", { exact: true }).fill(userCredentials(testInfo).password);
-  await page.getByRole("button", { name: "Создать аккаунт" }).click();
+  await registrationPanel
+    .getByLabel("Пароль", { exact: true })
+    .fill(userCredentials(testInfo).password);
+  await registrationPanel.getByRole("button", { name: "Создать аккаунт" }).click();
 
   await expect(page).toHaveURL(/\/profile$/);
   await expect(page.getByRole("heading", { name: "Вход выполнен" })).toBeVisible();
 
   await page.goto("/login");
-  await page.getByRole("tab", { name: "Восстановление" }).click();
-  await page.getByLabel("Email").fill("unknown-account@example.test");
-  await page.getByRole("button", { name: "Проверить email" }).click();
-  await expect(page.getByRole("status")).toContainText(
+  await page.getByRole("button", { name: "Забыли пароль?" }).click();
+  const recoveryDialog = page.getByRole("dialog", { name: "Восстановить пароль" });
+  await expect(recoveryDialog).toBeVisible();
+  await recoveryDialog.getByLabel("Email").fill("unknown-account@example.test");
+  await recoveryDialog.getByRole("button", { name: "Отправить ссылку" }).click();
+  await expect(recoveryDialog.getByRole("status")).toContainText(
     "Если аккаунт существует, запрос подготовлен. Доставка письма пока не настроена.",
   );
 });
