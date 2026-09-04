@@ -12,7 +12,7 @@ export function RouteTransition({ children }: Readonly<{ children: ReactNode }>)
         id="main-content"
         className="route-transition"
         tabIndex={-1}
-        initial={reduceMotion ? false : { opacity: 0, y: 8 }}
+        initial={false}
         animate={{ opacity: 1, y: 0 }}
         transition={reduceMotion ? { duration: 0 } : { duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
       >
