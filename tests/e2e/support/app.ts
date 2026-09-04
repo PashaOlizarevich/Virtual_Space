@@ -33,9 +33,12 @@ export function userCredentials(testInfo: TestInfo): Credentials {
 export async function loginAsAdmin(page: Page, testInfo: TestInfo): Promise<void> {
   const credentials = adminCredentials(testInfo);
   await page.goto("/admin");
+  await expect(page).toHaveURL(/\/login\?callbackUrl=%2Fadmin$/);
+  await expect(page.getByRole("heading", { name: "Войти в аккаунт" })).toBeVisible();
   await page.getByLabel("Email").fill(credentials.email);
   await page.getByLabel("Пароль", { exact: true }).fill(credentials.password);
-  await page.getByRole("button", { name: "Войти в Dashboard" }).click();
+  await page.getByRole("button", { name: "Войти", exact: true }).click();
+  await expect(page).toHaveURL(/\/admin$/);
   await expect(page.getByRole("heading", { name: "Добро пожаловать" })).toBeVisible();
 }
 
