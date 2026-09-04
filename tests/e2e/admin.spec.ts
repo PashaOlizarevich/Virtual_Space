@@ -80,19 +80,36 @@ test("opens an order and filters the admin order list", async ({ page }, testInf
 test("updates an order through allowed status transitions", async ({ page }, testInfo) => {
   await loginAsAdmin(page, testInfo);
   await page.goto("/admin/orders");
-  await page.getByRole("button", { name: new RegExp(`VS-E2ETRANS00${testInfo.retry}`) }).click();
+  const orderNumber = `VS-E2ETRANS00${testInfo.retry}`;
+  await page.getByRole("button", { name: new RegExp(orderNumber) }).click();
 
   const details = page.locator(".admin-order-details");
+  const updateStatus = async (statusName: string) => {
+    const [response] = await Promise.all([
+      page.waitForResponse(
+        (candidate) =>
+          candidate.request().method() === "PATCH" &&
+          new URL(candidate.url()).pathname === `/api/admin/orders/${orderNumber}/status`,
+      ),
+      details.getByRole("button", { name: statusName }).click(),
+    ]);
+
+    expect(
+      response.status(),
+      `Status update failed for ${orderNumber}: ${await response.text()}`,
+    ).toBe(200);
+  };
+
   await expect(details.getByText("Новый", { exact: true })).toBeVisible();
   await expect(details.getByRole("button", { name: "Завершён" })).toHaveCount(0);
 
-  await details.getByRole("button", { name: "Подтверждён" }).click();
+  await updateStatus("Подтверждён");
   await expect(details.getByText("Подтверждён", { exact: true })).toBeVisible();
   await expect(details.getByRole("button", { name: "В обработке" })).toBeVisible();
 
-  await details.getByRole("button", { name: "В обработке" }).click();
+  await updateStatus("В обработке");
   await expect(details.getByText("В обработке", { exact: true })).toBeVisible();
-  await details.getByRole("button", { name: "Завершён" }).click();
+  await updateStatus("Завершён");
 
   await expect(details.getByText("Завершён", { exact: true })).toBeVisible();
   await expect(details.getByText("Заказ находится в финальном статусе.")).toBeVisible();
