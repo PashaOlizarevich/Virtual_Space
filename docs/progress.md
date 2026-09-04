@@ -3329,3 +3329,27 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
 - Безопасность: secret и параметры подписи не изменены; HTTP-ответ сокращён до ожидаемого allowlist,
   внутреннее дублирующее поле больше не сериализуется клиенту. Новых findings нет.
 - База, окружение, архитектура, Product Tour и API overview: без изменений.
+
+## Task 189 — Единый вход пользователя и администратора
+
+- Результат: `/login` стал общей точкой Credentials-входа. После успешной авторизации роль `ADMIN`
+  ведёт в `/admin`, роль `USER` — в `/profile`; безопасный локальный `callbackUrl` возвращает
+  администратора на первоначально запрошенную страницу `/admin/**`.
+- Доступ: гость на любом реализованном маршруте `/admin/**` перенаправляется в
+  `/login?callbackUrl=...`, а авторизованный пользователь без роли `ADMIN` получает явный отказ в
+  доступе. Серверные административные границы по-прежнему повторно сверяют сессию и актуальную роль
+  в PostgreSQL.
+- Безопасность redirect: абсолютные, protocol-relative и иные внешние callback URL отклоняются;
+  роль `USER` не может использовать callback для перехода в административную область.
+- UI: отдельная `AdminLoginForm` и неиспользуемый preview-gate удалены; выход из административной
+  оболочки теперь ведёт на `/login`.
+- Файлы: `src/app/(store)/login/page.tsx`, страницы `src/app/admin/**`,
+  `src/modules/auth/components/auth-forms.tsx`, `src/modules/auth/login-redirect.ts`,
+  `src/modules/admin/components/admin-access-denied.tsx`, `src/modules/admin/components/admin-shell.tsx`,
+  `docs/ProductTour.md`, `docs/progress.md`.
+- Проверки: targeted unit (8 тестов), lint и полный Jest (101 suite, 316 тестов) прошли. Typecheck
+  прошёл до генерации build-артефактов; Webpack build скомпилировал приложение, но затем выявил
+  ранее существующие Next.js generated-type ошибки в `catalog/page.tsx` и `new/page.tsx`, из-за
+  которых повторный typecheck также не проходит. Turbopack build из изолированного worktree не видит
+  расположенный выше `node_modules`.
+- База и окружение: Prisma schema, миграции, данные и переменные окружения не изменялись.

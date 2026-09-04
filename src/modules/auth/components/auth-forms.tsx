@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, LoaderCircle } from "lucide-react";
-import { signIn } from "next-auth/react";
+import { getSession, signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { type KeyboardEvent, useRef, useState } from "react";
 import { type UseFormRegisterReturn, useForm } from "react-hook-form";
@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { registerUserAction, requestPasswordResetAction } from "@/modules/auth/server/actions";
+import { getPostLoginUrl } from "@/modules/auth/login-redirect";
 import {
   loginSchema,
   recoverySchema,
@@ -73,7 +74,13 @@ function Status({ value }: { value: string | null }) {
   ) : null;
 }
 
-function LoginForm({ onMode }: { onMode: (mode: AuthMode) => void }) {
+function LoginForm({
+  callbackUrl,
+  onMode,
+}: {
+  callbackUrl?: string;
+  onMode: (mode: AuthMode) => void;
+}) {
   const router = useRouter();
   const [status, setStatus] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -86,8 +93,12 @@ function LoginForm({ onMode }: { onMode: (mode: AuthMode) => void }) {
     try {
       const result = await signIn("credentials", { ...values, redirect: false });
       if (!result?.ok) throw new Error("Неверный email или пароль.");
-      setStatus("Вход выполнен. Открываем личный кабинет…");
-      router.push("/profile");
+      const session = await getSession();
+      if (!session?.user?.role) throw new Error("Не удалось подтвердить сессию.");
+      const destination = getPostLoginUrl(session.user.role, callbackUrl);
+      setStatus("Вход выполнен. Открываем нужный раздел…");
+      router.push(destination);
+      router.refresh();
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : "Не удалось обработать форму.");
     }
@@ -296,7 +307,7 @@ function AuthFormShell({
   );
 }
 
-export function AuthForms() {
+export function AuthForms({ callbackUrl }: { callbackUrl?: string }) {
   const [mode, setMode] = useState<AuthMode>("login");
   const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
 
@@ -337,7 +348,7 @@ export function AuthForms() {
       </div>
       <div id="auth-panel" role="tabpanel" aria-labelledby={`auth-tab-${mode}`} tabIndex={0}>
         {mode === "login" ? (
-          <LoginForm onMode={setMode} />
+          <LoginForm callbackUrl={callbackUrl} onMode={setMode} />
         ) : mode === "registration" ? (
           <RegistrationForm />
         ) : (

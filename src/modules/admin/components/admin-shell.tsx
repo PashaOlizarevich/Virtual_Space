@@ -46,7 +46,7 @@ export function AdminShell({ active, children }: { active: AdminSection; childre
         <Button
           className="admin-sidebar__logout"
           variant="ghost"
-          onClick={() => void signOut({ callbackUrl: "/admin" })}
+          onClick={() => void signOut({ callbackUrl: "/login" })}
         >
           <LogOut data-icon="inline-start" aria-hidden="true" />
           Выйти

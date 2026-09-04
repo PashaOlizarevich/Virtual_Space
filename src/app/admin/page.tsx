@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 
+import { AdminAccessDenied } from "@/modules/admin/components/admin-access-denied";
 import { AdminDashboard } from "@/modules/admin/components/admin-dashboard";
-import { AdminLoginForm } from "@/modules/admin/components/admin-login-form";
 import {
   AdminAccessRequiredError,
   AuthenticationRequiredError,
@@ -19,16 +20,19 @@ async function loadDashboard() {
       db.product.count({ where: { isActive: true } }),
       db.product.count({ where: { stock: 0 } }),
     ]);
-    return { authenticated: true as const, data: { products, activeProducts, outOfStock } };
+    return { authorized: true as const, data: { products, activeProducts, outOfStock } };
   } catch (error) {
-    if (error instanceof AuthenticationRequiredError || error instanceof AdminAccessRequiredError) {
-      return { authenticated: false as const };
-    }
+    if (error instanceof AuthenticationRequiredError) redirect("/login?callbackUrl=%2Fadmin");
+    if (error instanceof AdminAccessRequiredError) return { authorized: false as const };
     throw error;
   }
 }
 
 export default async function AdminPage() {
   const result = await loadDashboard();
-  return result.authenticated ? <AdminDashboard data={result.data} /> : <AdminLoginForm />;
+  return result.authorized === false ? (
+    <AdminAccessDenied />
+  ) : (
+    <AdminDashboard data={result.data} />
+  );
 }
