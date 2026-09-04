@@ -3353,3 +3353,23 @@ tests/e2e/accessibility.spec.ts tests/e2e/header.spec.ts --project=chromium` —
   которых повторный typecheck также не проходит. Turbopack build из изолированного worktree не видит
   расположенный выше `node_modules`.
 - База и окружение: Prisma schema, миграции, данные и переменные окружения не изменялись.
+
+## Task 190 — Модальное восстановление пароля
+
+- Результат: вкладка «Восстановление» удалена из `/login`; ссылка «Забыли пароль?» открывает
+  нативное модальное окно с существующей формой запроса reset-ссылки. Фон затемняется и размывается
+  в визуальном стиле header, а окно закрывается по крестику, клику на backdrop и `Escape` с
+  браузерным управлением фокусом.
+- Файлы: `src/modules/auth/components/auth-forms.tsx`, `src/styles/globals.css`,
+  `docs/ProductTour.md`, `docs/progress.md`.
+- Проверки: `npm run lint`, `npm run typecheck`, полный `npm test -- --runInBand` (101 suite,
+  316 тестов), targeted Prettier и `git diff --check` прошли. Webpack production build успешно
+  компилирует приложение, но останавливается на ранее известных generated-type ошибках
+  `catalog/page.tsx` и `new/page.tsx`; стандартный Turbopack build из worktree не видит
+  расположенный выше `node_modules`.
+- Визуальная проверка: Browser runtime недоступен в текущей сессии, а локальный `/login` без
+  `DATABASE_URL` отвечает 500; секреты из `.env.local` не читались и не переносились. Существующий
+  `tests/e2e/auth.spec.ts` не изменялся, поскольку изменение E2E требует отдельного разрешения.
+- База, API, безопасность и окружение: без изменений; сохранены существующие Server Action,
+  Zod-валидация и нейтральный ответ, не раскрывающий наличие email. Новые переменные не добавлялись.
+- Архитектура: без изменений. Product Tour: обновлён раздел `/login`. API overview: без изменений.

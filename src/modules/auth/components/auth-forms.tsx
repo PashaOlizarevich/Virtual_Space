@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Eye, EyeOff, LoaderCircle } from "lucide-react";
+import { Eye, EyeOff, LoaderCircle, X } from "lucide-react";
 import { getSession, signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { type KeyboardEvent, useRef, useState } from "react";
@@ -24,10 +24,9 @@ import {
 const modes: { id: AuthMode; label: string }[] = [
   { id: "login", label: "Вход" },
   { id: "registration", label: "Регистрация" },
-  { id: "recovery", label: "Восстановление" },
 ];
 
-type AuthMode = "login" | "registration" | "recovery";
+type AuthMode = "login" | "registration";
 
 function PasswordField({
   registered,
@@ -74,13 +73,7 @@ function Status({ value }: { value: string | null }) {
   ) : null;
 }
 
-function LoginForm({
-  callbackUrl,
-  onMode,
-}: {
-  callbackUrl?: string;
-  onMode: (mode: AuthMode) => void;
-}) {
+function LoginForm({ callbackUrl, onRecovery }: { callbackUrl?: string; onRecovery: () => void }) {
   const router = useRouter();
   const [status, setStatus] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -120,7 +113,7 @@ function LoginForm({
             error={form.formState.errors.password?.message}
           />
         </FieldGroup>
-        <button className="auth-form__text-action" type="button" onClick={() => onMode("recovery")}>
+        <button className="auth-form__text-action" type="button" onClick={onRecovery}>
           Забыли пароль?
         </button>
         <SubmitButton pending={form.formState.isSubmitting}>Войти</SubmitButton>
@@ -205,63 +198,94 @@ function RegistrationForm() {
   );
 }
 
-function RecoveryForm() {
+function RecoveryDialog({ dialogRef }: { dialogRef: React.RefObject<HTMLDialogElement | null> }) {
   const [status, setStatus] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const form = useForm<RecoveryValues>({
     resolver: zodResolver(recoverySchema),
     defaultValues: { email: "" },
   });
+
+  function closeDialog() {
+    dialogRef.current?.close();
+  }
+
   return (
-    <AuthFormShell
-      title="Восстановить пароль"
-      description="Укажите email аккаунта. Ответ не раскрывает, зарегистрирован ли этот адрес."
+    <dialog
+      ref={dialogRef}
+      className="auth-recovery-dialog"
+      aria-labelledby="auth-recovery-title"
+      aria-describedby="auth-recovery-description"
+      onClick={(event) => {
+        if (event.target === event.currentTarget) closeDialog();
+      }}
     >
-      <form
-        onSubmit={form.handleSubmit(async (values) => {
-          setError(null);
-          try {
-            const result = await requestPasswordResetAction(values);
-            if (!result.ok) throw new Error("Не удалось обработать запрос восстановления.");
-            setStatus(
-              "Если аккаунт существует, запрос подготовлен. Доставка письма пока не настроена.",
-            );
-          } catch (reason) {
-            setError(reason instanceof Error ? reason.message : "Не удалось обработать форму.");
-          }
-        })}
-        noValidate
-      >
-        <FieldGroup>
-          <EmailField
-            registered={form.register("email")}
-            error={form.formState.errors.email?.message}
-          />
-        </FieldGroup>
-        <SubmitButton pending={form.formState.isSubmitting}>Проверить email</SubmitButton>
-        {error ? (
-          <p className="auth-form__error" role="alert">
-            {error}
+      <div className="auth-recovery-dialog__surface">
+        <Button
+          className="auth-recovery-dialog__close"
+          type="button"
+          variant="ghost"
+          size="icon"
+          aria-label="Закрыть восстановление пароля"
+          onClick={closeDialog}
+        >
+          <X aria-hidden="true" />
+        </Button>
+        <div className="auth-recovery-dialog__heading">
+          <h2 id="auth-recovery-title">Восстановить пароль</h2>
+          <p id="auth-recovery-description">
+            Укажите email аккаунта. Ответ не раскроет, зарегистрирован ли этот адрес.
           </p>
-        ) : null}
-        <Status value={status} />
-      </form>
-    </AuthFormShell>
+        </div>
+        <form
+          onSubmit={form.handleSubmit(async (values) => {
+            setError(null);
+            try {
+              const result = await requestPasswordResetAction(values);
+              if (!result.ok) throw new Error("Не удалось обработать запрос восстановления.");
+              setStatus(
+                "Если аккаунт существует, запрос подготовлен. Доставка письма пока не настроена.",
+              );
+            } catch (reason) {
+              setError(reason instanceof Error ? reason.message : "Не удалось обработать форму.");
+            }
+          })}
+          noValidate
+        >
+          <FieldGroup>
+            <EmailField
+              id="recovery-email"
+              registered={form.register("email")}
+              error={form.formState.errors.email?.message}
+            />
+          </FieldGroup>
+          <SubmitButton pending={form.formState.isSubmitting}>Отправить ссылку</SubmitButton>
+          {error ? (
+            <p className="auth-form__error" role="alert">
+              {error}
+            </p>
+          ) : null}
+          <Status value={status} />
+        </form>
+      </div>
+    </dialog>
   );
 }
 
 function EmailField({
+  id = "email",
   registered,
   error,
 }: {
+  id?: string;
   registered: ReturnType<ReturnType<typeof useForm<LoginValues>>["register"]>;
   error?: string;
 }) {
   return (
     <Field>
-      <FieldLabel htmlFor="email">Email</FieldLabel>
+      <FieldLabel htmlFor={id}>Email</FieldLabel>
       <Input
-        id="email"
+        id={id}
         type="email"
         inputMode="email"
         autoComplete="email"
@@ -310,6 +334,7 @@ function AuthFormShell({
 export function AuthForms({ callbackUrl }: { callbackUrl?: string }) {
   const [mode, setMode] = useState<AuthMode>("login");
   const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
+  const recoveryDialogRef = useRef<HTMLDialogElement>(null);
 
   const handleTabKeyDown = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
     let nextIndex: number | null = null;
@@ -348,13 +373,15 @@ export function AuthForms({ callbackUrl }: { callbackUrl?: string }) {
       </div>
       <div id="auth-panel" role="tabpanel" aria-labelledby={`auth-tab-${mode}`} tabIndex={0}>
         {mode === "login" ? (
-          <LoginForm callbackUrl={callbackUrl} onMode={setMode} />
-        ) : mode === "registration" ? (
-          <RegistrationForm />
+          <LoginForm
+            callbackUrl={callbackUrl}
+            onRecovery={() => recoveryDialogRef.current?.showModal()}
+          />
         ) : (
-          <RecoveryForm />
+          <RegistrationForm />
         )}
       </div>
+      <RecoveryDialog dialogRef={recoveryDialogRef} />
     </section>
   );
 }

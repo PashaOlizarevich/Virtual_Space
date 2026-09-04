@@ -4446,7 +4446,7 @@ body:has(dialog[open]) {
 }
 .auth-tabs {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   margin-bottom: 48px;
   border-bottom: 1px solid var(--color-border);
 }
@@ -4542,6 +4542,91 @@ body:has(dialog[open]) {
   width: 18px;
   height: 18px;
   animation: checkout-spinner 0.8s linear infinite;
+}
+
+.auth-recovery-dialog {
+  width: min(calc(100% - (var(--page-gutter) * 2)), 520px);
+  max-width: none;
+  max-height: calc(100svh - (var(--page-gutter) * 2));
+  margin: auto;
+  overflow: visible;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: var(--color-text-primary);
+}
+
+.auth-recovery-dialog::backdrop {
+  background: rgb(16 16 16 / 32%);
+  -webkit-backdrop-filter: blur(18px) saturate(120%);
+  backdrop-filter: blur(18px) saturate(120%);
+}
+
+.auth-recovery-dialog__surface {
+  position: relative;
+  display: flex;
+  max-height: calc(100svh - (var(--page-gutter) * 2));
+  overflow-y: auto;
+  flex-direction: column;
+  gap: 32px;
+  border: 1px solid rgb(255 255 255 / 48%);
+  border-radius: var(--radius-lg);
+  padding: clamp(28px, 6vw, 48px);
+  background: rgb(255 255 255 / 92%);
+  box-shadow: 0 24px 80px rgb(0 0 0 / 20%);
+  -webkit-backdrop-filter: blur(18px) saturate(120%);
+  backdrop-filter: blur(18px) saturate(120%);
+}
+
+.auth-recovery-dialog__close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+}
+
+.auth-recovery-dialog__heading,
+.auth-recovery-dialog form {
+  display: flex;
+  flex-direction: column;
+}
+
+.auth-recovery-dialog__heading {
+  gap: 12px;
+  padding-right: 36px;
+}
+
+.auth-recovery-dialog__heading h2,
+.auth-recovery-dialog__heading p {
+  margin: 0;
+}
+
+.auth-recovery-dialog__heading h2 {
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.auth-recovery-dialog__heading p {
+  color: var(--color-text-secondary);
+  line-height: 1.55;
+}
+
+.auth-recovery-dialog form {
+  gap: 24px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .auth-recovery-dialog[open] {
+    animation: auth-dialog-enter var(--motion-normal) var(--motion-standard);
+  }
+
+  @keyframes auth-dialog-enter {
+    from {
+      opacity: 0;
+      transform: translateY(12px) scale(0.98);
+    }
+  }
 }
 
 .profile-page {
