@@ -36,7 +36,7 @@ test("supports keyboard tabs, validation and password autocomplete", async ({ pa
   await page.goto("/login");
   const loginTab = page.getByRole("tab", { name: "Вход" });
   const registrationTab = page.getByRole("tab", { name: "Регистрация" });
-  const recoveryTab = page.getByRole("tab", { name: "Восстановление" });
+  const authPanel = page.getByRole("tabpanel");
 
   await expect(page.getByLabel("Пароль", { exact: true })).toHaveAttribute(
     "autocomplete",
@@ -47,27 +47,35 @@ test("supports keyboard tabs, validation and password autocomplete", async ({ pa
   await expect(registrationTab).toBeFocused();
   await expect(registrationTab).toHaveAttribute("aria-selected", "true");
   await expect(registrationTab).toHaveAttribute("aria-controls", "auth-panel");
-  await expect(page.getByRole("tabpanel")).toHaveAttribute(
-    "aria-labelledby",
-    "auth-tab-registration",
-  );
-  await expect(page.getByLabel("Пароль", { exact: true })).toHaveAttribute(
+  await expect(authPanel).toHaveAttribute("aria-labelledby", "auth-tab-registration");
+  await expect(authPanel.getByLabel("Пароль", { exact: true })).toHaveAttribute(
     "autocomplete",
     "new-password",
   );
 
   await page.keyboard.press("End");
-  await expect(recoveryTab).toBeFocused();
+  await expect(registrationTab).toBeFocused();
   await page.keyboard.press("Home");
   await expect(loginTab).toBeFocused();
   await page.keyboard.press("ArrowLeft");
-  await expect(recoveryTab).toBeFocused();
+  await expect(registrationTab).toBeFocused();
 
-  await loginTab.click();
-  await page.getByRole("button", { name: "Войти" }).click();
-  await expect(page.getByText("Введите email")).toBeVisible();
-  await expect(page.getByText("Не менее 8 символов")).toBeVisible();
-  await expect(page.getByLabel("Email")).toHaveAttribute("aria-invalid", "true");
+  await page.keyboard.press("Home");
+  const recoveryButton = authPanel.getByRole("button", { name: "Забыли пароль?" });
+  await recoveryButton.focus();
+  await page.keyboard.press("Enter");
+
+  const recoveryDialog = page.getByRole("dialog", { name: "Восстановить пароль" });
+  await expect(recoveryDialog).toBeVisible();
+  await expect(recoveryDialog.locator(":focus")).toHaveCount(1);
+  await page.keyboard.press("Escape");
+  await expect(recoveryDialog).toBeHidden();
+  await expect(recoveryButton).toBeFocused();
+
+  await authPanel.getByRole("button", { name: "Войти" }).click();
+  await expect(authPanel.getByText("Введите email")).toBeVisible();
+  await expect(authPanel.getByText("Не менее 8 символов")).toBeVisible();
+  await expect(authPanel.getByLabel("Email")).toHaveAttribute("aria-invalid", "true");
 });
 
 test("merges guest and server carts, preserves the server cart on logout and restores it", async ({
