@@ -4,17 +4,19 @@ import { adminCredentials, loginAsAdmin } from "./support/app";
 
 test("validates admin login and opens dashboard", async ({ page }, testInfo) => {
   await page.goto("/admin");
-  await expect(page.getByRole("heading", { name: "Вход администратора" })).toBeVisible();
+  await expect(page).toHaveURL(/\/login\?callbackUrl=%2Fadmin$/);
+  await expect(page.getByRole("heading", { name: "Войти в аккаунт" })).toBeVisible();
 
-  await page.getByRole("button", { name: "Войти в Dashboard" }).click();
+  await page.getByRole("button", { name: "Войти", exact: true }).click();
   await expect(page.getByText("Введите корректную почту")).toBeVisible();
   await expect(page.getByText("Введите пароль")).toBeVisible();
 
   const credentials = adminCredentials(testInfo);
   await page.getByLabel("Email").fill(credentials.email);
   await page.getByLabel("Пароль", { exact: true }).fill(credentials.password);
-  await page.getByRole("button", { name: "Войти в Dashboard" }).click();
+  await page.getByRole("button", { name: "Войти", exact: true }).click();
 
+  await expect(page).toHaveURL(/\/admin$/);
   await expect(page.getByRole("heading", { name: "Добро пожаловать" })).toBeVisible();
   await expect(page.getByText("Всего товаров")).toBeVisible();
 });
@@ -27,7 +29,8 @@ test("restores an authenticated admin session and signs out", async ({ page }, t
   await page.goto("/admin");
   await expect(page.getByRole("heading", { name: "Добро пожаловать" })).toBeVisible();
   await page.getByRole("button", { name: "Выйти" }).click();
-  await expect(page.getByRole("heading", { name: "Вход администратора" })).toBeVisible();
+  await expect(page).toHaveURL(/\/login$/);
+  await expect(page.getByRole("heading", { name: "Войти в аккаунт" })).toBeVisible();
 });
 
 test("edits and deletes an isolated product fixture", async ({ page }, testInfo) => {
