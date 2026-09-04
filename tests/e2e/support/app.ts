@@ -61,20 +61,27 @@ export async function addFormaToCart(page: Page, color = "Молочный"): Pr
 
 export async function openFormaFromCatalog(page: Page): Promise<void> {
   await page.goto("/catalog");
-  const productLink = page.locator(`a[href="${FORMA_PRODUCT_PATH}"]`);
+  await expect(page.locator(".catalog-query__viewport .product-preview").first()).toBeVisible();
+
+  const productCard = page
+    .locator("article.product-preview")
+    .filter({ has: page.getByRole("heading", { name: "Кресло Forma", exact: true }) });
+  const productLink = productCard.getByRole("link", { name: "Подробнее", exact: true });
+  const pagination = page.getByRole("navigation", { name: "Страницы каталога" });
 
   for (let pageIndex = 0; pageIndex < 10; pageIndex += 1) {
-    if ((await productLink.count()) > 0) {
+    if (await productLink.isVisible()) {
       await productLink.click();
       await expect(page).toHaveURL(new RegExp(`${FORMA_PRODUCT_PATH}$`));
       return;
     }
 
-    const nextPage = page.getByRole("button", { name: "Следующая страница каталога" });
+    const nextPage = pagination.getByRole("button", { name: "Следующая страница каталога" });
     if ((await nextPage.count()) === 0 || (await nextPage.isDisabled())) break;
-    const currentUrl = page.url();
     await nextPage.click();
-    await expect.poll(() => page.url()).not.toBe(currentUrl);
+    await expect(
+      pagination.getByText(new RegExp(`^Страница ${pageIndex + 2} из \\d+$`)),
+    ).toBeVisible();
   }
 
   throw new Error("The Forma product link was not found in the catalog pagination.");
