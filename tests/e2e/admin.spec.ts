@@ -7,14 +7,15 @@ test("validates admin login and opens dashboard", async ({ page }, testInfo) => 
   await expect(page).toHaveURL(/\/login\?callbackUrl=%2Fadmin$/);
   await expect(page.getByRole("heading", { name: "Войти в аккаунт" })).toBeVisible();
 
-  await page.getByRole("button", { name: "Войти", exact: true }).click();
-  await expect(page.getByText("Введите корректную почту")).toBeVisible();
-  await expect(page.getByText("Введите пароль")).toBeVisible();
+  const loginPanel = page.getByRole("tabpanel");
+  await loginPanel.getByRole("button", { name: "Войти", exact: true }).click();
+  await expect(loginPanel.getByText("Введите email")).toBeVisible();
+  await expect(loginPanel.getByText("Не менее 8 символов")).toBeVisible();
 
   const credentials = adminCredentials(testInfo);
-  await page.getByLabel("Email").fill(credentials.email);
-  await page.getByLabel("Пароль", { exact: true }).fill(credentials.password);
-  await page.getByRole("button", { name: "Войти", exact: true }).click();
+  await loginPanel.getByLabel("Email").fill(credentials.email);
+  await loginPanel.getByLabel("Пароль", { exact: true }).fill(credentials.password);
+  await loginPanel.getByRole("button", { name: "Войти", exact: true }).click();
 
   await expect(page).toHaveURL(/\/admin$/);
   await expect(page.getByRole("heading", { name: "Добро пожаловать" })).toBeVisible();
